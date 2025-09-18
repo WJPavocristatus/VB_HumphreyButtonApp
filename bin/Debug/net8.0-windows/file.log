@@ -7,3 +7,170 @@
 2025-09-18T12:04:38.134  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
 2025-09-18T12:04:38.134  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0xb9c
 2025-09-18T12:04:38.134  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008a60
+2025-09-18T12:46:06.914  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T12:46:06.915  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T12:46:06.918  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T12:46:06.919  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5dc
+2025-09-18T12:46:06.920  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00007a04
+2025-09-18T12:46:07.015  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:05:12.471  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:05:12.472  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:05:12.476  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:05:12.477  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x52c
+2025-09-18T13:05:12.478  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00002e1c
+2025-09-18T13:05:12.566  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:05:15.606  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x52c
+2025-09-18T13:05:15.606  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:06:50.150  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:06:50.151  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:06:50.155  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:06:50.157  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5ec
+2025-09-18T13:06:50.157  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00009238
+2025-09-18T13:06:50.247  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:07:38.666  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:07:38.674  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:07:38.677  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:07:38.679  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5d0
+2025-09-18T13:07:38.679  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008324
+2025-09-18T13:07:38.763  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:07:42.498  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5d0
+2025-09-18T13:07:42.498  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:07:42.511  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:14:25.980  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:14:25.981  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:14:25.985  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:14:25.986  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5ec
+2025-09-18T13:14:25.987  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00005944
+2025-09-18T13:14:26.072  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:16:19.827  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:16:19.828  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:16:19.831  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:16:19.834  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x628
+2025-09-18T13:16:19.834  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00007fac
+2025-09-18T13:16:19.955  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:29:45.162  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:29:45.163  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:29:45.167  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:29:45.168  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5fc
+2025-09-18T13:29:45.168  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x0000913c
+2025-09-18T13:29:45.259  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:30:04.954  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5fc
+2025-09-18T13:30:04.954  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:30:04.999  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:31:58.838  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:31:58.839  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:31:58.843  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:31:58.845  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5fc
+2025-09-18T13:31:58.845  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x0000291c
+2025-09-18T13:31:58.934  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:35:06.457  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:35:06.458  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:35:06.461  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:35:06.463  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x4c4
+2025-09-18T13:35:06.463  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00002dec
+2025-09-18T13:35:06.553  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:37:48.919  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:37:48.920  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:37:48.923  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:37:48.926  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5e8
+2025-09-18T13:37:48.926  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00002e78
+2025-09-18T13:37:49.018  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:37:51.784  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5e8
+2025-09-18T13:37:51.784  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:37:51.979  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:38:06.533  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:38:06.534  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:38:06.537  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:38:06.538  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x614
+2025-09-18T13:38:06.539  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000091f4
+2025-09-18T13:38:06.630  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:39:29.409  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:39:29.411  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:39:29.414  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:39:29.415  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x608
+2025-09-18T13:39:29.416  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00004664
+2025-09-18T13:39:29.502  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:39:50.869  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x608
+2025-09-18T13:39:50.869  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:39:51.014  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:43:37.194  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:43:37.195  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:43:37.198  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:43:37.201  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x4e0
+2025-09-18T13:43:37.201  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00005c54
+2025-09-18T13:43:37.311  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:44:34.749  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:44:34.750  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:44:34.753  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:44:34.755  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5ec
+2025-09-18T13:44:34.755  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00004288
+2025-09-18T13:44:34.848  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:45:20.282  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T13:45:20.282  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T13:45:20.285  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T13:45:20.287  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f0
+2025-09-18T13:45:20.287  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008c78
+2025-09-18T13:45:20.374  <Info> phidget22 : Phidget button attached!
+2025-09-18T13:45:29.091  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5f0
+2025-09-18T13:45:29.091  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-18T13:45:29.110  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800

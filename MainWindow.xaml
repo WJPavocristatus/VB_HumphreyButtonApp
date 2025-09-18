@@ -12,10 +12,10 @@
             <Label Content="STATS" FontSize="18"/>
             <ListBox HorizontalAlignment="Center" Height="267" Width="200">
                 <ListBoxItem Height="40">
-                    <Label Name="ActiveStimVal" Content=""/>
+                    <Label Name="PressWatchVal" Content=""/>
                 </ListBoxItem>
                 <ListBoxItem Height="40">
-                    <Label Name="PressWatchVal" Content=""/>
+                    <Label Name="ActiveStimVal" Content=""/>
                 </ListBoxItem>
                 <ListBoxItem Height="40">
                     <Label Name="StimAWatchVal" Content=""/>
