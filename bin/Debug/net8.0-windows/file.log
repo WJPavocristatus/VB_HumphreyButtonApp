@@ -1,0 +1,9 @@
+2025-09-18T12:04:38.130  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T12:04:38.132  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b5
+2025-09-18T12:04:38.134  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T12:04:38.134  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0xb9c
+2025-09-18T12:04:38.134  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008a60

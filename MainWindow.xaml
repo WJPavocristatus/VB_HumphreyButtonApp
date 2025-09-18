@@ -1,0 +1,30 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VB_HumphreyButtonApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid x:Name="StimGrid" Background="Black">
+        
+        <StackPanel Height="300" Background="LightGray"  HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="STATS" FontSize="18"/>
+            <ListBox HorizontalAlignment="Center" Height="267" Width="200">
+                <ListBoxItem Height="40">
+                    <Label Name="ActiveStimVal" Content=""/>
+                </ListBoxItem>
+                <ListBoxItem Height="40">
+                    <Label Name="PressWatchVal" Content=""/>
+                </ListBoxItem>
+                <ListBoxItem Height="40">
+                    <Label Name="StimAWatchVal" Content=""/>
+                </ListBoxItem>
+                <ListBoxItem Height="40">
+                    <Label Name="StimBWatchVal" Content=""/>
+                </ListBoxItem>
+            </ListBox>
+        </StackPanel>
+
+    </Grid>
+</Window>
