@@ -40,10 +40,10 @@ Public Class MainWindow
         PressWatchVal.Content = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
         StimAWatchVal.Content = StimAWatch.ElapsedMilliseconds
         StimBWatchVal.Content = StimBWatch.ElapsedMilliseconds
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 1000) Then
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 60000) Then
             ResetTrial()
         End If
-        If (ActiveStimWatch.ElapsedMilliseconds >= 100) Then
+        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
             StimGrid.Background = Brushes.Black
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
