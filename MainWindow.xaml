@@ -5,26 +5,61 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VB_HumphreyButtonApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="StimGrid" Background="Black">
-        
-        <StackPanel Height="300" Background="LightGray"  HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Content="STATS" FontSize="18"/>
-            <ListBox HorizontalAlignment="Center" Height="267" Width="200">
+        Title="MainWindow" Height="600" Width="875">
+    <Grid x:Name="StimGrid" Background="Black" Margin="0,0,0,0" RenderTransformOrigin="0.500,0.500">
+
+        <StackPanel Height="193" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="486,63,0,0">
+            <Label Content="STATS" FontSize="18" Height="32"/>
+            <ListBox HorizontalAlignment="Center" Height="163" Width="284">
                 <ListBoxItem Height="40">
-                    <Label Name="PressWatchVal" Content=""/>
+                    <Label x:Name="PressWatchVal" Content=""/>
                 </ListBoxItem>
                 <ListBoxItem Height="40">
-                    <Label Name="ActiveStimVal" Content=""/>
+                    <Label x:Name="ActiveStimVal" Content=""/>
                 </ListBoxItem>
                 <ListBoxItem Height="40">
-                    <Label Name="StimAWatchVal" Content=""/>
+                    <Label x:Name="StimAWatchVal" Content=""/>
                 </ListBoxItem>
                 <ListBoxItem Height="40">
-                    <Label Name="StimBWatchVal" Content=""/>
+                    <Label x:Name="StimBWatchVal" Content=""/>
                 </ListBoxItem>
             </ListBox>
         </StackPanel>
+        <Grid Margin="54,69,475,40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Subject" Foreground="White" FontSize="14"/>
+            <ComboBox Grid.Column="1" x:Name="SubjectName" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="160" Height="24" FontSize="14" >
+                <ComboBoxItem Content="Billy"></ComboBoxItem>
+                <ComboBoxItem Content="Evelyn"></ComboBoxItem>
+                <ComboBoxItem Content="Arthur"></ComboBoxItem>
+                <ComboBoxItem Content="Rigatone"></ComboBoxItem>
+                <ComboBoxItem Content="Blue"></ComboBoxItem>
+                <ComboBox.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Focusable" Value="False"/>
+                    </Style>
+                </ComboBox.Resources>
+            </ComboBox>
 
+
+        </Grid>
+        <Grid Name="GridDataRecorder" Width="300" Height="200" Margin="494,338,81,46">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="150"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="300"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+            <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" HorizontalAlignment="Center" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Center" Width="75"/>
+
+
+
+        </Grid>
     </Grid>
 </Window>
