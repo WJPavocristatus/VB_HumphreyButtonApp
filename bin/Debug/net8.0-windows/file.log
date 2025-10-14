@@ -174,3 +174,746 @@
 2025-09-18T13:45:29.091  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5f0
 2025-09-18T13:45:29.091  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
 2025-09-18T13:45:29.110  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T14:08:11.882  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-18T14:08:11.882  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000b6
+2025-09-18T14:08:11.888  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-18T14:08:11.890  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5e8
+2025-09-18T14:08:11.890  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008f64
+2025-09-18T14:08:11.973  <Info> phidget22 : Phidget button attached!
+2025-09-18T14:09:53.952 <ERROR> phidget22usb[PhidgetUSBReadPacket()] : GetOverlappedResult() in PhidgetUSBReadPacket failed with error code: 0x0000048f - The device is not connected.
+2025-09-18T14:09:53.952  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (Phidget detach detected in PhidgetDevice_read)
+2025-09-18T14:09:53.952  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5e8
+2025-09-18T14:09:53.952  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T10:33:38.356  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T10:33:51.172  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T10:33:51.174  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T10:33:51.174  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0xf78
+2025-09-23T10:33:51.175  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x0000a1d8
+2025-09-23T10:33:51.183  <Info> phidget22 : Phidget button attached!
+2025-09-23T10:48:13.099  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T10:48:13.101  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T10:48:13.103  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T10:48:13.103  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5fc
+2025-09-23T10:48:13.103  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000063c4
+2025-09-23T10:48:13.192  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:07:32.576  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:07:32.576  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:07:32.591  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:07:32.591  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x548
+2025-09-23T11:07:32.591  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00009174
+2025-09-23T11:07:32.698  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:07:51.347  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x548
+2025-09-23T11:07:51.347  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T11:11:51.541  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:11:51.541  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:11:51.541  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:11:51.547  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5e8
+2025-09-23T11:11:51.549  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008b48
+2025-09-23T11:11:51.649  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:12:11.276  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5e8
+2025-09-23T11:12:11.276  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T11:12:11.370  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:13:35.439  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:13:35.441  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:13:35.443  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:13:35.443  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f4
+2025-09-23T11:13:35.443  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00006fc0
+2025-09-23T11:13:35.551  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:14:05.726  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5f4
+2025-09-23T11:14:05.726  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T11:14:05.795  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:15:11.500  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:15:11.500  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:15:11.500  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:15:11.500  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f0
+2025-09-23T11:15:11.500  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00000e18
+2025-09-23T11:15:11.611  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:28:42.447  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:28:42.447  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:28:42.447  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:28:42.447  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x620
+2025-09-23T11:28:42.447  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00003158
+2025-09-23T11:28:42.564  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:30:56.466  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:30:56.466  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:30:56.471  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:30:56.474  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f4
+2025-09-23T11:30:56.474  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00003138
+2025-09-23T11:30:56.581  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:44:42.004  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:44:42.004  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:44:42.004  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:44:42.020  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5d4
+2025-09-23T11:44:42.020  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00004fa4
+2025-09-23T11:44:42.115  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:49:25.106  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:49:25.106  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:49:25.111  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:49:25.114  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5d4
+2025-09-23T11:49:25.114  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00002db0
+2025-09-23T11:49:25.210  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:51:43.730  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:51:43.731  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:51:43.735  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:51:43.737  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f0
+2025-09-23T11:51:43.737  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x0000910c
+2025-09-23T11:51:43.837  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:51:49.811  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5f0
+2025-09-23T11:51:49.811  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T11:51:49.835  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:51:54.524  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T11:51:54.524  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T11:51:54.533  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T11:51:54.533  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5cc
+2025-09-23T11:51:54.533  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008148
+2025-09-23T11:51:54.639  <Info> phidget22 : Phidget button attached!
+2025-09-23T11:52:37.071  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5cc
+2025-09-23T11:52:37.071  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T11:52:37.218  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:22:13.820  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:22:13.820  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bd
+2025-09-23T13:22:13.831  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:22:13.831  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5d8
+2025-09-23T13:22:13.831  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00008554
+2025-09-23T13:22:13.936  <Info> phidget22 : Phidget button attached!
+2025-09-23T13:22:13.936  <Info> phidget22 : LEDs attached to Phidget!
+2025-09-23T13:23:47.126  <Info> phidget22usb[PhidgetUSBSendPacket()] : Possible expected STALL - Trying again.
+2025-09-23T13:23:47.126 <ERROR> phidget22usb[PhidgetUSBSendPacket()] : WriteFile() failed with error code: 0x000001b1 - A device which does not exist was specified.
+2025-09-23T13:23:47.126 <ERROR> phidget22usb[PhidgetUSBReadPacket()] : GetOverlappedResult() in PhidgetUSBReadPacket failed with error code: 0x0000048f - The device is not connected.
+2025-09-23T13:23:47.126  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (Phidget detach detected in PhidgetDevice_read)
+2025-09-23T13:23:47.126 <ERROR> phidget22[sendpacket()] : PhidgetUSBSendPacket() returned: 0x1c - Unexpected Error
+2025-09-23T13:23:47.127  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5d8
+2025-09-23T13:23:47.127  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:23:48.632  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000be
+2025-09-23T13:23:48.635  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:23:48.635  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0xfdc
+2025-09-23T13:23:48.636  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00007e78
+2025-09-23T13:23:57.375  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:23:57.375  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000be
+2025-09-23T13:23:57.381  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:23:57.381  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:23:57.403  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:23:57.405  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:23:57.659  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:08.693  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:08.949  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:16.452  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:24:16.453  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000be
+2025-09-23T13:24:16.456  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:24:16.458  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:16.470  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:24:16.470  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:16.729  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:57.772  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:24:57.772  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000be
+2025-09-23T13:24:57.772  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:24:57.779  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:57.802  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:24:57.804  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:58.058  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:58.058  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:24:58.308  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:25:03.321         last message repeated 41 more times
+2025-09-23T13:25:08.582         last message repeated 42 more times
+2025-09-23T13:25:13.844         last message repeated 42 more times
+2025-09-23T13:25:19.105         last message repeated 42 more times
+2025-09-23T13:25:23.620  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:25:23.620  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000be
+2025-09-23T13:25:23.620  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:25:23.627  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:25:23.646  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:25:23.648  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:25:23.901  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:25:34.294  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:25:34.555  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:26:31.437  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:26:31.438  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:26:31.440  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:26:31.443  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:26:31.479  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:26:31.481  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:26:31.732  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:10.633  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:10.889  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:14.723  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:27:14.724  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:27:14.727  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:27:14.729  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:14.748  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:27:14.823  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:14.823  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:27:15.076  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:30:08.849  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:30:08.850  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:30:08.853  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:30:08.854  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:30:08.873  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:30:08.957  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:30:08.957  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:30:09.219  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:30:40.295  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:38:04.609  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:38:04.609  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:38:04.609  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:38:04.624  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:38:04.640  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:38:04.726  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:38:04.726  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:38:04.982  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:18.108  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:43:18.108  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:43:18.110  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:43:18.110  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:18.133  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:43:18.136  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:18.386  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:55.585  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:43:55.585  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:43:55.600  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:43:55.600  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:55.617  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:43:55.617  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:43:55.871  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:16.704  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:44:16.705  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:44:16.707  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:44:16.710  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:16.730  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:44:16.731  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:16.810  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:16.810  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:16.810  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:16.810  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:16.989         last message repeated 84 more times
+2025-09-23T13:44:16.989  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:16.989  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:16.990  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:16.990  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.006  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.013  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.240         last message repeated 120 more times
+2025-09-23T13:44:17.240  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.240  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.241  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.243  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.244  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.246  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.490         last message repeated 175 more times
+2025-09-23T13:44:17.490  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.490  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.491  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.492  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.494  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.496  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.741         last message repeated 180 more times
+2025-09-23T13:44:17.741  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.741  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.742  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.743  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.744  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.745  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.991         last message repeated 175 more times
+2025-09-23T13:44:17.991  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.991  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:17.992  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.993  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.995  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:17.997  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.242         last message repeated 164 more times
+2025-09-23T13:44:18.242  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.242  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.243  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.245  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.247  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.249  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.492         last message repeated 166 more times
+2025-09-23T13:44:18.492  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.492  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.493  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.494  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.496  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.498  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.743         last message repeated 177 more times
+2025-09-23T13:44:18.743  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.743  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.744  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.745  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.747  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.748  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.993         last message repeated 198 more times
+2025-09-23T13:44:18.993  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.993  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:18.994  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.995  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.997  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:18.998  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.244         last message repeated 235 more times
+2025-09-23T13:44:19.244  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.244  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.245  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.246  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.247  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.248  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.495         last message repeated 238 more times
+2025-09-23T13:44:19.495  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.495  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.496  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.497  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.498  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.499  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.745         last message repeated 237 more times
+2025-09-23T13:44:19.745  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.745  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.746  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.747  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.748  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.749  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.995         last message repeated 235 more times
+2025-09-23T13:44:19.995  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.995  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:19.996  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.997  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.998  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:19.999  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.245         last message repeated 234 more times
+2025-09-23T13:44:20.245  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.245  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.246  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.247  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.248  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.249  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.496         last message repeated 236 more times
+2025-09-23T13:44:20.496  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.496  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.497  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.498  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.499  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.500  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.746         last message repeated 239 more times
+2025-09-23T13:44:20.746  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.746  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.747  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.748  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.749  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.751  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.997         last message repeated 237 more times
+2025-09-23T13:44:20.997  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.997  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:20.998  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:20.999  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.000  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.001  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.247         last message repeated 230 more times
+2025-09-23T13:44:21.247  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.247  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.248  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.250  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.251  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.252  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.498         last message repeated 240 more times
+2025-09-23T13:44:21.498  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.498  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.499  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.500  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.501  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.502  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.749         last message repeated 238 more times
+2025-09-23T13:44:21.749  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.749  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:21.750  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.751  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.752  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:21.753  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.000         last message repeated 239 more times
+2025-09-23T13:44:22.000  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.000  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.001  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.002  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.003  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.004  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.251         last message repeated 234 more times
+2025-09-23T13:44:22.251  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.251  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.252  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.253  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.254  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.255  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.502         last message repeated 232 more times
+2025-09-23T13:44:22.502  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.502  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.503  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.504  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.505  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.506  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.752         last message repeated 233 more times
+2025-09-23T13:44:22.752  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.752  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:22.753  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.754  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.755  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:22.756  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.002         last message repeated 236 more times
+2025-09-23T13:44:23.002  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.002  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.003  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.004  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.005  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.007  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.253         last message repeated 235 more times
+2025-09-23T13:44:23.253  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.253  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.254  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.255  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.256  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.257  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.504         last message repeated 236 more times
+2025-09-23T13:44:23.504  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.504  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.505  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.506  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.507  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.508  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.754         last message repeated 240 more times
+2025-09-23T13:44:23.754  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.754  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:23.755  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.756  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.757  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:23.758  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.005         last message repeated 235 more times
+2025-09-23T13:44:24.005  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.005  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.006  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.007  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.008  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.009  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.256         last message repeated 239 more times
+2025-09-23T13:44:24.256  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.256  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.257  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.258  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.259  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.260  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.507         last message repeated 237 more times
+2025-09-23T13:44:24.507  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.507  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.508  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.509  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.510  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.511  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.757         last message repeated 238 more times
+2025-09-23T13:44:24.757  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.757  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:24.758  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.759  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.760  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:24.761  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.007         last message repeated 233 more times
+2025-09-23T13:44:25.007  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.007  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.008  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.009  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.010  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.011  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.258         last message repeated 241 more times
+2025-09-23T13:44:25.258  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.258  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.259  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.260  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.261  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.262  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.509         last message repeated 235 more times
+2025-09-23T13:44:25.509  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.509  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.510  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.511  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.512  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.513  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.759         last message repeated 238 more times
+2025-09-23T13:44:25.759  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.759  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:25.760  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.761  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.762  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:25.763  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.010         last message repeated 239 more times
+2025-09-23T13:44:26.010  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.010  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.011  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.012  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.013  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.014  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.261         last message repeated 237 more times
+2025-09-23T13:44:26.261  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.261  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.262  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.263  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.264  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.265  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.511         last message repeated 238 more times
+2025-09-23T13:44:26.511  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.511  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.513  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.514  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.515  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.516  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.762         last message repeated 239 more times
+2025-09-23T13:44:26.762  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.762  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:26.763  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.764  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.765  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:26.766  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.012         last message repeated 235 more times
+2025-09-23T13:44:27.012  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:27.012  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:27.013  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.014  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.015  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.016  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.262         last message repeated 233 more times
+2025-09-23T13:44:27.262  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:27.262  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:27.264  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.266  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.267  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:27.268  <Warn> phidget22[Phidget_open_internal()] : Open was called on an already opened Phidget handle.
+2025-09-23T13:44:51.156  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:44:51.156  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:44:51.172  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:44:51.175  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:51.188  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:44:51.188  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:44:51.450  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:46:27.545  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:46:27.799  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:59:02.549  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T13:59:02.549  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T13:59:02.549  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T13:59:02.549  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:59:02.578  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T13:59:02.580  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T13:59:02.836  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T14:00:01.290  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T14:00:01.292  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T14:00:01.296  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T14:00:01.299  <Warn> phidget22usb[openHandle2()] : CreateFileW(\\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}) failed with error code: 0x00000020 - The process cannot access the file because it is being used by another process.
+2025-09-23T14:00:01.311  <Warn> phidget22usb[PhidgetUSBOpenHandle()] : Device: <1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800> open failed because device is in use. Failed to look up owning process.
+2025-09-23T14:01:58.317  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:15:27.879  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:16:11.888  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:16:43.614  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:17:02.854  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:17:02.854  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T15:17:02.854  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T15:17:02.860  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f8
+2025-09-23T15:17:02.860  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000054e4
+2025-09-23T15:17:02.967  <Info> phidget22 : Phidget button attached!
+2025-09-23T15:17:14.794  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5f8
+2025-09-23T15:17:14.794  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (signaled by Phidget_close)
+2025-09-23T15:17:14.943  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T15:17:23.550  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:17:23.550  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T15:17:23.550  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T15:17:23.550  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5e8
+2025-09-23T15:17:23.550  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000075f4
+2025-09-23T15:17:23.667  <Info> phidget22 : Phidget button attached!
+2025-09-23T15:19:17.869  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-09-23T15:19:17.869  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\000000bf
+2025-09-23T15:19:17.885  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-09-23T15:19:17.885  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f0
+2025-09-23T15:19:17.885  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000079e0
+2025-09-23T15:19:17.980  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:12:08.250  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-07T15:12:08.250  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\0000010d
+2025-10-07T15:12:08.250  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:12:08.265  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x600
+2025-10-07T15:12:08.265  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000078d4
+2025-10-07T15:12:08.410  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:12:24.952  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-07T15:12:24.952  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\0000010d
+2025-10-07T15:12:24.952  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:12:24.952  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x514
+2025-10-07T15:12:24.952  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00001524
+2025-10-07T15:12:25.100  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:12:37.063  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-07T15:12:37.065  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\0000010d
+2025-10-07T15:12:37.068  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:12:37.068  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5f4
+2025-10-07T15:12:37.068  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00009ad0
+2025-10-07T15:12:37.199  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:14:22.713  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-07T15:14:22.713  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\0000010d
+2025-10-07T15:14:22.718  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:14:22.718  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x5e0
+2025-10-07T15:14:22.718  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x00009568
+2025-10-07T15:14:22.862  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:24:55.155 <ERROR> phidget22usb[PhidgetUSBReadPacket()] : GetOverlappedResult() in PhidgetUSBReadPacket failed with error code: 0x0000048f - The device is not connected.
+2025-10-07T15:24:55.155  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (Phidget detach detected in PhidgetDevice_read)
+2025-10-07T15:24:55.155  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x5e0
+2025-10-07T15:24:55.155  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:25:03.926  <Info> phidget22usb[AttachUSBDevice()] : Attaching HID Phidget | Path: \\?\hid#vid_06c2&pid_0044#9&300f8978&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030} | PDO Name: \Device\0000010e
+2025-10-07T15:25:03.928  <Info> phidget22[deviceAttach()] : (Attach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-07T15:25:03.928  <Info> phidget22usb[PhidgetUSBOpenHandle()] : Opened USB Device: 0x1744
+2025-10-07T15:25:03.928  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: USB read thread started: 0x000033dc
+2025-10-07T15:25:03.932  <Info> phidget22 : Phidget button attached!
+2025-10-07T15:25:09.839 <ERROR> phidget22usb[PhidgetUSBReadPacket()] : GetOverlappedResult() in PhidgetUSBReadPacket failed with error code: 0x0000048f - The device is not connected.
+2025-10-07T15:25:09.839  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (Phidget detach detected in PhidgetDevice_read)
+2025-10-07T15:25:09.840  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x1744
+2025-10-07T15:25:09.840  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800

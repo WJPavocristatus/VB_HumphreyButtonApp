@@ -7,23 +7,24 @@ Imports Phidget22.Events
 
 Public Class MainWindow
 
-    Private bc As New DigitalInput()
-    'Private pc As New DigitalOutput()
-    Private fc As New DigitalOutput()
+    'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
+    Private bc As New DigitalInput() 'bc = "Button Channel"
+    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
     Friend WithEvents timer As New System.Timers.Timer
     Public btnCount As Integer = 0
 
     Public Property PressWatch As Long
+    Public Property Latency As Stopwatch = New Stopwatch()
     Public Property ActiveStimWatch As Stopwatch = New Stopwatch()
     Public Property StimAWatch As Stopwatch = New Stopwatch()
     Public Property StimBWatch As Stopwatch = New Stopwatch()
 
     Public Sub New()
         bc.DeviceSerialNumber = 705800
-        'pc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         bc.Channel = 13
         fc.Channel = 15
+        'pc.DeviceSerialNumber = 705800
         'pc.Channel = 2
         timer.Start()
         timer.Interval = 1
@@ -51,11 +52,11 @@ Public Class MainWindow
     End Sub
 
     Private Sub controlloop()
-        InitWatches()
+        InitWatches() 'sets values in UI
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 5000) Then
-            fc.State = True
-            ResetTrial()
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
+            fc.State = True 'activate feeder for banana pellet if target time met
+            ResetTrial() 'reset the trial values
         End If
 
         If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
@@ -83,34 +84,37 @@ Public Class MainWindow
     Private Sub SetGridColor(count As Integer)
         Select Case (count Mod 2)
             Case 0
-                StimGrid.Background = Brushes.White
                 ActiveStimWatch.Start()
                 StimAWatch.Start()
+                StimGrid.Background = Brushes.White
             Case 1
-                StimGrid.Background = Brushes.Red
                 ActiveStimWatch.Start()
                 StimBWatch.Start()
+                StimGrid.Background = Brushes.Red
         End Select
     End Sub
 
     Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
                               If e.State Then
+                                  Latency.Stop()
                                   If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
                                       btnCount = btnCount + 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
-                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
                                   End If
                               Else
+                                  Latency.Start()
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   StimGrid.Background = Brushes.Black
-                                  recorddata()
+                                  RecordData()
                               End If
                           End Sub)
     End Sub
@@ -119,33 +123,37 @@ Public Class MainWindow
         Dispatcher.Invoke(Sub()
                               Log.WriteLine(LogLevel.Info, "Phidget button attached!")
                           End Sub)
-
     End Sub
 
-    ' Reset Stopwatches to 0 for new trial after pressTimer reaches 1 minute
+    Private Sub LockOut()
+        bc.Close() 'prevent button activate 
+        System.Threading.Thread.Sleep(30000) '
+    End Sub
+
+    ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
         btnCount = 0
         PressWatch = 0
         StimGrid.Background = Brushes.Black
+        Latency.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
-        recorddata()
+        RecordData()
+        Latency.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
     End Sub
 
-    Private Sub recorddata()
+    Private Sub RecordData()
         'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
         TextBox1.Text = TextBox1.Text & SubjectName.Text & " , " & btnCount & " , " & StimAWatch.ElapsedMilliseconds & " , " & StimAWatch.ElapsedMilliseconds & " , " & ActiveStimWatch.ElapsedMilliseconds & System.Environment.NewLine
-
 
         TextBox1.ScrollToEnd()
     End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
-
         'opens up a save file dialogue to save the content of the textbox to a .txt file
         Dim SaveFileDialog1 As New Microsoft.Win32.SaveFileDialog
         SaveFileDialog1.FileName = $"{SubjectName.Text}_{System.DateTime.Now.ToFileTimeUtc}.csv"
@@ -159,9 +167,12 @@ Public Class MainWindow
 
     ' Clean up the Phidget resources when the application closes
     Protected Overrides Sub OnClosed(e As EventArgs)
-        MyBase.OnClosed(e)
         If bc IsNot Nothing Then
             bc.Close()
         End If
+        If fc IsNot Nothing Then
+            fc.Close()
+        End If
+        MyBase.OnClosed(e)
     End Sub
 End Class

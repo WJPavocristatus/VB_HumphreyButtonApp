@@ -33,3 +33,5 @@ C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debu
 C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debug\net8.0-windows\VB_HumphreyButtonApp.genruntimeconfig.cache
 C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debug\net8.0-windows\ref\VB_HumphreyButtonApp.dll
 C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debug\net8.0-windows\VB_HumphreyButtonApp.sourcelink.json
+C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debug\net8.0-windows\ResearcherWindow.g.vb
+C:\Users\Research Volunteer\dev_env\phidget_env\VB\VB_HumphreyButtonApp\obj\Debug\net8.0-windows\ResearcherWindow.baml
