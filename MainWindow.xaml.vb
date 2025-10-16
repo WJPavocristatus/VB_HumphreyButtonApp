@@ -9,7 +9,7 @@ Public Class MainWindow
 
     'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
     Private bc As New DigitalInput() 'bc = "Button Channel"
-    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
+    'Private fc As New DigitalOutput() 'fc = "Feeder Channel"
     Friend WithEvents timer As New System.Timers.Timer
     Public btnCount As Integer = 0
 
@@ -21,9 +21,9 @@ Public Class MainWindow
 
     Public Sub New()
         bc.DeviceSerialNumber = 705800
-        fc.DeviceSerialNumber = 705800
-        bc.Channel = 13
-        fc.Channel = 15
+        'fc.DeviceSerialNumber = 705800
+        bc.Channel = 0
+        'fc.Channel = 15
         'pc.DeviceSerialNumber = 705800
         'pc.Channel = 2
         timer.Start()
@@ -42,7 +42,7 @@ Public Class MainWindow
         'End If
         bc.Open()
         'If (fc.Attached) Then
-        fc.Open()
+        'fc.Open()
         'End If
         Clock()
     End Sub
@@ -54,17 +54,17 @@ Public Class MainWindow
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
-            fc.State = True 'activate feeder for banana pellet if target time met
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 10000) Then 'check that button holding time isn't over 100 seconds
+            'fc.State = True 'activate feeder for banana pellet if target time met
+            LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+        If (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
             StimGrid.Background = Brushes.Black
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
-            LockOut()
         End If
 
         'Dim prog = PressWatch Mod 10000
@@ -114,7 +114,7 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   StimGrid.Background = Brushes.Black
-                                  RecordData()
+                                  'RecordData()
                               End If
                           End Sub)
     End Sub
@@ -128,6 +128,7 @@ Public Class MainWindow
     Private Sub LockOut()
         bc.Close() 'prevent button activate 
         System.Threading.Thread.Sleep(30000) '
+        bc.Open()
     End Sub
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
@@ -178,9 +179,9 @@ Public Class MainWindow
         If bc IsNot Nothing Then
             bc.Close()
         End If
-        If fc IsNot Nothing Then
-            fc.Close()
-        End If
+        'If fc IsNot Nothing Then
+        '    fc.Close()
+        'End If
         MyBase.OnClosed(e)
     End Sub
 End Class
