@@ -64,6 +64,7 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
+            LockOut()
         End If
 
         'Dim prog = PressWatch Mod 10000
@@ -103,7 +104,6 @@ Public Class MainWindow
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                   ElseIf (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
-
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
@@ -132,14 +132,14 @@ Public Class MainWindow
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
-        btnCount = 0
-        PressWatch = 0
         StimGrid.Background = Brushes.Black
         Latency.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
         RecordData()
+        PressWatch = 0
+        btnCount = 0
         Latency.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
@@ -148,7 +148,15 @@ Public Class MainWindow
 
     Private Sub RecordData()
         'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
-        TextBox1.Text = TextBox1.Text & SubjectName.Text & " , " & btnCount & " , " & StimAWatch.ElapsedMilliseconds & " , " & StimAWatch.ElapsedMilliseconds & " , " & ActiveStimWatch.ElapsedMilliseconds & System.Environment.NewLine
+        TextBox1.Text = TextBox1.Text &
+            SubjectName.Text & " , " &
+            btnCount & " , " &
+            StimAWatch.ElapsedMilliseconds & " , " &
+            StimAWatch.ElapsedMilliseconds & " , " &
+            ActiveStimWatch.ElapsedMilliseconds & " , " &
+            Latency.ElapsedMilliseconds & " , " &
+            Latency.ElapsedMilliseconds / btnCount &
+            System.Environment.NewLine
 
         TextBox1.ScrollToEnd()
     End Sub

@@ -917,3 +917,23 @@
 2025-10-07T15:25:09.839  <Info> phidget22[PhidgetUSBReadThreadFunction()] : 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800: ReadThread exiting normally (Phidget detach detected in PhidgetDevice_read)
 2025-10-07T15:25:09.840  <Info> phidget22usb[PhidgetUSBCloseHandle()] : Closing USB Device: 0x1744
 2025-10-07T15:25:09.840  <Info> phidget22[deviceDetach()] : (Detach) 1012 (PhidgetInterfaceKit 0/16/16) v606 S/N:705800
+2025-10-16T10:24:20.516  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-16T10:27:00.062  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-16T10:27:26.132  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
+2025-10-16T10:27:59.030  <Info> phidget22 : 
+	******************************  Logging Enabled  ******************************
+	* Phidget22 - Version 1.23 - Built Sep 11 2025 15:54:07                       *
+	* Release 1.23.20250911 - Windows (x64)                                       *
+	*******************************************************************************
