@@ -6,7 +6,7 @@ Imports Phidget22
 Imports Phidget22.Events
 
 Public Class MainWindow
-
+    Private ph As Phidget
     'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
     Private bc As New DigitalInput() 'bc = "Button Channel"
     'Private fc As New DigitalOutput() 'fc = "Feeder Channel"
@@ -20,6 +20,7 @@ Public Class MainWindow
     Public Property StimBWatch As Stopwatch = New Stopwatch()
 
     Public Sub New()
+        InitializeComponent()
         bc.DeviceSerialNumber = 705800
         'fc.DeviceSerialNumber = 705800
         bc.Channel = 0
@@ -173,6 +174,8 @@ Public Class MainWindow
             System.IO.File.WriteAllText(SaveFileDialog1.FileName, TextBox1.Text)
         End If
     End Sub
+
+
 
     ' Clean up the Phidget resources when the application closes
     Protected Overrides Sub OnClosed(e As EventArgs)
