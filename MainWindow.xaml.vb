@@ -59,8 +59,6 @@ Public Class MainWindow
         InitWatches() 'sets values in UI
 
         If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
-            'ActivateOut(fc) 'fc.State = True 'activate feeder for banana pellet if target time met
-            Feeder()
             LockOut()
             ResetTrial() 'reset the trial values
         End If
@@ -85,6 +83,7 @@ Public Class MainWindow
         PressWatchVal.Content = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
         StimAWatchVal.Content = StimAWatch.ElapsedMilliseconds
         StimBWatchVal.Content = StimBWatch.ElapsedMilliseconds
+        LatencyVal.Content = Latency.ElapsedMilliseconds
     End Sub
 
     Private Sub SetGridColor(count As Integer)
@@ -103,8 +102,7 @@ Public Class MainWindow
     Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
                               If e.State Then
-                                  'ActivateOut(cc)
-                                  Clicker()
+                                  ActivateOut(cc, 25)
                                   Latency.Stop()
                                   If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
                                       btnCount = btnCount + 1
@@ -114,6 +112,7 @@ Public Class MainWindow
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
+                                      StimGrid.Background = Brushes.Black
                                   End If
                               Else
                                   Latency.Start()
@@ -121,7 +120,7 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   StimGrid.Background = Brushes.Black
-                                  'RecordData()
+                                  RecordData()
                               End If
 
                           End Sub)
@@ -135,28 +134,19 @@ Public Class MainWindow
     End Sub
 
     Private Sub LockOut()
+        ActivateOut(fc, 50)
+        StimGrid.Background = Brushes.Black
         bc.Close() 'prevent button activate 
         System.Threading.Thread.Sleep(30000) '
         bc.Open()
     End Sub
 
-    Private Sub ActivateOut(chan As DigitalOutput)
+    Private Sub ActivateOut(chan As DigitalOutput, ms As Integer)
         chan.State = True
-        System.Threading.Thread.Sleep(50)
+        System.Threading.Thread.Sleep(ms)
         chan.State = False
     End Sub
 
-    Private Sub Clicker()
-            cc.State = True
-            System.Threading.Thread.Sleep(50)
-            cc.State = False
-    End Sub
-
-    Private Sub Feeder()
-        fc.State = True
-        System.Threading.Thread.Sleep(50)
-        fc.State = False
-    End Sub
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
@@ -172,6 +162,7 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
+        LockOut()
     End Sub
 
     Private Sub RecordData()

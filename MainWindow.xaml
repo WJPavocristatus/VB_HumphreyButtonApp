@@ -23,6 +23,9 @@
                 <ListBoxItem Height="40">
                     <Label x:Name="StimBWatchVal" Content=""/>
                 </ListBoxItem>
+                <ListBoxItem Height="40">
+                    <Label x:Name="LatencyVal" Content=""/>
+                </ListBoxItem>
             </ListBox>
         </StackPanel>
         <Grid Margin="54,69,475,326">
