@@ -7,9 +7,10 @@ Imports Phidget22.Events
 
 Public Class MainWindow
 
+    Private cc As New DigitalOutput() 'clicker channel
     'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
     Private bc As New DigitalInput() 'bc = "Button Channel"
-    'Private fc As New DigitalOutput() 'fc = "Feeder Channel"
+    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
     Friend WithEvents timer As New System.Timers.Timer
     Public btnCount As Integer = 0
 
@@ -21,9 +22,11 @@ Public Class MainWindow
 
     Public Sub New()
         bc.DeviceSerialNumber = 705800
-        'fc.DeviceSerialNumber = 705800
+        bc.DeviceSerialNumber = 705800
+        cc.Channel = 15
+        fc.DeviceSerialNumber = 705800
         bc.Channel = 0
-        'fc.Channel = 15
+        fc.Channel = 7
         'pc.DeviceSerialNumber = 705800
         'pc.Channel = 2
         timer.Start()
@@ -31,8 +34,8 @@ Public Class MainWindow
         Log.Enable(LogLevel.Info, "file.log")
 
         AddHandler bc.Attach, AddressOf OnAttachHandler
-        'AddHandler fc.Attach, AddressOf OnAttachHandler
-
+        AddHandler fc.Attach, AddressOf OnAttachHandler
+        AddHandler cc.Attach, AddressOf OnAttachHandler
         AddHandler bc.StateChange, AddressOf BCh_StateChange
         'AddHandler pc.Attach, AddressOf OnAttachHandler
 
@@ -40,9 +43,10 @@ Public Class MainWindow
         '    pc.Open()
         '    pc.State = False
         'End If
+        cc.Open()
         bc.Open()
         'If (fc.Attached) Then
-        'fc.Open()
+        fc.Open()
         'End If
         Clock()
     End Sub
@@ -54,13 +58,14 @@ Public Class MainWindow
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 10000) Then 'check that button holding time isn't over 100 seconds
-            'fc.State = True 'activate feeder for banana pellet if target time met
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
+            'ActivateOut(fc) 'fc.State = True 'activate feeder for banana pellet if target time met
+            Feeder()
             LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
+        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
             StimGrid.Background = Brushes.Black
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
@@ -98,6 +103,8 @@ Public Class MainWindow
     Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
                               If e.State Then
+                                  'ActivateOut(cc)
+                                  Clicker()
                                   Latency.Stop()
                                   If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
                                       btnCount = btnCount + 1
@@ -116,12 +123,14 @@ Public Class MainWindow
                                   StimGrid.Background = Brushes.Black
                                   'RecordData()
                               End If
+
                           End Sub)
     End Sub
 
     Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Log.WriteLine(LogLevel.Info, "Phidget button attached!")
+                              Log.WriteLine(LogLevel.Info, $"Phidget {sender} attached!")
+                              Console.WriteLine($"Phidget {sender} attached!")
                           End Sub)
     End Sub
 
@@ -129,6 +138,24 @@ Public Class MainWindow
         bc.Close() 'prevent button activate 
         System.Threading.Thread.Sleep(30000) '
         bc.Open()
+    End Sub
+
+    Private Sub ActivateOut(chan As DigitalOutput)
+        chan.State = True
+        System.Threading.Thread.Sleep(50)
+        chan.State = False
+    End Sub
+
+    Private Sub Clicker()
+            cc.State = True
+            System.Threading.Thread.Sleep(50)
+            cc.State = False
+    End Sub
+
+    Private Sub Feeder()
+        fc.State = True
+        System.Threading.Thread.Sleep(50)
+        fc.State = False
     End Sub
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
@@ -179,9 +206,12 @@ Public Class MainWindow
         If bc IsNot Nothing Then
             bc.Close()
         End If
-        'If fc IsNot Nothing Then
-        '    fc.Close()
-        'End If
+        If cc IsNot Nothing Then
+            cc.Close()
+        End If
+        If fc IsNot Nothing Then
+            fc.Close()
+        End If
         MyBase.OnClosed(e)
     End Sub
 End Class
