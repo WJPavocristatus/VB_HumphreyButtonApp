@@ -7,63 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="875">
     <Grid x:Name="StimGrid" Background="Black" Margin="0,0,0,0" RenderTransformOrigin="0.500,0.500">
-
-        <StackPanel Height="419" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="496,67,0,0">
-            <Label Content="STATS" FontSize="18" Height="32"/>
-            <ListBox HorizontalAlignment="Center" Height="385" Width="284">
-                <ListBoxItem Height="40">
-                    <Label x:Name="PressWatchVal" Content=""/>
-                </ListBoxItem>
-                <ListBoxItem Height="40">
-                    <Label x:Name="ActiveStimVal" Content=""/>
-                </ListBoxItem>
-                <ListBoxItem Height="40">
-                    <Label x:Name="StimAWatchVal" Content=""/>
-                </ListBoxItem>
-                <ListBoxItem Height="40">
-                    <Label x:Name="StimBWatchVal" Content=""/>
-                </ListBoxItem>
-                <ListBoxItem Height="40">
-                    <Label x:Name="LatencyVal" Content=""/>
-                </ListBoxItem>
-            </ListBox>
-        </StackPanel>
-        <Grid Margin="54,69,475,326">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="200" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Subject" Foreground="White" FontSize="14"/>
-            <ComboBox Grid.Column="1" x:Name="SubjectName" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="160" Height="24" FontSize="14" >
-                <ComboBoxItem Content="Billy"></ComboBoxItem>
-                <ComboBoxItem Content="Evelyn"></ComboBoxItem>
-                <ComboBoxItem Content="Arthur"></ComboBoxItem>
-                <ComboBoxItem Content="Rigatone"></ComboBoxItem>
-                <ComboBoxItem Content="Ben"></ComboBoxItem>
-                <ComboBoxItem Content="Blue"></ComboBoxItem>
-                <ComboBox.Resources>
-                    <Style TargetType="TextBox">
-                        <Setter Property="Focusable" Value="False"/>
-                    </Style>
-                </ComboBox.Resources>
-            </ComboBox>
-
-
-        </Grid>
-        <Grid Name="GridDataRecorder" Height="200" Margin="54,276,475,108" RenderTransformOrigin="0.518,-0.017">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="150"></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-46,0" />
-            <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" HorizontalAlignment="Left" Margin="75,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="1"/>
-
-
-
-        </Grid>
+        <Button x:Name="VirtualBtn" Content="Button" HorizontalAlignment="Center" VerticalAlignment="Center" Height="128" Width="128"/>
     </Grid>
 </Window>
