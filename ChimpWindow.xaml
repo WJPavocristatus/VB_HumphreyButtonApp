@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VB_HumphreyButtonApp"
         mc:Ignorable="d"
-        Title="ChimpWindow" Height="450" Width="800">
-    
-        <Grid x:Name="StimGrid" Background="Black" Margin="0,0,0,0" RenderTransformOrigin="0.500,0.500">
+        Title="ChimpWindow" Height="544" Width="728">
 
-        </Grid>
+    <Grid x:Name="StimGrid" Background="Black" RenderTransformOrigin="0.500,0.500" HorizontalAlignment="Stretch" Height="NaN" VerticalAlignment="Stretch" Width="NaN">
+        <Button x:Name="VirtualBtn" Content="Button" HorizontalAlignment="Center" VerticalAlignment="Center" Height="128" Width="128"/>
+
+    </Grid>
 </Window>

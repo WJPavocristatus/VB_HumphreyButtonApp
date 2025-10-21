@@ -23,6 +23,9 @@
                 <ListBoxItem Height="40">
                     <Label x:Name="StimBWatchVal" Content=""/>
                 </ListBoxItem>
+                <ListBoxItem Height="40">
+                    <Label x:Name="LatencyVal" Content=""/>
+                </ListBoxItem>
             </ListBox>
         </StackPanel>
         <Grid Margin="54,69,475,326">
@@ -36,6 +39,7 @@
                 <ComboBoxItem Content="Evelyn"></ComboBoxItem>
                 <ComboBoxItem Content="Arthur"></ComboBoxItem>
                 <ComboBoxItem Content="Rigatone"></ComboBoxItem>
+                <ComboBoxItem Content="Ben"></ComboBoxItem>
                 <ComboBoxItem Content="Blue"></ComboBoxItem>
                 <ComboBox.Resources>
                     <Style TargetType="TextBox">

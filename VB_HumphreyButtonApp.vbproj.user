@@ -5,8 +5,5 @@
     <Compile Update="ChimpWindow.xaml.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="ResearcherWindow.xaml.vb">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 </Project>
