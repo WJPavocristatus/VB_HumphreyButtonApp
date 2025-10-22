@@ -194,15 +194,9 @@ Public Class MainWindow
 
     ' Clean up the Phidget resources when the application closes
     Protected Overrides Sub OnClosed(e As EventArgs)
-        If bc IsNot Nothing Then
-            bc.Close()
-        End If
-        If cc IsNot Nothing Then
-            cc.Close()
-        End If
-        If fc IsNot Nothing Then
-            fc.Close()
-        End If
+        bc?.Close()
+        cc?.Close()
+        fc?.Close()
         MyBase.OnClosed(e)
     End Sub
 End Class
