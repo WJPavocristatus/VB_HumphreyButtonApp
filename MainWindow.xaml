@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VB_HumphreyButtonApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="875">
-    <Grid x:Name="StimGrid" Background="Black" Margin="0,0,0,0" RenderTransformOrigin="0.500,0.500">
+        x:Name="MainWin"
+        Background="Black" 
+        ShowInTaskbar="False" 
+        AllowDrop="False"
+        Title="MainWindow" Height="1080" Width="2944">
 
+    <Grid x:Name="StimGrid" Background="Black" Margin="0,0,0,0" RenderTransformOrigin="0.500,0.500">
         <StackPanel Height="419" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="496,67,0,0">
             <Label Content="STATS" FontSize="18" Height="32"/>
             <ListBox HorizontalAlignment="Center" Height="385" Width="284">

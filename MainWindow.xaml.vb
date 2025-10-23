@@ -51,6 +51,15 @@ Public Class MainWindow
         Clock()
     End Sub
 
+    Private Sub InitMainWindow() Handles MyBase.Initialized
+        MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+        MainWin.Height = SystemParameters.PrimaryScreenHeight
+        MainWin.Top = 0
+        MainWin.Left = 0
+        MainWin.WindowStyle = WindowStyle.None
+        MainWin.ResizeMode = ResizeMode.NoResize
+    End Sub
+
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(New Action(AddressOf controlloop))
     End Sub
