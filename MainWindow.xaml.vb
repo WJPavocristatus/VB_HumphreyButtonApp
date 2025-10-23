@@ -111,7 +111,7 @@ Public Class MainWindow
     Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
                               If e.State Then
-                                  ActivateOut(cc, 25)
+                                  ActivateOut(cc, 35)
                                   Latency.Stop()
                                   If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
                                       btnCount = btnCount + 1
