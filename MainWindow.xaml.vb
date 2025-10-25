@@ -1,8 +1,4 @@
-﻿Imports System.Diagnostics
-Imports System.Reflection.Emit
-Imports System.Windows
-Imports System.Windows.Media
-Imports Phidget22
+﻿Imports Phidget22
 Imports Phidget22.Events
 
 Public Class MainWindow
