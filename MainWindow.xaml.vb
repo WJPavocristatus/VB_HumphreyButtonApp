@@ -2,12 +2,15 @@
 Imports Phidget22.Events
 
 Public Class MainWindow
-
-    Private cc As New DigitalOutput() 'clicker channel
-    'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
-    Private bc As New DigitalInput() 'bc = "Button Channel"
-    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
     Friend WithEvents timer As New System.Timers.Timer
+
+    Private bc As New DigitalInput() 'bc = "Button Channel"
+    Private cc As New DigitalOutput() 'clicker channel
+    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
+    Private flc As New DigitalOutput() 'flc = "Feeder LED Channel"
+    Private llc As New DigitalOutput() 'llc = "Lockout LED Channel"
+    'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
+
     Public btnCount As Integer = 0
 
     Public Property PressWatch As Long
@@ -18,15 +21,17 @@ Public Class MainWindow
 
     Public Sub New()
         bc.DeviceSerialNumber = 705800
-        bc.DeviceSerialNumber = 705800
-        cc.Channel = 15
+        cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
+        flc.DeviceSerialNumber = 705800
+        llc.DeviceSerialNumber = 705800
+        'pc.DeviceSerialNumber = 705800
+        cc.Channel = 15
         bc.Channel = 0
         fc.Channel = 7
-        'pc.DeviceSerialNumber = 705800
+        flc.Channel = 0
+        llc.Channel = 8
         'pc.Channel = 2
-        timer.Start()
-        timer.Interval = 1
         Log.Enable(LogLevel.Info, "file.log")
 
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -43,7 +48,11 @@ Public Class MainWindow
         bc.Open()
         'If (fc.Attached) Then
         fc.Open()
+        flc.Open()
+        llc.Open()
         'End If
+        timer.Start()
+        timer.Interval = 1
         Clock()
     End Sub
 
@@ -63,7 +72,7 @@ Public Class MainWindow
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 10000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
@@ -74,13 +83,6 @@ Public Class MainWindow
             StimAWatch.Stop()
             StimBWatch.Stop()
         End If
-
-        'Dim prog = PressWatch Mod 10000
-        'If (prog.Equals(0)) Then
-        '    pc.State = True
-        'ElseIf (prog > 0) Then
-        '    pc.State = False
-        'End If
     End Sub
 
     Private Sub InitWatches()
@@ -88,6 +90,8 @@ Public Class MainWindow
         PressWatchVal.Content = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
         StimAWatchVal.Content = StimAWatch.ElapsedMilliseconds
         StimBWatchVal.Content = StimBWatch.ElapsedMilliseconds
+        Latency.Reset()
+        Latency.Stop()
         LatencyVal.Content = Latency.ElapsedMilliseconds
     End Sub
 
@@ -97,10 +101,12 @@ Public Class MainWindow
                 ActiveStimWatch.Start()
                 StimAWatch.Start()
                 StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
             Case 1
                 ActiveStimWatch.Start()
                 StimBWatch.Start()
                 StimGrid.Background = Brushes.Red
+                StimSpy.Background = Brushes.Red
         End Select
     End Sub
 
@@ -118,6 +124,7 @@ Public Class MainWindow
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
                                       StimGrid.Background = Brushes.Black
+                                      StimSpy.Background = Brushes.Black
                                   End If
                               Else
                                   Latency.Start()
@@ -125,6 +132,7 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   StimGrid.Background = Brushes.Black
+                                  StimSpy.Background = Brushes.Black
                                   RecordData()
                               End If
 
@@ -138,12 +146,17 @@ Public Class MainWindow
                           End Sub)
     End Sub
 
-    Private Sub LockOut()
-        ActivateOut(fc, 50)
+    Private Sub LockOut() 'gross AF pattern, should fix in the future
         StimGrid.Background = Brushes.Black
-        bc.Close() 'prevent button activate 
-        System.Threading.Thread.Sleep(30000) '
+        StimSpy.Background = Brushes.Gray
+        bc.Close() 'prevent button activate
+        LockedLED()
+        FeederLED()
+        ActivateOut(fc, 50)
+        FeederLED()
+        System.Threading.Thread.Sleep(30000) 'really oughta do multi-threading in next iteration
         bc.Open()
+        LockedLED()
     End Sub
 
     Private Sub ActivateOut(chan As DigitalOutput, ms As Integer)
@@ -152,10 +165,26 @@ Public Class MainWindow
         chan.State = False
     End Sub
 
+    Private Sub FeederLED()
+        If flc.State = False Then
+            flc.State = True
+        Else
+            flc.State = False
+        End If
+    End Sub
+
+    Private Sub LockedLED()
+        If llc.State = False Then
+            llc.State = True
+        Else
+            llc.State = False
+        End If
+    End Sub
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
         StimGrid.Background = Brushes.Black
+        StimSpy.Background = Brushes.Black
         Latency.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
@@ -202,6 +231,8 @@ Public Class MainWindow
         bc?.Close()
         cc?.Close()
         fc?.Close()
+        flc?.Close()
+        llc?.Close()
         MyBase.OnClosed(e)
     End Sub
 End Class

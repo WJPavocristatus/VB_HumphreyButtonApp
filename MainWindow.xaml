@@ -15,17 +15,15 @@
     <Grid Name="AllScreens">
         
         <!-- Grid defining both screens/views as Columns -->
-        <Grid Background="DarkCyan" RenderTransformOrigin="0.500,0.500">
+        <Grid Name="ScreenSplitter" Background="DarkCyan" RenderTransformOrigin="0.500,0.500">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Name="ResearcherView" Width="1920"/>
                 <ColumnDefinition Name="SubjectView" Width="1024"/>
             </Grid.ColumnDefinitions>
-            <!-- ResearcherView Column -->
-            
+            <!-- ResearcherView Column -->  
             <!-- Stat tracker block for current session -->
-            <StackPanel  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="280">
+            <StackPanel Name="StatTracker" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="280">
                 <Label Content="STATS (ms)" FontSize="18" Height="32" HorizontalAlignment="Center"/>
-                
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Name="TimeLabels" Width="142"/>
@@ -69,7 +67,7 @@
             </StackPanel>
             
             <!-- Research Subject Combo Box -->
-            <Grid Margin="376,192,1234,672" Height="200" Width="310">
+            <Grid Name="SubjectSelect" Margin="376,192,1234,672" Height="200" Width="310">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="200" />
@@ -98,16 +96,11 @@
                 </Grid.RowDefinitions>
                 <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-461,0" />
                 <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" HorizontalAlignment="Left" Margin="75,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.Column="1" Height="20"/>
-
-
-
             </Grid>
-
-
-
-
+            <Frame x:Name="StimSpy" Background="Black" Foreground="Ivory" Content="Chimp View" Margin="1198,292,333,493"/>
         </Grid>
-        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" VerticalAlignment="Center" HorizontalAlignment="Left" Width="1024" Height="1064" Margin="1920,0,0,0" />
 
+        <!-- ChimpView Column -->
+        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" VerticalAlignment="Center" HorizontalAlignment="Left" Width="1024" Height="1064" Margin="1920,0,0,0" />
     </Grid>
 </Window>
