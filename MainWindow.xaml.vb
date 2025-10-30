@@ -79,6 +79,7 @@ Public Class MainWindow
 
         If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
             StimGrid.Background = Brushes.Black
+            StimSpy.Background = Brushes.Black
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
@@ -86,13 +87,13 @@ Public Class MainWindow
     End Sub
 
     Private Sub InitWatches()
-        ActiveStimVal.Content = ActiveStimWatch.ElapsedMilliseconds
-        PressWatchVal.Content = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-        StimAWatchVal.Content = StimAWatch.ElapsedMilliseconds
-        StimBWatchVal.Content = StimBWatch.ElapsedMilliseconds
+        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) * 1000}"
+        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds * 1000} secs"
+        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds * 1000} secs"
+        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds * 1000} secs"
         Latency.Reset()
         Latency.Stop()
-        LatencyVal.Content = Latency.ElapsedMilliseconds
+        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} secs"
     End Sub
 
     Private Sub SetGridColor(count As Integer)
@@ -148,7 +149,7 @@ Public Class MainWindow
 
     Private Sub LockOut() 'gross AF pattern, should fix in the future
         StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Gray
+        StimSpy.Background = Brushes.Black
         bc.Close() 'prevent button activate
         LockedLED()
         FeederLED()
@@ -202,13 +203,13 @@ Public Class MainWindow
     Private Sub RecordData()
         'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
         TextBox1.Text = TextBox1.Text &
-            SubjectName.Text & " , " &
-            btnCount & " , " &
-            StimAWatch.ElapsedMilliseconds & " , " &
-            StimAWatch.ElapsedMilliseconds & " , " &
-            ActiveStimWatch.ElapsedMilliseconds & " , " &
-            Latency.ElapsedMilliseconds & " , " &
-            Latency.ElapsedMilliseconds / btnCount &
+            $"{SubjectName}, " &
+            $"Button Presses: {btnCount}, " &
+            $"Press duration: {ActiveStimWatch.ElapsedMilliseconds * 1000} secs, " &
+            $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds * 1000} secs, " &
+            $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds * 1000} secs, " &
+            $"Latency time: {Latency.ElapsedMilliseconds * 1000} sec, " &
+            $"Avg. Hold Time: {(Latency.ElapsedMilliseconds * 1000) / btnCount} secs" &
             System.Environment.NewLine
 
         TextBox1.ScrollToEnd()
