@@ -29,7 +29,7 @@ Public Class MainWindow
         cc.Channel = 15
         bc.Channel = 0
         fc.Channel = 7
-        flc.Channel = 0
+        flc.Channel = 9
         llc.Channel = 8
         'pc.Channel = 2
         Log.Enable(LogLevel.Info, "file.log")
