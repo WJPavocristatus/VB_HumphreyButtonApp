@@ -54,6 +54,7 @@ Public Class MainWindow
         timer.Start()
         timer.Interval = 1
         Clock()
+
     End Sub
 
     Private Sub InitMainWindow() Handles MyBase.Initialized
@@ -63,6 +64,7 @@ Public Class MainWindow
         MainWin.Left = 0
         MainWin.WindowStyle = WindowStyle.None
         MainWin.ResizeMode = ResizeMode.NoResize
+
     End Sub
 
     Private Sub Clock() Handles timer.Elapsed
@@ -72,12 +74,13 @@ Public Class MainWindow
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
+
         If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+        If (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
             StimGrid.Background = Brushes.Black
             StimSpy.Background = Brushes.Black
             ActiveStimWatch.Stop()
@@ -90,9 +93,12 @@ Public Class MainWindow
         PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
         ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
-        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds * 1000} secs"
-        Latency.Reset()
-        Latency.Stop()
+        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
+
+        If (btnCount > 0) Then
+            Latency.Start()
+
+        End If
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} secs"
     End Sub
 
@@ -114,13 +120,13 @@ Public Class MainWindow
     Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
                               If e.State Then
-                                  ActivateOut(cc, 35)
                                   Latency.Stop()
-                                  If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
+                                  ActivateOut(cc, 35)
+                                  If (ActiveStimWatch.ElapsedMilliseconds <= 1000) Then
                                       btnCount = btnCount + 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
-                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
@@ -201,7 +207,8 @@ Public Class MainWindow
 
     Private Sub RecordData()
         'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
-        TextBox1.Text = TextBox1.Text & SubjectName.Text &
+        TextBox1.Text = TextBox1.Text &
+            $"{SubjectName.Text}, " &
             $"Button Presses: {btnCount}, " &
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
