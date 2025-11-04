@@ -72,7 +72,7 @@ Public Class MainWindow
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 10000) Then 'check that button holding time isn't over 100 seconds
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
@@ -87,9 +87,9 @@ Public Class MainWindow
     End Sub
 
     Private Sub InitWatches()
-        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) * 1000}"
-        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds * 1000} secs"
-        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds * 1000} secs"
+        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
+        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
+        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds * 1000} secs"
         Latency.Reset()
         Latency.Stop()
@@ -155,7 +155,7 @@ Public Class MainWindow
         FeederLED()
         ActivateOut(fc, 50)
         FeederLED()
-        System.Threading.Thread.Sleep(30000) 'really oughta do multi-threading in next iteration
+        System.Threading.Thread.Sleep(20000) 'really oughta do multi-threading in next iteration
         bc.Open()
         LockedLED()
     End Sub
@@ -197,19 +197,17 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
-        LockOut()
     End Sub
 
     Private Sub RecordData()
         'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
-        TextBox1.Text = TextBox1.Text &
-            $"{SubjectName}, " &
+        TextBox1.Text = TextBox1.Text & SubjectName.Text &
             $"Button Presses: {btnCount}, " &
-            $"Press duration: {ActiveStimWatch.ElapsedMilliseconds * 1000} secs, " &
-            $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds * 1000} secs, " &
-            $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds * 1000} secs, " &
-            $"Latency time: {Latency.ElapsedMilliseconds * 1000} sec, " &
-            $"Avg. Hold Time: {(Latency.ElapsedMilliseconds * 1000) / btnCount} secs" &
+            $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Latency time: {Latency.ElapsedMilliseconds / 1000} sec, " &
+            $"Avg. Hold Time: {(Latency.ElapsedMilliseconds / 1000) / btnCount} secs" &
             System.Environment.NewLine
 
         TextBox1.ScrollToEnd()
