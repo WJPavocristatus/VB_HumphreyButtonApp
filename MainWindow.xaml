@@ -57,8 +57,7 @@
                             <Label x:Name="StimAWatchVal" Content=""/>
                         </ListBoxItem>
                         <ListBoxItem Height="40">
-                            <Label x:Name="StimBWatchVal" Content=""/>
-                        </ListBoxItem>
+                            <Label x:Name="StimBWatchVal" Content=""/>                        </ListBoxItem>
                         <ListBoxItem Height="40">
                             <Label x:Name="LatencyVal" Content=""/>
                         </ListBoxItem>

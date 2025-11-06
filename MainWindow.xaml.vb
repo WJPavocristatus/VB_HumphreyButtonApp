@@ -1,5 +1,7 @@
 ﻿Imports Phidget22
 Imports Phidget22.Events
+Imports System.Threading
+Imports System.Threading.Tasks
 
 Public Class MainWindow
     Friend WithEvents timer As New System.Timers.Timer
@@ -12,7 +14,7 @@ Public Class MainWindow
     'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
 
     Public btnCount As Integer = 0
-
+    Private rumbleCts As CancellationTokenSource
     Public Property PressWatch As Long
     Public Property Latency As Stopwatch = New Stopwatch()
     Public Property ActiveStimWatch As Stopwatch = New Stopwatch()
@@ -26,7 +28,7 @@ Public Class MainWindow
         flc.DeviceSerialNumber = 705800
         llc.DeviceSerialNumber = 705800
         'pc.DeviceSerialNumber = 705800
-        cc.Channel = 15
+        cc.Channel = 6
         bc.Channel = 0
         fc.Channel = 7
         flc.Channel = 9
@@ -38,6 +40,8 @@ Public Class MainWindow
         AddHandler fc.Attach, AddressOf OnAttachHandler
         AddHandler cc.Attach, AddressOf OnAttachHandler
         AddHandler bc.StateChange, AddressOf BCh_StateChange
+        AddHandler bc.StateChange, AddressOf Button_StateChange
+
         'AddHandler pc.Attach, AddressOf OnAttachHandler
 
         'If (pc.Attached) Then
@@ -71,21 +75,77 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(New Action(AddressOf controlloop))
     End Sub
 
+    Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
+        Dispatcher.Invoke(Sub()
+                              If e.State Then
+
+                                  Latency.Stop()
+                                  ActivateOut(cc, 35)
+                                  If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
+                                      btnCount = btnCount + 1
+                                      ActiveStimWatch.Reset()
+                                      SetGridColor(btnCount)
+                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+                                      ActiveStimWatch.Reset()
+                                      StimAWatch.Reset()
+                                      StimBWatch.Reset()
+                                      cc.State = False
+                                      StimGrid.Background = Brushes.Black
+                                      StimSpy.Background = Brushes.Black
+                                  End If
+
+                              Else
+                                  cc.State = False
+                                  Latency.Start()
+                                  ActiveStimWatch.Stop()
+                                  StimAWatch.Stop()
+                                  StimBWatch.Stop()
+                                  StimGrid.Background = Brushes.Black
+                                  StimSpy.Background = Brushes.Black
+                                  RecordData()
+                              End If
+
+                          End Sub)
+    End Sub
+
+    Private Sub Button_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
+        Dispatcher.Invoke(Async Function()
+                              If e.State Then
+                                  ' Button pressed
+                                  rumbleCts = New CancellationTokenSource()
+                                  Await RumblePak(rumbleCts.Token)
+                              Else
+                                  ' Button released
+                                  If rumbleCts IsNot Nothing Then
+                                      rumbleCts.Cancel()
+                                  End If
+                                  cc.State = False
+                              End If
+                          End Function)
+    End Sub
+
+    Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
+        Dispatcher.Invoke(Sub()
+                              Log.WriteLine(LogLevel.Info, $"Phidget {sender} attached!")
+                              Console.WriteLine($"Phidget {sender} attached!")
+                          End Sub)
+    End Sub
+
     Private Sub controlloop()
         InitWatches() 'sets values in UI
 
+        If (btnCount < 1) Then
+            Latency.Reset()
+            Latency.Stop()
+        End If
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds > 10000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
-            StimGrid.Background = Brushes.Black
-            StimSpy.Background = Brushes.Black
-            ActiveStimWatch.Stop()
-            StimAWatch.Stop()
-            StimBWatch.Stop()
+        If (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+            Interrupt()
         End If
     End Sub
 
@@ -95,10 +155,6 @@ Public Class MainWindow
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
 
-        If (btnCount > 0) Then
-            Latency.Start()
-
-        End If
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} secs"
     End Sub
 
@@ -116,43 +172,6 @@ Public Class MainWindow
                 StimSpy.Background = Brushes.Red
         End Select
     End Sub
-
-    Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
-        Dispatcher.Invoke(Sub()
-                              If e.State Then
-                                  Latency.Stop()
-                                  ActivateOut(cc, 35)
-                                  If (ActiveStimWatch.ElapsedMilliseconds <= 1000) Then
-                                      btnCount = btnCount + 1
-                                      ActiveStimWatch.Reset()
-                                      SetGridColor(btnCount)
-                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds >= 1000) Then
-                                      ActiveStimWatch.Reset()
-                                      StimAWatch.Reset()
-                                      StimBWatch.Reset()
-                                      StimGrid.Background = Brushes.Black
-                                      StimSpy.Background = Brushes.Black
-                                  End If
-                              Else
-                                  Latency.Start()
-                                  ActiveStimWatch.Stop()
-                                  StimAWatch.Stop()
-                                  StimBWatch.Stop()
-                                  StimGrid.Background = Brushes.Black
-                                  StimSpy.Background = Brushes.Black
-                                  RecordData()
-                              End If
-
-                          End Sub)
-    End Sub
-
-    Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
-        Dispatcher.Invoke(Sub()
-                              Log.WriteLine(LogLevel.Info, $"Phidget {sender} attached!")
-                              Console.WriteLine($"Phidget {sender} attached!")
-                          End Sub)
-    End Sub
-
     Private Sub LockOut() 'gross AF pattern, should fix in the future
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
@@ -160,9 +179,9 @@ Public Class MainWindow
         LockedLED()
         FeederLED()
         ActivateOut(fc, 50)
-        FeederLED()
         System.Threading.Thread.Sleep(20000) 'really oughta do multi-threading in next iteration
         bc.Open()
+        FeederLED()
         LockedLED()
     End Sub
 
@@ -187,6 +206,34 @@ Public Class MainWindow
             llc.State = False
         End If
     End Sub
+
+    Private Sub Interrupt()
+        ActiveStimWatch.Stop()
+        StimAWatch.Stop()
+        StimBWatch.Stop()
+        StimGrid.Background = Brushes.Black
+        StimSpy.Background = Brushes.Black
+        rumbleCts.Cancel()
+        cc.State = False
+    End Sub
+
+    Private Async Function RumblePak(ct As CancellationToken) As Task
+        Try
+            While Not ct.IsCancellationRequested
+                ' Turn on the clicker (rumble)
+                cc.State = True
+                Await Task.Delay(100, ct) ' rumble for 100 ms
+
+                ' Turn it off
+                cc.State = False
+
+                ' Wait 1 second before the next rumble
+                Await Task.Delay(1000, ct)
+            End While
+        Catch ex As TaskCanceledException
+            ' Normal exit
+        End Try
+    End Function
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
@@ -214,8 +261,8 @@ Public Class MainWindow
             $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Latency time: {Latency.ElapsedMilliseconds / 1000} sec, " &
-            $"Avg. Hold Time: {(Latency.ElapsedMilliseconds / 1000) / btnCount} secs" &
             System.Environment.NewLine
+        '$"Avg. Hold Time: {(Latency.ElapsedMilliseconds / 1000) / btnCount} secs" &  <-- Calculation incorrect.
 
         TextBox1.ScrollToEnd()
     End Sub
