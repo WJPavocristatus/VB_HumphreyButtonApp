@@ -13,14 +13,14 @@
 
 
     <Grid Name="AllScreens">
-        
+
         <!-- Grid defining both screens/views as Columns -->
         <Grid Name="ScreenSplitter" Background="DarkCyan" RenderTransformOrigin="0.500,0.500">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Name="ResearcherView" Width="1920"/>
                 <ColumnDefinition Name="SubjectView" Width="1024"/>
             </Grid.ColumnDefinitions>
-            <!-- ResearcherView Column -->  
+            <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
             <StackPanel Name="StatTracker" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="280">
                 <Label Content="STATS (ms)" FontSize="18" Height="32" HorizontalAlignment="Center"/>
@@ -40,7 +40,7 @@
                             <Label Content="Stim A Hold Time:"/>
                         </ListBoxItem>
                         <ListBoxItem Height="40">
-                                <Label Content="Stim B Hold Time:"/>
+                            <Label Content="Stim B Hold Time:"/>
                         </ListBoxItem>
                         <ListBoxItem Height="40">
                             <Label Content="Cumulative Latency:"/>
@@ -57,16 +57,17 @@
                             <Label x:Name="StimAWatchVal" Content=""/>
                         </ListBoxItem>
                         <ListBoxItem Height="40">
-                            <Label x:Name="StimBWatchVal" Content=""/>                        </ListBoxItem>
+                            <Label x:Name="StimBWatchVal" Content=""/>
+                        </ListBoxItem>
                         <ListBoxItem Height="40">
                             <Label x:Name="LatencyVal" Content=""/>
                         </ListBoxItem>
                     </ListBox>
                 </Grid>
             </StackPanel>
-            
+
             <!-- Research Subject Combo Box -->
-            <Grid Name="SubjectSelect" Margin="376,192,1234,672" Height="200" Width="310">
+            <Grid Name="SubjectSelect" Margin="376,192,1234,766" Width="310">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="200" />
@@ -83,7 +84,17 @@
                 </ComboBox>
             </Grid>
 
-            <!-- Data Collectr & Save Button -->
+            <!-- Target Time Setter -->
+            <Grid Name="TimeSelect" Margin="376,292,1220,720">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="155" />
+                    <ColumnDefinition Width="145" />
+                </Grid.ColumnDefinitions>
+                <Label  Content="Target Time (seconds)" Foreground="White" FontSize="14"/>
+                <TextBox x:Name="TargetTimeVal" Height="24" TextAlignment="Right" Text="10" Grid.Column="1" Margin="27,2,27,26"/>
+            </Grid>
+
+            <!-- Data Collector & Save Button -->
             <Grid Name="GridDataRecorder" Height="200" Margin="344,648,815,216" RenderTransformOrigin="0.518,-0.017">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="139"></ColumnDefinition>

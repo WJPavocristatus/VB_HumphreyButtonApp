@@ -15,6 +15,7 @@ Public Class MainWindow
 
     Public btnCount As Integer = 0
     Private rumbleCts As CancellationTokenSource
+
     Public Property PressWatch As Long
     Public Property Latency As Stopwatch = New Stopwatch()
     Public Property ActiveStimWatch As Stopwatch = New Stopwatch()
@@ -139,14 +140,15 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
+        If (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+            ActiveStimWatch.Stop()
+        End If
+
         If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds > 10000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
-            Interrupt()
-        End If
     End Sub
 
     Private Sub InitWatches()
