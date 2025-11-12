@@ -22,6 +22,9 @@ Public Class MainWindow
     Public Property StimAWatch As Stopwatch = New Stopwatch()
     Public Property StimBWatch As Stopwatch = New Stopwatch()
 
+
+
+
     Public Sub New()
         bc.DeviceSerialNumber = 705800
         cc.DeviceSerialNumber = 705800
@@ -133,21 +136,34 @@ Public Class MainWindow
     End Sub
 
     Private Sub controlloop()
-        InitWatches() 'sets values in UI
 
         If (btnCount < 1) Then
             Latency.Reset()
+
+
+
+
             Latency.Stop()
         End If
 
-        If (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+
             ActiveStimWatch.Stop()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+            StimGrid.Background = Brushes.Black
+            StimSpy.Background = Brushes.Black
+            rumbleCts.Cancel()
+            cc.State = False
         End If
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds > 10000) Then 'check that button holding time isn't over 100 seconds
+
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds > 100000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
+
+        InitWatches() 'sets values in UI
 
     End Sub
 
@@ -209,15 +225,7 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub Interrupt()
-        ActiveStimWatch.Stop()
-        StimAWatch.Stop()
-        StimBWatch.Stop()
-        StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
-        rumbleCts.Cancel()
-        cc.State = False
-    End Sub
+
 
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
@@ -264,7 +272,6 @@ Public Class MainWindow
             $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Latency time: {Latency.ElapsedMilliseconds / 1000} sec, " &
             System.Environment.NewLine
-        '$"Avg. Hold Time: {(Latency.ElapsedMilliseconds / 1000) / btnCount} secs" &  <-- Calculation incorrect.
 
         TextBox1.ScrollToEnd()
     End Sub

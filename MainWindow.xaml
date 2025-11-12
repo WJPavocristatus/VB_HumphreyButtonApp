@@ -84,7 +84,7 @@
                 </ComboBox>
             </Grid>
 
-            <!-- Target Time Setter -->
+            <!-- Target Time Setter 
             <Grid Name="TimeSelect" Margin="376,292,1220,720">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="155" />
@@ -92,7 +92,7 @@
                 </Grid.ColumnDefinitions>
                 <Label  Content="Target Time (seconds)" Foreground="White" FontSize="14"/>
                 <TextBox x:Name="TargetTimeVal" Height="24" TextAlignment="Right" Text="10" Grid.Column="1" Margin="27,2,27,26"/>
-            </Grid>
+            </Grid>-->
 
             <!-- Data Collector & Save Button -->
             <Grid Name="GridDataRecorder" Height="200" Margin="344,648,815,216" RenderTransformOrigin="0.518,-0.017">
