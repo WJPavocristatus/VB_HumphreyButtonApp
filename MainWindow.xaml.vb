@@ -11,7 +11,6 @@ Public Class MainWindow
     Private fc As New DigitalOutput() 'fc = "Feeder Channel"
     Private flc As New DigitalOutput() 'flc = "Feeder LED Channel"
     Private llc As New DigitalOutput() 'llc = "Lockout LED Channel"
-    'Private pc As New DigitalOutput() '<-- INTENDED FOR PHYSICAL (I.E., LED) PROGRESS BA; pc = "Progress Channel"
 
     Public btnCount As Integer = 0
     Private rumbleCts As CancellationTokenSource
@@ -22,22 +21,18 @@ Public Class MainWindow
     Public Property StimAWatch As Stopwatch = New Stopwatch()
     Public Property StimBWatch As Stopwatch = New Stopwatch()
 
-
-
-
     Public Sub New()
         bc.DeviceSerialNumber = 705800
         cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         flc.DeviceSerialNumber = 705800
         llc.DeviceSerialNumber = 705800
-        'pc.DeviceSerialNumber = 705800
         cc.Channel = 6
         bc.Channel = 0
         fc.Channel = 7
         flc.Channel = 9
         llc.Channel = 8
-        'pc.Channel = 2
+
         Log.Enable(LogLevel.Info, "file.log")
 
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -46,23 +41,14 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf BCh_StateChange
         AddHandler bc.StateChange, AddressOf Button_StateChange
 
-        'AddHandler pc.Attach, AddressOf OnAttachHandler
-
-        'If (pc.Attached) Then
-        '    pc.Open()
-        '    pc.State = False
-        'End If
         cc.Open()
         bc.Open()
-        'If (fc.Attached) Then
         fc.Open()
         flc.Open()
         llc.Open()
-        'End If
         timer.Start()
         timer.Interval = 1
         Clock()
-
     End Sub
 
     Private Sub InitMainWindow() Handles MyBase.Initialized
@@ -72,7 +58,6 @@ Public Class MainWindow
         MainWin.Left = 0
         MainWin.WindowStyle = WindowStyle.None
         MainWin.ResizeMode = ResizeMode.NoResize
-
     End Sub
 
     Private Sub Clock() Handles timer.Elapsed
@@ -85,7 +70,7 @@ Public Class MainWindow
 
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
-                                  If (ActiveStimWatch.ElapsedMilliseconds <= 10000) Then
+                                  If (ActiveStimWatch.ElapsedMilliseconds < 10000) Then
                                       btnCount = btnCount + 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
@@ -136,18 +121,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub controlloop()
-
-        If (btnCount < 1) Then
-            Latency.Reset()
-
-
-
-
-            Latency.Stop()
-        End If
-
         If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
-
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
@@ -158,13 +132,17 @@ Public Class MainWindow
         End If
 
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds > 100000) Then 'check that button holding time isn't over 100 seconds
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
 
-        InitWatches() 'sets values in UI
+        If (btnCount < 1) Then
+            Latency.Reset()
+            Latency.Stop()
+        End If
 
+        InitWatches() 'sets values in UI
     End Sub
 
     Private Sub InitWatches()
@@ -172,7 +150,6 @@ Public Class MainWindow
         ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} secs"
     End Sub
 
@@ -190,6 +167,7 @@ Public Class MainWindow
                 StimSpy.Background = Brushes.Red
         End Select
     End Sub
+
     Private Sub LockOut() 'gross AF pattern, should fix in the future
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
@@ -225,8 +203,6 @@ Public Class MainWindow
         End If
     End Sub
 
-
-
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
             While Not ct.IsCancellationRequested
@@ -238,7 +214,7 @@ Public Class MainWindow
                 cc.State = False
 
                 ' Wait 1 second before the next rumble
-                Await Task.Delay(1000, ct)
+                Await Task.Delay(999, ct)
             End While
         Catch ex As TaskCanceledException
             ' Normal exit
