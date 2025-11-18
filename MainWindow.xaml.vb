@@ -122,9 +122,9 @@ Public Class MainWindow
     End Sub
 
     Private Sub controlloop()
-        TargetTime = TargetTimeInput.Value
+        TargetTime = TargetTimeInput.Value * 1000
 
-        If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
+        If (ActiveStimWatch.ElapsedMilliseconds = 10000) Then
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
@@ -132,10 +132,11 @@ Public Class MainWindow
             StimSpy.Background = Brushes.Black
             rumbleCts.Cancel()
             cc.State = False
+            ActiveStimWatch.Reset()
         End If
 
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= 100000) Then 'check that button holding time isn't over 100 seconds
+        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= TargetTime) Then 'check that button holding time isn't over 100 seconds
             LockOut()
             ResetTrial() 'reset the trial values
         End If
@@ -175,6 +176,7 @@ Public Class MainWindow
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
         bc.Close() 'prevent button activate
+        Latency.Stop()
         LockedLED()
         FeederLED()
         ActivateOut(fc, 50)
@@ -182,6 +184,7 @@ Public Class MainWindow
         bc.Open()
         FeederLED()
         LockedLED()
+        Latency.Reset()
     End Sub
 
     Private Sub ActivateOut(chan As DigitalOutput, ms As Integer)
@@ -226,12 +229,12 @@ Public Class MainWindow
 
     ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
     Private Sub ResetTrial()
-        StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
-        Latency.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
+        StimGrid.Background = Brushes.Black
+        StimSpy.Background = Brushes.Black
+        Latency.Stop()
         RecordData()
         PressWatch = 0
         btnCount = 0
@@ -275,9 +278,5 @@ Public Class MainWindow
         flc?.Close()
         llc?.Close()
         MyBase.OnClosed(e)
-    End Sub
-
-    Private Sub SubjectName_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles SubjectName.SelectionChanged
-
     End Sub
 End Class
