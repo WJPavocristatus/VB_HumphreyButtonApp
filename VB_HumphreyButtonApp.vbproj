@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Phidget22.NET" Version="1.23.20251006" />
+    <PackageReference Include="WPF-UI" Version="4.0.3" />
   </ItemGroup>
 
 </Project>

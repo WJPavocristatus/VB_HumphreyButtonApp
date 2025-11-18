@@ -14,6 +14,7 @@ Public Class MainWindow
 
     Public btnCount As Integer = 0
     Private rumbleCts As CancellationTokenSource
+    Public TargetTime As Integer
 
     Public Property PressWatch As Long
     Public Property Latency As Stopwatch = New Stopwatch()
@@ -121,6 +122,8 @@ Public Class MainWindow
     End Sub
 
     Private Sub controlloop()
+        TargetTime = TargetTimeInput.Value
+
         If (ActiveStimWatch.ElapsedMilliseconds >= 10000) Then
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
@@ -272,5 +275,9 @@ Public Class MainWindow
         flc?.Close()
         llc?.Close()
         MyBase.OnClosed(e)
+    End Sub
+
+    Private Sub SubjectName_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles SubjectName.SelectionChanged
+
     End Sub
 End Class
