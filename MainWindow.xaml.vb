@@ -162,13 +162,13 @@ Public Class MainWindow
             Case 0
                 ActiveStimWatch.Start()
                 StimAWatch.Start()
-                StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
+                StimGrid.Background = Brushes.DarkGray
+                StimSpy.Background = Brushes.DarkGray
             Case 1
                 ActiveStimWatch.Start()
                 StimBWatch.Start()
-                StimGrid.Background = Brushes.Red
-                StimSpy.Background = Brushes.Red
+                StimGrid.Background = Brushes.LightGray
+                StimSpy.Background = Brushes.LightGray
         End Select
     End Sub
 
