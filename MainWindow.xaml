@@ -11,7 +11,7 @@
         ShowInTaskbar="False" 
         AllowDrop="False"
         Title="MainWindow" Height="1080" Width="2944">
-
+    <!-- hd-wallpaper-7939241_1280.png by Darren Collis from Pixabay && waves-9954690_1280.png by Pete Linforth from Pixabay -->
 
     <Grid Name="AllScreens">
 
@@ -77,6 +77,7 @@
                 <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" >
                     <ComboBoxItem Content="Billy"></ComboBoxItem>
                     <ComboBoxItem Content="Ben"></ComboBoxItem>
+                    <ComboBoxItem Content="Other Chimp, note on paper"></ComboBoxItem>
                     <ComboBox.Resources>
                         <Style TargetType="TextBox">
                             <Setter Property="Focusable" Value="False"/>
@@ -95,6 +96,7 @@
                 <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
             </Grid>
 
+            <Button Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"></Button>
             <!-- Data Collector & Save Button -->
             <Grid Name="GridDataRecorder" Height="200" Margin="344,648,403,216" RenderTransformOrigin="0.518,-0.017">
                 <Grid.ColumnDefinitions>
