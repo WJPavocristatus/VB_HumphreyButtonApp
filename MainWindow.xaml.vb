@@ -5,6 +5,7 @@ Imports System.Threading.Tasks
 Imports System.Windows.Threading
 Imports System.Diagnostics
 Imports System.Windows.Media
+Imports System.Media
 
 Public Class MainWindow
 
@@ -214,6 +215,7 @@ Public Class MainWindow
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
             If totalPress >= TargetTime Then
+                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DefaultChime.wav"))
                 ' Enter lockout — prevent re-entry and stop timing immediately
                 isLockout = True
 
@@ -422,6 +424,18 @@ Public Class MainWindow
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TextBox1.Text)
         End If
+    End Sub
+
+    ' -------------------------------------------------------
+    ' Some Helpers
+    ' -------------------------------------------------------
+    Private Sub PlaySound(fileName As String)
+        Try
+            Dim player As New SoundPlayer(fileName)
+            player.Play()
+        Catch ex As Exception
+            Console.WriteLine($"Error playing sound: {ex.Message}")
+        End Try
     End Sub
 
 

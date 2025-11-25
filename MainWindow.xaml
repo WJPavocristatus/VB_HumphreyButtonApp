@@ -96,7 +96,7 @@
                 <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
             </Grid>
 
-            <Button Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"></Button>
+            <Button x:Name="StBtn" Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"/>
             <!-- Data Collector & Save Button -->
             <Grid Name="GridDataRecorder" Height="200" Margin="344,648,403,216" RenderTransformOrigin="0.518,-0.017">
                 <Grid.ColumnDefinitions>
