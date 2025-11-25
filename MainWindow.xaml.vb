@@ -354,6 +354,7 @@ Public Class MainWindow
 
         btnCount = 0
         Latency.Reset()
+        Latency.Stop()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
