@@ -23,9 +23,9 @@
             </Grid.ColumnDefinitions>
             <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
-            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="350">
-                <Label Content="STATS (ms)" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
-                <Grid>
+            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="446">
+                <Label Content="STATS" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
+                <Grid Height="294">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Name="TimeLabels" Width="172"/>
                         <ColumnDefinition Name="TimeVals" Width="140"/>
@@ -65,6 +65,10 @@
                         </ListBoxItem>
                     </ListBox>
                 </Grid>
+                <Label Content="StimA Name" FontSize="12" Foreground="Black"/>
+                <TextBox x:Name="StimAName" Text=""></TextBox>
+                <Label Content="StimB Name" FontSize="12" Foreground="Black"/>
+                <TextBox x:Name="StimBName" Text=""></TextBox>
             </StackPanel>
 
             <!-- Research Subject Combo Box -->

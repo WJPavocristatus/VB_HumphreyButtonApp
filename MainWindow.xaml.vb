@@ -32,6 +32,8 @@ Public Class MainWindow
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
 
+    'Public StimAName As String
+    'Public StimBName As String
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -415,7 +417,7 @@ Public Class MainWindow
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_{Date.Now.ToFileTimeUtc}.csv",
+            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
