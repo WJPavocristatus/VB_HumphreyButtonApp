@@ -114,8 +114,8 @@
         </Grid>
 
         <!-- ChimpView Column -->
-        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" VerticalAlignment="Center" HorizontalAlignment="Left" Width="1024" Height="1064" Margin="1920,0,0,0">
-            <Image x:Name="StimGridOverlay" Source="Assets/hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
+        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1920,-636,-888,-636">
+            <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
         </Grid>
     </Grid>
 </Window>

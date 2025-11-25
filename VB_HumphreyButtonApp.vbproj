@@ -23,6 +23,7 @@
     <None Remove="Assets\DefaultChime.wav" />
     <None Remove="Assets\DingDing.wav" />
     <None Remove="Assets\hd-wallpaper-7939241_1280.png" />
+    <None Remove="Assets\invert_hd-wallpaper-7939241_1280.png" />
     <None Remove="Assets\StartSynth.wav" />
     <None Remove="Assets\waves-9954690_1280.png" />
   </ItemGroup>
@@ -38,6 +39,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\hd-wallpaper-7939241_1280.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\invert_hd-wallpaper-7939241_1280.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\StartSynth.wav">

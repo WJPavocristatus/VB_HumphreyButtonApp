@@ -274,7 +274,7 @@ Public Class MainWindow
             StimAWatch.Start()
             StimGrid.Background = Brushes.Gray
             StimSpy.Background = Brushes.Gray
-            ShowOverlay(StimGridOverlay, "Assets/hd-wallpaper-7939241_1280.png")
+            ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
         Else
             StimBWatch.Start()
             StimGrid.Background = Brushes.LightGray
@@ -378,10 +378,11 @@ Public Class MainWindow
         TextBox1.Text &= $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
+            $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Up time: {Latency.ElapsedMilliseconds} msec" &
+            $"Total Button Up time: {Latency.ElapsedMilliseconds} ms" &
             Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
