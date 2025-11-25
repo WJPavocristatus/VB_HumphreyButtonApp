@@ -396,12 +396,15 @@ Public Class MainWindow
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         If isRunning = False Then
             isRunning = True
+            StBtn.Content = "Stop"
+            StBtn.Background = Brushes.Violet
         Else
             isRunning = False
+            StBtn.Content = "Start"
+            StBtn.Background = Brushes.Red
+
         End If
 
-        StBtn.Content = "Stop"
-        StBtn.Background = Brushes.Violet
 
         PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DingDing.wav"))
         Latency.Reset()
