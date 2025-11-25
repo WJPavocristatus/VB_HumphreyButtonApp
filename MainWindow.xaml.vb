@@ -310,6 +310,7 @@ Public Class MainWindow
         flc.State = False
         llc.State = False
         Latency.Reset()
+        Latency.Stop()
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
