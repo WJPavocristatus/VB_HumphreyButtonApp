@@ -66,9 +66,9 @@
                     </ListBox>
                 </Grid>
                 <Label Content="StimA Name" FontSize="12" Foreground="Black"/>
-                <TextBox x:Name="StimAName" Text=""></TextBox>
+                <TextBox x:Name="StimAName" Text="" Foreground="Black"></TextBox>
                 <Label Content="StimB Name" FontSize="12" Foreground="Black"/>
-                <TextBox x:Name="StimBName" Text=""></TextBox>
+                <TextBox x:Name="StimBName" Text="" Foreground="Black"></TextBox>
             </StackPanel>
 
             <!-- Research Subject Combo Box -->
