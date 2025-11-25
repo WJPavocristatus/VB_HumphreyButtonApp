@@ -55,13 +55,13 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         flc.DeviceSerialNumber = 705800
-        llc.DeviceSerialNumber = 705800
+        'llc.DeviceSerialNumber = 705800
 
         bc.Channel = 0
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        llc.Channel = 8
+        'llc.Channel = 8
 
         ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -75,7 +75,7 @@ Public Class MainWindow
         bc.Open()
         fc.Open()
         flc.Open()
-        llc.Open()
+        'llc.Open()
 
         ' Timer
         timer.Start()
@@ -225,7 +225,7 @@ Public Class MainWindow
 
             If totalPress >= TargetTime Then
                 ' Play chime
-                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
+                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
 
                 ' Enter lockout
                 isLockout = True
@@ -351,7 +351,7 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        llc.State = False
+        'llc.State = False
         Latency.Reset()
         Latency.Stop()
     End Function
@@ -359,10 +359,10 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            llc.State = True
+            'llc.State = True
             Await Task.Delay(150)
             flc.State = False
-            llc.State = False
+            'llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -451,14 +451,41 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
+    ' Autosave
+    ' -------------------------------------------------------
+    Private Sub AutoSaveOnExit()
+        Try
+            Dim folder As String = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "PhidgetData"
+        )
+
+            If Not IO.Directory.Exists(folder) Then
+                IO.Directory.CreateDirectory(folder)
+            End If
+
+            Dim file As String = System.IO.Path.Combine(
+            folder,
+            $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
+        )
+
+            IO.File.WriteAllText(file, TextBox1.Text)
+
+        Catch ex As Exception
+            ' Silent fail – do not block app closure
+        End Try
+    End Sub
+
+    ' -------------------------------------------------------
     ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
+        AutoSaveOnExit()
         bc?.Close()
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        llc?.Close()
+        'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
 
