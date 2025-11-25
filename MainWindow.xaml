@@ -77,7 +77,10 @@
                 <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" >
                     <ComboBoxItem Content="Billy"></ComboBoxItem>
                     <ComboBoxItem Content="Ben"></ComboBoxItem>
-                    <ComboBoxItem Content="Other Chimp, note on paper"></ComboBoxItem>
+                    <ComboBoxItem Content="Test"></ComboBoxItem>
+                    <ComboBoxItem Content="PrefWhite"></ComboBoxItem>
+                    <ComboBoxItem Content="PrefRed"></ComboBoxItem>
+                    <ComboBoxItem Content="FauxMacaque"></ComboBoxItem>
                     <ComboBox.Resources>
                         <Style TargetType="TextBox">
                             <Setter Property="Focusable" Value="False"/>
@@ -116,7 +119,7 @@
         <!-- ChimpView Column -->
         <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1920,-636,-888,-636">
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
-            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="-226,52,994,908">
+            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="35,494,733,466">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
