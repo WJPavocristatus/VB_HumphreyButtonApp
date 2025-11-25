@@ -388,7 +388,7 @@ Public Class MainWindow
         StBtn.Content = "Stop"
         StBtn.Background = Brushes.Violet
 
-        PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\StartSynth.wav")
+        PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DingDing.wav"))
         Latency.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
