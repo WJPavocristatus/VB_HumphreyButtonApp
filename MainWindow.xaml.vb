@@ -2,60 +2,77 @@
 Imports Phidget22.Events
 Imports System.Threading
 Imports System.Threading.Tasks
+Imports System.Windows.Threading
 
 Public Class MainWindow
-    Friend WithEvents timer As New System.Timers.Timer
 
-    Private bc As New DigitalInput() 'bc = "Button Channel"
-    Private cc As New DigitalOutput() 'clicker channel
-    Private fc As New DigitalOutput() 'fc = "Feeder Channel"
-    Private flc As New DigitalOutput() 'flc = "Feeder LED Channel"
-    Private llc As New DigitalOutput() 'llc = "Lockout LED Channel"
+    ' -----------------------------
+    ' Phidget Channels
+    ' -----------------------------
+    Private bc As New DigitalInput()   ' Button Channel
+    Private cc As New DigitalOutput()  ' Clicker (rumble)
+    Private fc As New DigitalOutput()  ' Feeder Channel
+    Private flc As New DigitalOutput() ' Feeder LED
+    Private llc As New DigitalOutput() ' Lockout LED
 
-    Public btnCount As Integer = 0
+    ' -----------------------------
+    ' Timer & State Variables
+    ' -----------------------------
+    Friend WithEvents timer As New System.Timers.Timer(16) ' 60 FPS tick
+
     Private rumbleCts As CancellationTokenSource
-    Public TargetTime As Integer
-    Public LockTime As Integer = 3000 '3 SECONDS
+    Private TargetTime As Integer
+    Private btnCount As Integer = 0
 
-    Public Property PressWatch As Long
-    Public Property Latency As Stopwatch = New Stopwatch()
-    Public Property ActiveStimWatch As Stopwatch = New Stopwatch()
-    Public Property StimAWatch As Stopwatch = New Stopwatch()
-    Public Property StimBWatch As Stopwatch = New Stopwatch()
+    ' -----------------------------
+    ' Stopwatches
+    ' -----------------------------
+    Private Latency As New Stopwatch()
+    Private ActiveStimWatch As New Stopwatch()
+    Private StimAWatch As New Stopwatch()
+    Private StimBWatch As New Stopwatch()
 
-    Private ButtonEnabled As Boolean = True
-
-
+    ' -------------------------------------------------------
+    ' Constructor
+    ' -------------------------------------------------------
     Public Sub New()
+        InitializeComponent()
+
+        ' Assign device serial
         bc.DeviceSerialNumber = 705800
         cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         flc.DeviceSerialNumber = 705800
         llc.DeviceSerialNumber = 705800
-        cc.Channel = 6
+
         bc.Channel = 0
+        cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
         llc.Channel = 8
 
-        Log.Enable(LogLevel.Info, "file.log")
-
+        ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
         AddHandler fc.Attach, AddressOf OnAttachHandler
         AddHandler cc.Attach, AddressOf OnAttachHandler
-        AddHandler bc.StateChange, AddressOf BCh_StateChange
-        AddHandler bc.StateChange, AddressOf Button_StateChange
+        AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
+        AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
+        ' Open hardware
         cc.Open()
         bc.Open()
         fc.Open()
         flc.Open()
         llc.Open()
+
+        ' Timer
         timer.Start()
-        timer.Interval = 1
-        Clock()
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' UI Initialization
+    ' -------------------------------------------------------
     Private Sub InitMainWindow() Handles MyBase.Initialized
         MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
         MainWin.Height = SystemParameters.PrimaryScreenHeight
@@ -63,26 +80,35 @@ Public Class MainWindow
         MainWin.Left = 0
         MainWin.WindowStyle = WindowStyle.None
         MainWin.ResizeMode = ResizeMode.NoResize
-        
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' Clock tick → UI dispatcher → control loop
+    ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
-        Application.Current.Dispatcher.BeginInvoke(
-            New Func(Of Task)(AddressOf controlloop)
-        )
+        Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-    Private Sub BCh_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
-        Dispatcher.Invoke(Async Function()
-                              If e.State Then
 
+    ' -------------------------------------------------------
+    ' Button → Stimulus Logic
+    ' -------------------------------------------------------
+    Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
+        Dispatcher.Invoke(Sub()
+
+                              If e.State = True Then
+                                  ' Button pressed
                                   Latency.Stop()
-                                  Await ActivateOut(cc, 35)
-                                  If (ActiveStimWatch.ElapsedMilliseconds < 10000) Then
-                                      btnCount = btnCount + 1
+
+                                  ActivateOut(cc, 35)
+
+                                  If ActiveStimWatch.ElapsedMilliseconds < 10000 Then
+                                      btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
-                                  ElseIf (ActiveStimWatch.ElapsedMilliseconds > 10000) Then
+                                  Else
+                                      ' Over 10sec -> reset visual and stim
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
@@ -92,6 +118,7 @@ Public Class MainWindow
                                   End If
 
                               Else
+                                  ' Button released
                                   cc.State = False
                                   Latency.Start()
                                   ActiveStimWatch.Stop()
@@ -102,15 +129,14 @@ Public Class MainWindow
                                   RecordData()
                               End If
 
-                          End Function)
+                          End Sub)
     End Sub
 
-    Private Sub Button_StateChange(sender As Object, e As DigitalInputStateChangeEventArgs)
-        If Not ButtonEnabled Then
-            ' Ignore presses entirely
-            Return
-        End If
 
+    ' -------------------------------------------------------
+    ' Button → Rumble Loop
+    ' -------------------------------------------------------
+    Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Async Function()
                               If e.State Then
                                   rumbleCts = New CancellationTokenSource()
@@ -122,157 +148,169 @@ Public Class MainWindow
                           End Function)
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' Phidget Attached
+    ' -------------------------------------------------------
     Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Log.WriteLine(LogLevel.Info, $"Phidget {sender} attached!")
                               Console.WriteLine($"Phidget {sender} attached!")
                           End Sub)
     End Sub
 
-    Private Async Function controlloop() As Task
-        TargetTime = TargetTimeInput.Value * 1000
 
-        If (ActiveStimWatch.ElapsedMilliseconds = 10000) Then
+    ' -------------------------------------------------------
+    ' CONTROL LOOP (Safe and Clean)
+    ' -------------------------------------------------------
+    Private Async Sub ControlLoop()
+        ' NumericUpDown gives seconds → convert to ms
+        TargetTime = CInt(TargetTimeInput.Value) * 1000
+
+        ' Auto stop if ActiveStim hits 10 sec
+        If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
+            rumbleCts?.Cancel()
+            cc.State = False
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
             StimGrid.Background = Brushes.Black
             StimSpy.Background = Brushes.Black
-            rumbleCts.Cancel()
-            cc.State = False
             ActiveStimWatch.Reset()
         End If
 
-        If (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= TargetTime) Then 'check that button holding time isn't over 100 seconds
-            Await TargetReached()
+        ' LOCKOUT CONDITION
+        Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+
+        If totalPress >= TargetTime Then
+            Await LockOut()
+            ResetTrial()
+            Return
         End If
 
-        If (btnCount < 1) Then
+        ' Reset latency when first press hasn't occurred
+        If btnCount < 1 Then
             Latency.Reset()
             Latency.Stop()
         End If
 
-        InitWatches() 'sets values in UI
-    End Function
+        InitWatches()
+    End Sub
 
+
+    ' -------------------------------------------------------
+    ' Update UI watch labels
+    ' -------------------------------------------------------
     Private Sub InitWatches()
         PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
         ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} secs"
+        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' Alternating colors on each press
+    ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        Select Case (count Mod 2)
-            Case 0
-                ActiveStimWatch.Start()
-                StimAWatch.Start()
-                StimGrid.Background = Brushes.DarkGray
-                StimSpy.Background = Brushes.DarkGray
-            Case 1
-                ActiveStimWatch.Start()
-                StimBWatch.Start()
-                StimGrid.Background = Brushes.LightGray
-                StimSpy.Background = Brushes.LightGray
-        End Select
+        Dim even As Boolean = (count Mod 2 = 0)
+
+        ActiveStimWatch.Start()
+
+        If even Then
+            StimAWatch.Start()
+            StimGrid.Background = Brushes.DarkGray
+            StimSpy.Background = Brushes.DarkGray
+        Else
+            StimBWatch.Start()
+            StimGrid.Background = Brushes.LightGray
+            StimSpy.Background = Brushes.LightGray
+        End If
     End Sub
 
-    Private Async Function DelayITI() As Task
-        Await Task.Delay(3000)
-    End Function
 
-    Private Async Function TargetReached() As Task
+    ' -------------------------------------------------------
+    ' LED Animation + Feeder + Full Lockout
+    ' -------------------------------------------------------
+    Public Async Function LockOut() As Task
+        StimGrid.Background = Brushes.Black
+        StimSpy.Background = Brushes.Black
 
-        Await LockOutAsync(LockTime)
-            ResetTrial() 'reset the trial values
+        bc.Close()      ' disable button input
+        Latency.Stop()
 
-    End Function
+        ' PLAY LED ANIMATION ONLY HERE
+        Await PlayLockoutLEDSequence()
 
-
-    Public Async Function LockOutAsync(durationMs As Integer) As Task
-        ButtonEnabled = False
-
-        ' Stop rumbling if active
-        rumbleCts?.Cancel()
-        cc.State = False
-
-        ' Close the button channel (true hardware lockout)
-        bc.Close()
-
-        ' Turn on lockout LED, feeder LED, etc.
-        LockedLED()
-        FeederLED()
-
-        ' Do other actions (your feeder)
+        ' FEEDER pulse
         Await ActivateOut(fc, 50)
 
-        ' Wait for the programmed duration
-        Await Task.Delay(durationMs)
+        ' ITI
+        Await Task.Delay(3000)
 
-        ' Re-enable: open the button again
+        ' Restore state
         bc.Open()
-        LockedLED()
-        FeederLED()
-
-        ButtonEnabled = True
-    End Function
-
-    Private Async Function Feeder() As Task
-        Await Task.Delay(100)
+        flc.State = False
+        llc.State = False
+        Latency.Reset()
     End Function
 
 
-    Public Async Function ActivateOut(chan As DigitalOutput, ms As Integer) As Task
+    ' -------------------------------------------------------
+    ' LED Animation (only during lockout)
+    ' -------------------------------------------------------
+    Private Async Function PlayLockoutLEDSequence() As Task
+        For i = 1 To 3
+            flc.State = True
+            llc.State = True
+            Await Task.Delay(150)
+            flc.State = False
+            llc.State = False
+            Await Task.Delay(150)
+        Next
+    End Function
+
+
+    ' -------------------------------------------------------
+    ' Activate Output
+    ' -------------------------------------------------------
+    Private Async Function ActivateOut(chan As DigitalOutput, ms As Integer) As Task
         chan.State = True
-        Await Feeder()
+        Await Task.Delay(ms)
         chan.State = False
     End Function
 
-    Private Sub FeederLED()
-        If flc.State = False Then
-            flc.State = True
-        Else
-            flc.State = False
-        End If
-    End Sub
 
-    Private Sub LockedLED()
-        If llc.State = False Then
-            llc.State = True
-        Else
-            llc.State = False
-        End If
-    End Sub
-
+    ' -------------------------------------------------------
+    ' Rumble Loop
+    ' -------------------------------------------------------
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
             While Not ct.IsCancellationRequested
-                ' Turn on the clicker (rumble)
                 cc.State = True
-                Await Task.Delay(100, ct) ' rumble for 100 ms
-
-                ' Turn it off
+                Await Task.Delay(100, ct)
                 cc.State = False
-
-                ' Wait 1 second before the next rumble
                 Await Task.Delay(999, ct)
             End While
         Catch ex As TaskCanceledException
-            ' Normal exit
         End Try
     End Function
 
-    ' Reset Stopwatches to 0 for new trial after pressTimer reaches 100 seconds
+
+    ' -------------------------------------------------------
+    ' Reset Trial After Lockout
+    ' -------------------------------------------------------
     Private Sub ResetTrial()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
+
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
+
         Latency.Stop()
         RecordData()
-        PressWatch = 0
+
         btnCount = 0
         Latency.Reset()
         ActiveStimWatch.Reset()
@@ -280,33 +318,41 @@ Public Class MainWindow
         StimBWatch.Reset()
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' Write a CSV line to TextBox
+    ' -------------------------------------------------------
     Private Sub RecordData()
-        'add data to the textbox by pasting the content of all the labels into a comma seperated line of text
-        TextBox1.Text = TextBox1.Text &
-            $"{SubjectName.Text}, " &
+        TextBox1.Text &= $"{SubjectName.Text}, " &
             $"Button Presses: {btnCount}, " &
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total StimA Watch Time: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total StimB Watch Time: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Latency time: {Latency.ElapsedMilliseconds / 1000} sec, " &
-            System.Environment.NewLine
+            $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Latency: {Latency.ElapsedMilliseconds} msec" &
+            Environment.NewLine
 
         TextBox1.ScrollToEnd()
     End Sub
 
-    Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
-        'opens up a save file dialogue to save the content of the textbox to a .txt file
-        Dim SaveFileDialog1 As New Microsoft.Win32.SaveFileDialog
-        SaveFileDialog1.FileName = $"{SubjectName.Text}_{System.DateTime.Now.ToFileTimeUtc}.csv"
-        SaveFileDialog1.DefaultExt = ".csv"
-        SaveFileDialog1.ShowDialog()
 
-        If SaveFileDialog1.FileName <> "" Then
-            System.IO.File.WriteAllText(SaveFileDialog1.FileName, TextBox1.Text)
+    ' -------------------------------------------------------
+    ' Save Button
+    ' -------------------------------------------------------
+    Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
+        Dim save As New Microsoft.Win32.SaveFileDialog With {
+            .FileName = $"{SubjectName.Text}_{Date.Now.ToFileTimeUtc}.csv",
+            .DefaultExt = ".csv"
+        }
+
+        If save.ShowDialog() Then
+            IO.File.WriteAllText(save.FileName, TextBox1.Text)
         End If
     End Sub
 
-    ' Clean up the Phidget resources when the application closes
+
+    ' -------------------------------------------------------
+    ' Clean Shutdown
+    ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
         bc?.Close()
         cc?.Close()
@@ -315,4 +361,5 @@ Public Class MainWindow
         llc?.Close()
         MyBase.OnClosed(e)
     End Sub
+
 End Class
