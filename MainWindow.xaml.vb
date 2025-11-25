@@ -5,6 +5,7 @@ Imports System.Threading.Tasks
 Imports System.Windows.Threading
 Imports System.Diagnostics
 Imports System.Windows.Media
+Imports System.Windows.Media.Imaging
 Imports System.Media
 
 Public Class MainWindow
@@ -21,7 +22,7 @@ Public Class MainWindow
     ' -----------------------------
     ' Timer & State Variables
     ' -----------------------------
-    Friend WithEvents timer As New System.Timers.Timer(1) ' 60 FPS tick
+    Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
 
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
@@ -29,7 +30,7 @@ Public Class MainWindow
     Private trialCount As Integer = 0
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
-    Private isRunning As Boolean = False ' <-- Pre-start flag
+    Private isRunning As Boolean = False ' Pre-start flag
 
     ' -----------------------------
     ' Stopwatches
@@ -77,6 +78,7 @@ Public Class MainWindow
         timer.Start()
     End Sub
 
+
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
@@ -89,12 +91,14 @@ Public Class MainWindow
         MainWin.ResizeMode = ResizeMode.NoResize
     End Sub
 
+
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
+
 
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
@@ -111,9 +115,13 @@ Public Class MainWindow
                               End If
 
                               If e.State = True Then
+                                  ' Button pressed → hide ready overlay
+                                  If isRunning AndAlso Not isLockout Then
+                                      HideReadyIndicator()
+                                  End If
+
                                   ' Button pressed
                                   Latency.Stop()
-
                                   ActivateOut(cc, 35)
 
                                   If ActiveStimWatch.ElapsedMilliseconds < 10000 Then
@@ -146,6 +154,7 @@ Public Class MainWindow
                           End Sub)
     End Sub
 
+
     ' -------------------------------------------------------
     ' Button → Rumble Loop
     ' -------------------------------------------------------
@@ -154,7 +163,6 @@ Public Class MainWindow
                               If e.State Then
                                   ' Pre-start or lockout: ignore
                                   If isLockout OrElse Not isRunning Then Return
-
                                   rumbleCts = New CancellationTokenSource()
                                   Await RumblePak(rumbleCts.Token)
                               Else
@@ -164,6 +172,7 @@ Public Class MainWindow
                           End Function)
     End Sub
 
+
     ' -------------------------------------------------------
     ' Phidget Attached
     ' -------------------------------------------------------
@@ -172,6 +181,7 @@ Public Class MainWindow
                               Console.WriteLine($"Phidget {sender} attached!")
                           End Sub)
     End Sub
+
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
@@ -195,8 +205,7 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
-            StimGrid.Background = Brushes.Black
-            StimSpy.Background = Brushes.Black
+            ResetGridVisuals()
             ActiveStimWatch.Reset()
         End If
 
@@ -227,6 +236,8 @@ Public Class MainWindow
                 ResetTrial()
                 isLockout = False
                 animationPlayed = False
+                ' Show ready overlay again after LockOut
+                ShowReadyIndicator()
                 Return
             End If
         End If
@@ -238,6 +249,7 @@ Public Class MainWindow
 
         InitWatches()
     End Sub
+
 
     ' -------------------------------------------------------
     ' Play WAV file
@@ -251,6 +263,7 @@ Public Class MainWindow
         End Try
     End Sub
 
+
     ' -------------------------------------------------------
     ' Update UI watch labels
     ' -------------------------------------------------------
@@ -262,8 +275,9 @@ Public Class MainWindow
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
     End Sub
 
+
     ' -------------------------------------------------------
-    ' Alternating colors
+    ' Alternating colors + overlays
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
         If isLockout OrElse Not isRunning Then Return
@@ -292,6 +306,18 @@ Public Class MainWindow
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
+    End Sub
+
+    ' -------------------------------------------------------
+    ' READY overlay helpers
+    ' -------------------------------------------------------
+    Private Sub ShowReadyIndicator()
+        StimGridReadyOverlay.Source = New BitmapImage(New Uri("Assets/playbtn.png", UriKind.Relative))
+        StimGridReadyOverlay.Visibility = Visibility.Visible
+    End Sub
+
+    Private Sub HideReadyIndicator()
+        StimGridReadyOverlay.Visibility = Visibility.Collapsed
     End Sub
 
 
@@ -401,18 +427,17 @@ Public Class MainWindow
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        If isRunning = False Then
+        If Not isRunning Then
             isRunning = True
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Violet
+            ShowReadyIndicator()
         Else
             isRunning = False
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
+            HideReadyIndicator()
         End If
-
-
-        'PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DingDing.wav"))
 
         Latency.Reset()
         ActiveStimWatch.Reset()
