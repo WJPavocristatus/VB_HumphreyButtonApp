@@ -116,7 +116,7 @@
         <!-- ChimpView Column -->
         <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1920,-636,-888,-636">
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
-            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5" Margin="380,76,388,884">
+            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="-226,52,994,908">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
