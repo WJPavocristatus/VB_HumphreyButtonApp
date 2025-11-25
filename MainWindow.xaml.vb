@@ -28,6 +28,7 @@ Public Class MainWindow
     Private btnCount As Integer = 0
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
+    Private isRunning As Boolean = False ' <-- Pre-start flag
 
     ' -----------------------------
     ' Stopwatches
@@ -74,7 +75,6 @@ Public Class MainWindow
         timer.Start()
     End Sub
 
-
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
@@ -87,7 +87,6 @@ Public Class MainWindow
         MainWin.ResizeMode = ResizeMode.NoResize
     End Sub
 
-
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
     ' -------------------------------------------------------
@@ -95,15 +94,14 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
 
-                              ' If we are in lockout, ignore presses and ensure watches are stopped/reset
-                              If isLockout Then
+                              ' Pre-start or lockout: ignore presses
+                              If isLockout OrElse Not isRunning Then
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
@@ -111,7 +109,7 @@ Public Class MainWindow
                               End If
 
                               If e.State = True Then
-                                  ' Button pressed (only handled when not in lockout)
+                                  ' Button pressed
                                   Latency.Stop()
 
                                   ActivateOut(cc, 35)
@@ -140,7 +138,7 @@ Public Class MainWindow
                                   StimGrid.Background = Brushes.Black
                                   StimSpy.Background = Brushes.Black
 
-                                  If Not isLockout Then   ' <-- Prevent recording during lockout
+                                  If Not isLockout Then
                                       RecordData()
                                   End If
                               End If
@@ -148,20 +146,16 @@ Public Class MainWindow
                           End Sub)
     End Sub
 
-
     ' -------------------------------------------------------
     ' Button → Rumble Loop
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Async Function()
                               If e.State Then
-                                  ' If in lockout, do not start rumble
-                                  If isLockout Then
-                                      Return
-                                  End If
+                                  ' Pre-start or lockout: ignore
+                                  If isLockout OrElse Not isRunning Then Return
 
                                   rumbleCts = New CancellationTokenSource()
-                                  ' Fire-and-await rumble until cancelled by release or lockout
                                   Await RumblePak(rumbleCts.Token)
                               Else
                                   rumbleCts?.Cancel()
@@ -169,7 +163,6 @@ Public Class MainWindow
                               End If
                           End Function)
     End Sub
-
 
     ' -------------------------------------------------------
     ' Phidget Attached
@@ -180,15 +173,22 @@ Public Class MainWindow
                           End Sub)
     End Sub
 
-
     ' -------------------------------------------------------
-    ' CONTROL LOOP (Safe and Clean)
+    ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-        ' NumericUpDown gives seconds → convert to ms
+        ' Pre-start: behave like lockout but no outputs
+        If Not isRunning Then
+            ActiveStimWatch.Stop()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+            InitWatches()
+            Return
+        End If
+
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
-        ' Auto stop if ActiveStim hits 10 sec
+        ' Auto stop at 10 sec
         If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
             rumbleCts?.Cancel()
             cc.State = False
@@ -200,11 +200,8 @@ Public Class MainWindow
             ActiveStimWatch.Reset()
         End If
 
-        ' If currently in lockout, don't evaluate lockout condition and don't change timing
         If Not isLockout Then
-            ' Ensure we only consider timing while button is actually held
             If Not bc.State Then
-                ' Button not held — ensure watches are stopped (no accumulation)
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -215,26 +212,18 @@ Public Class MainWindow
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
             If totalPress >= TargetTime Then
+                ' Play chime
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DefaultChime.wav"))
-                ' Enter lockout — prevent re-entry and stop timing immediately
-                isLockout = True
 
-                ' Cancel any rumble, stop clicker
+                ' Enter lockout
+                isLockout = True
                 rumbleCts?.Cancel()
                 cc.State = False
-
-                ' Stop timing watches so no further accumulation
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
-
-                ' Mark animation as played for this lockout
                 animationPlayed = True
-
-                ' Perform lockout (plays the LED animation once)
                 Await LockOut()
-
-                ' After lockout completes, reset trial and allow next trial
                 ResetTrial()
                 isLockout = False
                 animationPlayed = False
@@ -242,7 +231,6 @@ Public Class MainWindow
             End If
         End If
 
-        ' Reset latency when first press hasn't occurred
         If btnCount < 1 Then
             Latency.Reset()
             Latency.Stop()
@@ -251,6 +239,17 @@ Public Class MainWindow
         InitWatches()
     End Sub
 
+    ' -------------------------------------------------------
+    ' Play WAV file
+    ' -------------------------------------------------------
+    Private Sub PlaySound(fileName As String)
+        Try
+            Dim player As New SoundPlayer(fileName)
+            player.Play()
+        Catch ex As Exception
+            Console.WriteLine($"Error playing sound: {ex.Message}")
+        End Try
+    End Sub
 
     ' -------------------------------------------------------
     ' Update UI watch labels
@@ -263,20 +262,14 @@ Public Class MainWindow
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
     End Sub
 
-
     ' -------------------------------------------------------
-    ' Alternating colors on each press
+    ' Alternating colors
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        ' If we're in lockout don't start any watches or change UI
-        If isLockout Then
-            Return
-        End If
+        If isLockout OrElse Not isRunning Then Return
 
         Dim even As Boolean = (count Mod 2 = 0)
-
         ActiveStimWatch.Start()
-
         If even Then
             StimAWatch.Start()
             StimGrid.Background = Brushes.DarkGray
@@ -288,15 +281,13 @@ Public Class MainWindow
         End If
     End Sub
 
-
     ' -------------------------------------------------------
-    ' LED Animation + Feeder + Full Lockout
+    ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
 
-        ' Hard disable button input immediately
         Try
             bc.Close()
         Catch
@@ -304,21 +295,13 @@ Public Class MainWindow
 
         Latency.Stop()
 
-        ' PLAY LED ANIMATION ONLY HERE (only once per lockout due to animationPlayed flag)
         If Not animationPlayed Then
-            ' Shouldn't happen because we set animationPlayed before calling LockOut,
-            ' but keep the guard for safety.
             animationPlayed = True
         End If
         Await PlayLockoutLEDSequence()
-
-        ' FEEDER pulse
         Await ActivateOut(fc, 50)
-
-        ' ITI
         Await Task.Delay(3000)
 
-        ' Restore state
         Try
             bc.Open()
         Catch
@@ -329,10 +312,6 @@ Public Class MainWindow
         Latency.Reset()
     End Function
 
-
-    ' -------------------------------------------------------
-    ' LED Animation (only during lockout)
-    ' -------------------------------------------------------
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
@@ -344,20 +323,12 @@ Public Class MainWindow
         Next
     End Function
 
-
-    ' -------------------------------------------------------
-    ' Activate Output
-    ' -------------------------------------------------------
     Private Async Function ActivateOut(chan As DigitalOutput, ms As Integer) As Task
         chan.State = True
         Await Task.Delay(ms)
         chan.State = False
     End Function
 
-
-    ' -------------------------------------------------------
-    ' Rumble Loop
-    ' -------------------------------------------------------
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
             While Not ct.IsCancellationRequested
@@ -370,19 +341,13 @@ Public Class MainWindow
         End Try
     End Function
 
-
-    ' -------------------------------------------------------
-    ' Reset Trial After Lockout
-    ' -------------------------------------------------------
     Private Sub ResetTrial()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
-
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
 
-        ' Record data now that lockout has finished (we only record if not in lockout)
         If Not isLockout Then
             RecordData()
         End If
@@ -394,11 +359,6 @@ Public Class MainWindow
         StimBWatch.Reset()
     End Sub
 
-
-
-    ' -------------------------------------------------------
-    ' Write a CSV line to TextBox
-    ' -------------------------------------------------------
     Private Sub RecordData()
         TextBox1.Text &= $"{SubjectName.Text}, " &
             $"Button Presses: {btnCount}, " &
@@ -407,37 +367,34 @@ Public Class MainWindow
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Latency: {Latency.ElapsedMilliseconds} msec" &
             Environment.NewLine
-
         TextBox1.ScrollToEnd()
     End Sub
 
-
-    ' -------------------------------------------------------
-    ' Save Button
-    ' -------------------------------------------------------
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
             .FileName = $"{SubjectName.Text}_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
-
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TextBox1.Text)
         End If
     End Sub
 
     ' -------------------------------------------------------
-    ' Some Helpers
+    ' Start button
     ' -------------------------------------------------------
-    Private Sub PlaySound(fileName As String)
-        Try
-            Dim player As New SoundPlayer(fileName)
-            player.Play()
-        Catch ex As Exception
-            Console.WriteLine($"Error playing sound: {ex.Message}")
-        End Try
-    End Sub
+    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+        isRunning = True
+        StBtn.Content = "Stop"
+        StBtn.Background = Brushes.Violet
 
+        PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\StartSynth.wav")
+        Latency.Reset()
+        ActiveStimWatch.Reset()
+        StimAWatch.Reset()
+        StimBWatch.Reset()
+        btnCount = 0
+    End Sub
 
     ' -------------------------------------------------------
     ' Clean Shutdown
