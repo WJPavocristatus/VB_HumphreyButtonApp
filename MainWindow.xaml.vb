@@ -394,7 +394,12 @@ Public Class MainWindow
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        isRunning = True
+        If isRunning = False Then
+            isRunning = True
+        Else
+            isRunning = False
+        End If
+
         StBtn.Content = "Stop"
         StBtn.Background = Brushes.Violet
 
