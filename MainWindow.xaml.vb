@@ -124,8 +124,7 @@ Public Class MainWindow
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
                                       cc.State = False
-                                      StimGrid.Background = Brushes.Black
-                                      StimSpy.Background = Brushes.Black
+                                      ResetGridVisuals()
                                   End If
 
                               Else
@@ -135,8 +134,7 @@ Public Class MainWindow
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
-                                  StimGrid.Background = Brushes.Black
-                                  StimSpy.Background = Brushes.Black
+                                  ResetGridVisuals()
 
                                   If Not isLockout Then
                                       RecordData()
@@ -272,21 +270,32 @@ Public Class MainWindow
         ActiveStimWatch.Start()
         If even Then
             StimAWatch.Start()
-            StimGrid.Background = Brushes.DarkGray
-            StimSpy.Background = Brushes.DarkGray
+            StimGrid.Background = Brushes.Gray
+            StimSpy.Background = Brushes.Gray
+            ShowOverlay(StimGridOverlay, "Assets/hd-wallpaper-7939241_1280.png")
         Else
             StimBWatch.Start()
             StimGrid.Background = Brushes.LightGray
             StimSpy.Background = Brushes.LightGray
+            ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
         End If
     End Sub
 
+    Private Sub ShowOverlay(img As Image, file As String)
+        img.Source = New BitmapImage(New Uri(file, UriKind.Relative))
+        img.Visibility = Visibility.Visible
+    End Sub
+
+    Private Sub ResetGridVisuals()
+        StimGrid.Background = Brushes.Black
+        StimSpy.Background = Brushes.Black
+        StimGridOverlay.Visibility = Visibility.Collapsed
+    End Sub
     ' -------------------------------------------------------
     ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
-        StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
+        ResetGridVisuals()
 
         Try
             bc.Close()
@@ -346,8 +355,7 @@ Public Class MainWindow
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
-        StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
+        ResetGridVisuals()
 
         If Not isLockout Then
             RecordData()
