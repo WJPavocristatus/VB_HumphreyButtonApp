@@ -333,6 +333,7 @@ Public Class MainWindow
     ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
+        RecordData()
         ResetGridVisuals()
 
         Try
@@ -341,6 +342,7 @@ Public Class MainWindow
         End Try
 
         Latency.Stop()
+        MasterStopWatch.Reset()
 
         If Not animationPlayed Then
             animationPlayed = True
