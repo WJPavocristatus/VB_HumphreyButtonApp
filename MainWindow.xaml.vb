@@ -23,7 +23,7 @@ Public Class MainWindow
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
     Private btnCount As Integer = 0
-
+    Private isLockout As Boolean = False
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -118,15 +118,19 @@ Public Class MainWindow
                                   End If
 
                               Else
-                                  ' Button released
-                                  cc.State = False
-                                  Latency.Start()
-                                  ActiveStimWatch.Stop()
-                                  StimAWatch.Stop()
-                                  StimBWatch.Stop()
-                                  StimGrid.Background = Brushes.Black
-                                  StimSpy.Background = Brushes.Black
-                                  RecordData()
+                                  If e.State = False Then     ' Button released
+                                      cc.State = False
+                                      Latency.Start()
+                                      ActiveStimWatch.Stop()
+                                      StimAWatch.Stop()
+                                      StimBWatch.Stop()
+                                      StimGrid.Background = Brushes.Black
+                                      StimSpy.Background = Brushes.Black
+
+                                      If Not isLockout Then   ' <-- Prevent recording during lockout
+                                          RecordData()
+                                      End If
+                                  End If
                               End If
 
                           End Sub)
@@ -179,12 +183,16 @@ Public Class MainWindow
         End If
 
         ' LOCKOUT CONDITION
-        Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+        If Not isLockout Then
+            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
-        If totalPress >= TargetTime Then
-            Await LockOut()
-            ResetTrial()
-            Return
+            If totalPress >= TargetTime Then
+                isLockout = True
+                Await LockOut()
+                ResetTrial()
+                isLockout = False
+                Return
+            End If
         End If
 
         ' Reset latency when first press hasn't occurred
@@ -260,7 +268,7 @@ Public Class MainWindow
     ' LED Animation (only during lockout)
     ' -------------------------------------------------------
     Private Async Function PlayLockoutLEDSequence() As Task
-        For i = 1 To 3
+        For i = 1 To 5
             flc.State = True
             llc.State = True
             Await Task.Delay(150)
@@ -308,8 +316,9 @@ Public Class MainWindow
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
 
-        Latency.Stop()
-        RecordData()
+        If Not isLockout Then   ' <-- Prevent recording during lockout
+            RecordData()
+        End If
 
         btnCount = 0
         Latency.Reset()
@@ -317,6 +326,7 @@ Public Class MainWindow
         StimAWatch.Reset()
         StimBWatch.Reset()
     End Sub
+
 
 
     ' -------------------------------------------------------
