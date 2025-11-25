@@ -17,7 +17,7 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    Private llc As New DigitalOutput() ' Lockout LED
+    'Private llc As New DigitalOutput() ' Lockout LED
     Private btnLED As New DigitalOutput()
 
     ' -----------------------------
@@ -33,8 +33,7 @@ Public Class MainWindow
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
 
-    'Public StimAName As String
-    'Public StimBName As String
+
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -42,7 +41,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
-
+    Private MasterStopWatch As New Stopwatch()
 
     ' -------------------------------------------------------
     ' Constructor
@@ -199,6 +198,10 @@ Public Class MainWindow
             Return
         End If
 
+        If isRunning Then
+            MasterStopWatch.Start()
+        End If
+
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
         ' Auto stop at 10 sec
@@ -230,8 +233,9 @@ Public Class MainWindow
                 ' Enter lockout
                 isLockout = True
                 cc.State = False
-                RecordData()
                 rumbleCts?.Cancel()
+                RecordData()
+                MasterStopWatch.Stop()
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -391,9 +395,9 @@ Public Class MainWindow
         StimBWatch.Stop()
         ResetGridVisuals()
 
-        If Not isLockout Then
-            RecordData()
-        End If
+
+        RecordData()
+
 
         trialCount += 1
         btnCount = 0
@@ -412,8 +416,9 @@ Public Class MainWindow
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Up time: {Latency.ElapsedMilliseconds} ms" &
-            Environment.NewLine
+            $"Total Button Up time: {Latency.ElapsedMilliseconds / 1000} secs, " &
+            $"MasterStopWatch Time: {MasterStopWatch.ElapsedMilliseconds / 1000} secs" &
+        Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
 
@@ -433,17 +438,18 @@ Public Class MainWindow
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         If Not isRunning Then
             isRunning = True
+            ShowReadyIndicator()
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Violet
-            ShowReadyIndicator()
         Else
             isRunning = False
+            HideReadyIndicator()
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
-            HideReadyIndicator()
         End If
 
         Latency.Reset()
+        Latency.Stop()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
