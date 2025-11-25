@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\beep.wav" />
     <None Remove="Assets\DefaultChime.wav" />
     <None Remove="Assets\DingDing.wav" />
     <None Remove="Assets\hd-wallpaper-7939241_1280.png" />
@@ -27,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\beep.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\DefaultChime.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

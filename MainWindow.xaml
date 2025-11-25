@@ -23,8 +23,8 @@
             </Grid.ColumnDefinitions>
             <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
-            <StackPanel Name="StatTracker" Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="350">
-                <Label Content="STATS (ms)" FontSize="18" Height="32" HorizontalAlignment="Center"/>
+            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="350">
+                <Label Content="STATS (ms)" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Name="TimeLabels" Width="172"/>
@@ -32,36 +32,36 @@
                     </Grid.ColumnDefinitions>
                     <ListBox Width="172" HorizontalAlignment="Center" Margin="0,0,0,36">
                         <ListBoxItem Height="48">
-                            <Label Content="Cumulative Btn Hold:"/>
+                            <Label Content="Cumulative Btn Hold:" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label Content="Current Hold Time:"/>
+                            <Label Content="Current Hold Time:" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label Content="Stim A Hold Time:"/>
+                            <Label Content="Stim A Hold Time:" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label Content="Stim B Hold Time:"/>
+                            <Label Content="Stim B Hold Time:" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label Content="Cumulative Latency:"/>
+                            <Label Content="Cumulative Button Up:" Foreground="Black"/>
                         </ListBoxItem>
                     </ListBox>
                     <ListBox Grid.Column="1" Margin="5,0,0,36">
                         <ListBoxItem Height="48">
-                            <Label x:Name="PressWatchVal" Content=""/>
+                            <Label x:Name="PressWatchVal" Content="" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label x:Name="ActiveStimVal" Content=""/>
+                            <Label x:Name="ActiveStimVal" Content="" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label x:Name="StimAWatchVal" Content=""/>
+                            <Label x:Name="StimAWatchVal" Content="" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label x:Name="StimBWatchVal" Content=""/>
+                            <Label x:Name="StimBWatchVal" Content="" Foreground="Black"/>
                         </ListBoxItem>
                         <ListBoxItem Height="48">
-                            <Label x:Name="LatencyVal" Content=""/>
+                            <Label x:Name="LatencyVal" Content="" Foreground="Black"/>
                         </ListBoxItem>
                     </ListBox>
                 </Grid>
@@ -73,7 +73,7 @@
                     <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
-                <Label  Content="Subject" Foreground="White" FontSize="14"/>
+                <Label  Content="Subject" FontSize="14"/>
                 <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" >
                     <ComboBoxItem Content="Billy"></ComboBoxItem>
                     <ComboBoxItem Content="Ben"></ComboBoxItem>
@@ -92,7 +92,7 @@
                     <ColumnDefinition Width="155" />
                     <ColumnDefinition Width="145" />
                 </Grid.ColumnDefinitions>
-                <Label Content="Target Time (seconds)" Foreground="White" FontSize="14"/>
+                <Label Content="Target Time (seconds)" FontSize="14"/>
                 <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
             </Grid>
 
@@ -110,7 +110,7 @@
                 <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-868,0" />
                 <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" Margin="75,5,-75,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" Height="45" HorizontalAlignment="Stretch"/>
             </Grid>
-            <Frame x:Name="StimSpy" Background="Black" Foreground="Ivory" Content="Chimp View" Margin="1208,240,322,545"/>
+            <Frame x:Name="StimSpy" Background="Black" Margin="1208,240,322,545"/>
         </Grid>
 
         <!-- ChimpView Column -->

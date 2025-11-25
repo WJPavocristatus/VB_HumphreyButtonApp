@@ -21,11 +21,12 @@ Public Class MainWindow
     ' -----------------------------
     ' Timer & State Variables
     ' -----------------------------
-    Friend WithEvents timer As New System.Timers.Timer(16) ' 60 FPS tick
+    Friend WithEvents timer As New System.Timers.Timer(1) ' 60 FPS tick
 
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
     Private btnCount As Integer = 0
+    Private trialCount As Integer = 0
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' <-- Pre-start flag
@@ -37,6 +38,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
+
 
     ' -------------------------------------------------------
     ' Constructor
@@ -129,6 +131,9 @@ Public Class MainWindow
 
                               Else
                                   ' Button released
+                                  If Not isLockout Then
+                                      RecordData()
+                                  End If
                                   cc.State = False
                                   Latency.Start()
                                   ActiveStimWatch.Stop()
@@ -136,9 +141,6 @@ Public Class MainWindow
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
 
-                                  If Not isLockout Then
-                                      RecordData()
-                                  End If
                               End If
 
                           End Sub)
@@ -211,7 +213,7 @@ Public Class MainWindow
 
             If totalPress >= TargetTime Then
                 ' Play chime
-                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DefaultChime.wav"))
+                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
 
                 ' Enter lockout
                 isLockout = True
@@ -291,6 +293,8 @@ Public Class MainWindow
         StimSpy.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
     End Sub
+
+
     ' -------------------------------------------------------
     ' Lockout sequence
     ' -------------------------------------------------------
@@ -361,6 +365,7 @@ Public Class MainWindow
             RecordData()
         End If
 
+        trialCount += 1
         btnCount = 0
         Latency.Reset()
         Latency.Stop()
@@ -371,11 +376,12 @@ Public Class MainWindow
 
     Private Sub RecordData()
         TextBox1.Text &= $"{SubjectName.Text}, " &
+            $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Latency: {Latency.ElapsedMilliseconds} msec" &
+            $"Total Button Up time: {Latency.ElapsedMilliseconds} msec" &
             Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
@@ -402,11 +408,11 @@ Public Class MainWindow
             isRunning = False
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
-
         End If
 
 
-        PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DingDing.wav"))
+        'PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\DingDing.wav"))
+
         Latency.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
