@@ -18,6 +18,7 @@ Public Class MainWindow
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
     Private llc As New DigitalOutput() ' Lockout LED
+    Private btnLED As New DigitalOutput()
 
     ' -----------------------------
     ' Timer & State Variables
@@ -228,8 +229,9 @@ Public Class MainWindow
 
                 ' Enter lockout
                 isLockout = True
-                rumbleCts?.Cancel()
                 cc.State = False
+                RecordData()
+                rumbleCts?.Cancel()
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
