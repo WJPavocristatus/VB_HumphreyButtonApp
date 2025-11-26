@@ -8,6 +8,10 @@ Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
 Imports System.Media
 
+
+''' <summary>
+''' WORKING MVP VERSION OF APP!!!!
+''' </summary>
 Public Class MainWindow
 
     ' -----------------------------
