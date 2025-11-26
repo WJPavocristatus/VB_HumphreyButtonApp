@@ -31,6 +31,7 @@ Public Class MainWindow
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
+    Private isTrialReady As Boolean = True ' NEW: prevents starting trial until button released after target
 
     ' -----------------------------
     ' Button press tracking
@@ -119,14 +120,14 @@ Public Class MainWindow
                               buttonPressed = e.State
 
                               ' READY overlay visibility
-                              If isRunning AndAlso Not buttonPressed Then
+                              If isRunning AndAlso Not buttonPressed AndAlso isTrialReady Then
                                   StimGridReadyOverlay.Visibility = Visibility.Visible
                               Else
                                   StimGridReadyOverlay.Visibility = Visibility.Collapsed
                               End If
 
                               ' Stimuli logic while button is pressed
-                              If buttonPressed Then
+                              If buttonPressed AndAlso isTrialReady Then
                                   HideReadyIndicator()
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
@@ -134,15 +135,21 @@ Public Class MainWindow
                                   btnCount += 1
                                   ActiveStimWatch.Start()
                                   SetGridColor(btnCount) ' Show stimuli for full press
-                              Else
+                              ElseIf Not buttonPressed Then
                                   ' Button released
-                                  RecordData()
                                   cc.State = False
                                   Latency.Start()
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
+
+                                  ' If trial was locked due to targetTime, release it now
+                                  If Not isTrialReady Then
+                                      isTrialReady = True
+                                  End If
+
+                                  RecordData()
                               End If
                           End Sub)
     End Sub
@@ -200,7 +207,7 @@ Public Class MainWindow
         End If
 
         ' Lockout logic based on total press
-        If Not isLockout AndAlso buttonPressed Then
+        If buttonPressed AndAlso isTrialReady Then
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
             If totalPress >= TargetTime Then
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
@@ -217,6 +224,9 @@ Public Class MainWindow
                 ResetTrial()
                 isLockout = False
                 animationPlayed = False
+
+                ' Lock trial until button released
+                isTrialReady = False
                 Return
             End If
         End If
@@ -359,8 +369,8 @@ Public Class MainWindow
         StimAWatch.Reset()
         StimBWatch.Reset()
 
-        ' Show READY overlay after trial reset if running
-        If isRunning Then
+        ' READY overlay only shown if trial ready
+        If isRunning AndAlso isTrialReady Then
             StimGridReadyOverlay.Visibility = Visibility.Visible
         End If
     End Sub
@@ -412,6 +422,7 @@ Public Class MainWindow
         StimBWatch.Reset()
         btnCount = 0
         buttonPressed = False
+        isTrialReady = True
     End Sub
 
     ' -------------------------------------------------------
