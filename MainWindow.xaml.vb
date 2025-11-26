@@ -116,21 +116,19 @@ Public Class MainWindow
                               End If
 
                               If e.State AndAlso Not buttonPressed Then
-                                  ' Rising edge detected
+                                  ' Rising edge: button pressed
                                   buttonPressed = True
-
                                   HideReadyIndicator()
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
                                   btnCount += 1
                                   ActiveStimWatch.Restart()
-                                  SetGridColor(btnCount)
+                                  SetGridColor(btnCount) ' start stimulus for duration of press
 
                               ElseIf Not e.State AndAlso buttonPressed Then
-                                  ' Falling edge detected
+                                  ' Falling edge: button released
                                   buttonPressed = False
-
                                   RecordData()
                                   cc.State = False
                                   Latency.Start()
@@ -169,7 +167,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' CONTROL LOOP (monitor time & lockout, no stimulus toggling)
+    ' CONTROL LOOP (timing and lockout only)
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
         If Not isRunning Then
@@ -194,7 +192,7 @@ Public Class MainWindow
             ActiveStimWatch.Reset()
         End If
 
-        ' Only monitor total press time for lockout
+        ' Monitor total press time for lockout
         If Not isLockout AndAlso buttonPressed Then
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
             If totalPress >= TargetTime Then
@@ -250,29 +248,21 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Alternating colors + overlays
+    ' Alternating colors + overlays (Select Case style)
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        If isLockout OrElse Not isRunning Then Return
-
-        Dim even As Boolean = (count Mod 2 = 0)
-        ActiveStimWatch.Start()
-        If even Then
-            StimAWatch.Start()
-            StimGrid.Background = Brushes.Gray
-            StimSpy.Background = Brushes.Gray
-            ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
-        Else
-            StimBWatch.Start()
-            StimGrid.Background = Brushes.LightGray
-            StimSpy.Background = Brushes.LightGray
-            ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
-        End If
-    End Sub
-
-    Private Sub ShowOverlay(img As Image, file As String)
-        img.Source = New BitmapImage(New Uri(file, UriKind.Relative))
-        img.Visibility = Visibility.Visible
+        Select Case (count Mod 2)
+            Case 0
+                StimAWatch.Start()
+                StimBWatch.Stop()
+                StimGrid.Background = Brushes.DarkGray
+                StimSpy.Background = Brushes.DarkGray
+            Case 1
+                StimBWatch.Start()
+                StimAWatch.Stop()
+                StimGrid.Background = Brushes.LightGray
+                StimSpy.Background = Brushes.LightGray
+        End Select
     End Sub
 
     Private Sub ResetGridVisuals()
@@ -370,6 +360,7 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
+        buttonPressed = False
     End Sub
 
     Private Sub RecordData()
