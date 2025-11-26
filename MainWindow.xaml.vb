@@ -37,6 +37,8 @@ Public Class MainWindow
     ' NEW: require button release before a new trial is allowed
     ' -----------------------------
     Private newTrialReady As Boolean = True
+    ' NEW: prevent stimuli toggling while button is held
+    Private stimToggled As Boolean = False
 
     ' -----------------------------
     ' Stopwatches
@@ -143,17 +145,12 @@ Public Class MainWindow
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
-                                  If ActiveStimWatch.ElapsedMilliseconds < 10000 Then
+                                  ' NEW: only toggle stimulus on first press
+                                  If Not stimToggled Then
                                       btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
-                                  Else
-                                      ' Over 10sec -> reset visual and stim
-                                      ActiveStimWatch.Reset()
-                                      StimAWatch.Reset()
-                                      StimBWatch.Reset()
-                                      cc.State = False
-                                      ResetGridVisuals()
+                                      stimToggled = True
                                   End If
 
                               Else
@@ -167,6 +164,9 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
+
+                                  ' Reset toggled flag after release
+                                  stimToggled = False
                                   ' Release after lockout will set newTrialReady above
                               End If
 
@@ -257,7 +257,7 @@ Public Class MainWindow
                 rumbleCts?.Cancel()
                 RecordData()
 
-                ' NEW: Stop MasterStopWatch exactly at TargetTime
+                ' Stop MasterStopWatch exactly at TargetTime
                 MasterStopWatch.Stop()
 
                 ActiveStimWatch.Stop()
@@ -265,7 +265,7 @@ Public Class MainWindow
                 StimBWatch.Stop()
                 animationPlayed = True
 
-                ' NEW: require release after lockout before allowing a new trial
+                ' require release after lockout before allowing a new trial
                 newTrialReady = False
 
                 Await LockOut()
