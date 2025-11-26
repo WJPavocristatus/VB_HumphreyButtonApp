@@ -38,8 +38,10 @@ Public Class MainWindow
     ' -----------------------------
     Private newTrialReady As Boolean = True
 
-    ' NEW: track if stimulus was toggled for current press
-    Private stimToggled As Boolean = False
+    ' -----------------------------
+    ' Track previous button state
+    ' -----------------------------
+    Private prevButtonState As Boolean = False
 
     ' -----------------------------
     ' Stopwatches
@@ -114,6 +116,7 @@ Public Class MainWindow
                                   If e.State = False Then
                                       newTrialReady = True
                                   End If
+                                  prevButtonState = e.State
                                   Return
                               End If
 
@@ -122,10 +125,15 @@ Public Class MainWindow
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
+                                  prevButtonState = e.State
                                   Return
                               End If
 
-                              If e.State = True Then
+                              ' Detect true press edge
+                              Dim pressedEdge As Boolean = (e.State = True AndAlso prevButtonState = False)
+                              prevButtonState = e.State
+
+                              If pressedEdge Then
                                   ' Button pressed → hide ready overlay
                                   If isRunning AndAlso Not isLockout Then
                                       HideReadyIndicator()
@@ -141,15 +149,13 @@ Public Class MainWindow
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
-                                  ' Only toggle stimulus once per press
-                                  If Not stimToggled Then
-                                      btnCount += 1
-                                      SetGridColor(btnCount)
-                                      stimToggled = True
-                                      ActiveStimWatch.Start()
-                                  End If
+                                  btnCount += 1
+                                  SetGridColor(btnCount)
+                                  ActiveStimWatch.Start()
+                              End If
 
-                              Else
+                              ' Detect release edge
+                              If e.State = False AndAlso prevButtonState = False Then
                                   ' Button released
                                   If Not isLockout Then
                                       RecordData()
@@ -160,9 +166,6 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
-
-                                  ' Reset toggled flag after release
-                                  stimToggled = False
                               End If
 
                           End Sub)
@@ -226,11 +229,6 @@ Public Class MainWindow
         End If
 
         If Not isLockout Then
-            If Not bc.State Then
-                InitWatches()
-                Return
-            End If
-
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
             If totalPress >= TargetTime Then
