@@ -37,7 +37,8 @@ Public Class MainWindow
     ' NEW: require button release before a new trial is allowed
     ' -----------------------------
     Private newTrialReady As Boolean = True
-    ' NEW: prevent stimuli toggling while button is held
+
+    ' NEW: track if stimulus was toggled for current press
     Private stimToggled As Boolean = False
 
     ' -----------------------------
@@ -60,13 +61,11 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         flc.DeviceSerialNumber = 705800
-        'llc.DeviceSerialNumber = 705800
 
         bc.Channel = 0
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        'llc.Channel = 8
 
         ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -80,7 +79,6 @@ Public Class MainWindow
         bc.Open()
         fc.Open()
         flc.Open()
-        'llc.Open()
 
         ' Timer
         timer.Start()
@@ -107,7 +105,6 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
-    ' Minimal changes: newTrialReady gating & MasterStopWatch start
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
@@ -119,7 +116,6 @@ Public Class MainWindow
                                   End If
                                   Return
                               End If
-                              ' END NEW
 
                               ' Pre-start or lockout: ignore presses
                               If isLockout OrElse Not isRunning Then
@@ -135,7 +131,7 @@ Public Class MainWindow
                                       HideReadyIndicator()
                                   End If
 
-                                  ' NEW: Start master stopwatch ONLY on first valid press
+                                  ' NEW: Start master stopwatch only on first valid press
                                   If Not MasterStopWatch.IsRunning AndAlso newTrialReady Then
                                       MasterStopWatch.Reset()
                                       MasterStopWatch.Start()
@@ -145,10 +141,9 @@ Public Class MainWindow
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
-                                  ' NEW: only toggle stimulus on first press
+                                  ' NEW: Only toggle stimulus on first press
                                   If Not stimToggled Then
                                       btnCount += 1
-                                      ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                       stimToggled = True
                                   End If
@@ -167,7 +162,6 @@ Public Class MainWindow
 
                                   ' Reset toggled flag after release
                                   stimToggled = False
-                                  ' Release after lockout will set newTrialReady above
                               End If
 
                           End Sub)
@@ -175,21 +169,17 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' Button → Rumble Loop
-    ' Minimal change: respect newTrialReady at top
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Async Function()
-                              ' NEW: require release before new trial can start
                               If Not newTrialReady Then
                                   If e.State = False Then
                                       newTrialReady = True
                                   End If
                                   Return
                               End If
-                              ' END NEW
 
                               If e.State Then
-                                  ' Pre-start or lockout: ignore
                                   If isLockout OrElse Not isRunning Then Return
                                   rumbleCts = New CancellationTokenSource()
                                   Await RumblePak(rumbleCts.Token)
@@ -211,10 +201,8 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
-    ' Minimal change: set newTrialReady = False when entering lockout
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-        ' Pre-start: behave like lockout but no outputs
         If Not isRunning Then
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
@@ -225,7 +213,6 @@ Public Class MainWindow
 
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
-        ' Auto stop at 10 sec
         If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
             rumbleCts?.Cancel()
             cc.State = False
@@ -256,10 +243,7 @@ Public Class MainWindow
                 cc.State = False
                 rumbleCts?.Cancel()
                 RecordData()
-
-                ' Stop MasterStopWatch exactly at TargetTime
                 MasterStopWatch.Stop()
-
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -272,7 +256,6 @@ Public Class MainWindow
                 ResetTrial()
                 isLockout = False
                 animationPlayed = False
-                ' Show ready overlay again after LockOut
                 ShowReadyIndicator()
                 Return
             End If
@@ -285,7 +268,6 @@ Public Class MainWindow
 
         InitWatches()
     End Sub
-
     ' -------------------------------------------------------
     ' Play WAV file
     ' -------------------------------------------------------
