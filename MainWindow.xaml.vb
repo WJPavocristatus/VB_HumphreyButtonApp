@@ -29,10 +29,10 @@ Public Class MainWindow
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False
-    Private isTrialReady As Boolean = True
     Private trialInProgress As Boolean = False
     Private buttonPressed As Boolean = False
     Private stimulusActive As Boolean = False
+    Private activeStimulus As String = ""
 
     ' -----------------------------
     ' Stopwatches
@@ -49,6 +49,7 @@ Public Class MainWindow
     Public Sub New()
         InitializeComponent()
 
+        ' Phidget serials
         bc.DeviceSerialNumber = 705599
         cc.DeviceSerialNumber = 705599
         fc.DeviceSerialNumber = 705599
@@ -72,6 +73,7 @@ Public Class MainWindow
 
         timer.Start()
 
+        ' Hide play button initially
         StimGridReadyOverlay.Visibility = Visibility.Collapsed
     End Sub
 
@@ -88,14 +90,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Clock tick
-    ' -------------------------------------------------------
-    Private Sub Clock() Handles timer.Elapsed
-        Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
-    End Sub
-
-    ' -------------------------------------------------------
-    ' Button press tracking
+    ' Button state tracking
     ' -------------------------------------------------------
     Private Sub Button_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
@@ -142,25 +137,32 @@ Public Class MainWindow
             Return
         End If
 
-        ' Show READY overlay only if trial is ready and not in progress
-        StimGridReadyOverlay.Visibility = If(isTrialReady AndAlso Not trialInProgress, Visibility.Visible, Visibility.Collapsed)
+        ' Show ready button only if no trial in progress
+        StimGridReadyOverlay.Visibility = If(Not trialInProgress, Visibility.Visible, Visibility.Collapsed)
 
-        ' Start trial if button pressed and trial is ready
-        If buttonPressed AndAlso isTrialReady AndAlso Not trialInProgress Then
+        ' Start a new trial if button is pressed and no trial is in progress
+        If buttonPressed AndAlso Not trialInProgress AndAlso Not isLockout Then
             trialInProgress = True
-            isTrialReady = False
             btnCount += 1
-            stimulusActive = True
             ActiveStimWatch.Restart()
-            SetGridColor(btnCount)
+            Select Case btnCount Mod 2
+                Case 0 : activeStimulus = "A"
+                Case 1 : activeStimulus = "B"
+            End Select
+            stimulusActive = True
+            SetGridColor(activeStimulus)
         End If
 
-        ' Keep stimulus active while button is held
+        ' While button is held, continue stimulus
         If buttonPressed AndAlso stimulusActive Then
             ActiveStimWatch.Start()
+            Select Case activeStimulus
+                Case "A" : StimAWatch.Start() : StimBWatch.Stop()
+                Case "B" : StimBWatch.Start() : StimAWatch.Stop()
+            End Select
         End If
 
-        ' End stimulus when button released
+        ' When button is released, end stimulus
         If Not buttonPressed AndAlso stimulusActive Then
             stimulusActive = False
             ResetGridVisuals()
@@ -170,9 +172,11 @@ Public Class MainWindow
             Latency.Start()
         End If
 
-        ' Check for lockout
+        ' Check if total press reached target time
+        TargetTime = CInt(TargetTimeInput.Value) * 1000
         Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
         If totalPress >= TargetTime AndAlso trialInProgress AndAlso Not isLockout Then
+            ' Lockout + animation + feeder cycle
             isLockout = True
             stimulusActive = False
             cc.State = False
@@ -195,17 +199,13 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' Stimuli + overlays
     ' -------------------------------------------------------
-    Private Sub SetGridColor(count As Integer)
-        Select Case count Mod 2
-            Case 0
-                StimAWatch.Start()
-                StimBWatch.Stop()
+    Private Sub SetGridColor(stim As String)
+        Select Case stim
+            Case "A"
                 StimGrid.Background = Brushes.DarkGray
                 StimSpy.Background = Brushes.DarkGray
                 ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
-            Case 1
-                StimBWatch.Start()
-                StimAWatch.Stop()
+            Case "B"
                 StimGrid.Background = Brushes.LightGray
                 StimSpy.Background = Brushes.LightGray
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
@@ -221,10 +221,11 @@ Public Class MainWindow
         StimGrid.Background = Brushes.Black
         StimSpy.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
+        activeStimulus = ""
     End Sub
 
     ' -------------------------------------------------------
-    ' Lockout
+    ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
         RecordData()
@@ -269,58 +270,20 @@ Public Class MainWindow
         End Try
     End Function
 
-    ' -------------------------------------------------------
-    ' Reset Trial
-    ' -------------------------------------------------------
     Private Sub ResetTrial()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
-        stimulusActive = False
         trialInProgress = False
         btnCount = 0
-        Latency.Reset()
-        Latency.Stop()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
-        trialCount += 1
-
-        ' Only allow next trial when button released
-        If Not buttonPressed Then
-            isTrialReady = True
-        Else
-            isTrialReady = False
-        End If
+        Latency.Reset()
+        Latency.Stop()
     End Sub
 
-    ' -------------------------------------------------------
-    ' Play sound
-    ' -------------------------------------------------------
-    Private Sub PlaySound(fileName As String)
-        Try
-            Dim player As New SoundPlayer(fileName)
-            player.Play()
-        Catch ex As Exception
-            Console.WriteLine($"Error playing sound: {ex.Message}")
-        End Try
-    End Sub
-
-    ' -------------------------------------------------------
-    ' UI watch updates
-    ' -------------------------------------------------------
-    Private Sub InitWatches()
-        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
-        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
-        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
-        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
-    End Sub
-
-    ' -------------------------------------------------------
-    ' Record data
-    ' -------------------------------------------------------
     Private Sub RecordData()
         TextBox1.Text &= $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
@@ -340,21 +303,14 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         isRunning = Not isRunning
-        isTrialReady = True
-        trialInProgress = False
-        stimulusActive = False
-        buttonPressed = False
-
-        StimGridReadyOverlay.Visibility = If(isRunning, Visibility.Visible, Visibility.Collapsed)
-        StBtn.Content = If(isRunning, "Stop", "Start")
-        StBtn.Background = If(isRunning, Brushes.Violet, Brushes.Red)
-
-        Latency.Reset()
-        Latency.Stop()
-        ActiveStimWatch.Reset()
-        StimAWatch.Reset()
-        StimBWatch.Reset()
-        btnCount = 0
+        If isRunning Then
+            StBtn.Content = "Stop"
+            StBtn.Background = Brushes.Violet
+        Else
+            StBtn.Content = "Start"
+            StBtn.Background = Brushes.Red
+        End If
+        ResetTrial()
     End Sub
 
     ' -------------------------------------------------------
@@ -363,23 +319,22 @@ Public Class MainWindow
     Private Sub AutoSaveOnExit()
         Try
             Dim folder As String = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "PhidgetData"
-            )
-            If Not IO.Directory.Exists(folder) Then IO.Directory.CreateDirectory(folder)
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "PhidgetData"
+        )
 
+            If Not IO.Directory.Exists(folder) Then IO.Directory.CreateDirectory(folder)
             Dim file As String = System.IO.Path.Combine(
                 folder,
                 $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
             )
-
             IO.File.WriteAllText(file, TextBox1.Text)
         Catch
         End Try
     End Sub
 
     ' -------------------------------------------------------
-    ' Clean shutdown
+    ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
         AutoSaveOnExit()
@@ -389,5 +344,4 @@ Public Class MainWindow
         flc?.Close()
         MyBase.OnClosed(e)
     End Sub
-
 End Class
