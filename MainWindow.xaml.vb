@@ -45,7 +45,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
-    Private MasterStopWatch As New Stopwatch()
+    Private MasterStopWatch As New Stopwatch() ' <-- runs only during trial
 
     ' -------------------------------------------------------
     ' Constructor
@@ -84,7 +84,6 @@ Public Class MainWindow
         timer.Start()
     End Sub
 
-
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
@@ -97,7 +96,6 @@ Public Class MainWindow
         MainWin.ResizeMode = ResizeMode.NoResize
     End Sub
 
-
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
     ' -------------------------------------------------------
@@ -105,17 +103,15 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
-    ' Minimal changes: added newTrialReady gating at top only
+    ' Minimal changes: newTrialReady gating & MasterStopWatch start
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
 
                               ' NEW: require release before new trial can start
                               If Not newTrialReady Then
-                                  ' If release detected, mark ready; otherwise ignore the event
                                   If e.State = False Then
                                       newTrialReady = True
                                   End If
@@ -135,6 +131,12 @@ Public Class MainWindow
                                   ' Button pressed → hide ready overlay
                                   If isRunning AndAlso Not isLockout Then
                                       HideReadyIndicator()
+                                  End If
+
+                                  ' NEW: Start master stopwatch ONLY on first valid press
+                                  If Not MasterStopWatch.IsRunning AndAlso newTrialReady Then
+                                      MasterStopWatch.Reset()
+                                      MasterStopWatch.Start()
                                   End If
 
                                   ' Button pressed
@@ -165,13 +167,11 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
-
-                                  ' If this release follows a lockout, it will set newTrialReady on the next handler call above
+                                  ' Release after lockout will set newTrialReady above
                               End If
 
                           End Sub)
     End Sub
-
 
     ' -------------------------------------------------------
     ' Button → Rumble Loop
@@ -200,7 +200,6 @@ Public Class MainWindow
                           End Function)
     End Sub
 
-
     ' -------------------------------------------------------
     ' Phidget Attached
     ' -------------------------------------------------------
@@ -209,7 +208,6 @@ Public Class MainWindow
                               Console.WriteLine($"Phidget {sender} attached!")
                           End Sub)
     End Sub
-
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
@@ -223,10 +221,6 @@ Public Class MainWindow
             StimBWatch.Stop()
             InitWatches()
             Return
-        End If
-
-        If isRunning Then
-            MasterStopWatch.Start()
         End If
 
         TargetTime = CInt(TargetTimeInput.Value) * 1000
@@ -262,7 +256,10 @@ Public Class MainWindow
                 cc.State = False
                 rumbleCts?.Cancel()
                 RecordData()
+
+                ' NEW: Stop MasterStopWatch exactly at TargetTime
                 MasterStopWatch.Stop()
+
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -289,7 +286,6 @@ Public Class MainWindow
         InitWatches()
     End Sub
 
-
     ' -------------------------------------------------------
     ' Play WAV file
     ' -------------------------------------------------------
@@ -302,7 +298,6 @@ Public Class MainWindow
         End Try
     End Sub
 
-
     ' -------------------------------------------------------
     ' Update UI watch labels
     ' -------------------------------------------------------
@@ -313,7 +308,6 @@ Public Class MainWindow
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
     End Sub
-
 
     ' -------------------------------------------------------
     ' Alternating colors + overlays
@@ -359,7 +353,6 @@ Public Class MainWindow
         StimGridReadyOverlay.Visibility = Visibility.Collapsed
     End Sub
 
-
     ' -------------------------------------------------------
     ' Lockout sequence
     ' -------------------------------------------------------
@@ -373,7 +366,7 @@ Public Class MainWindow
         End Try
 
         Latency.Stop()
-        MasterStopWatch.Reset()
+        MasterStopWatch.Reset() ' <-- ready for next trial
 
         If Not animationPlayed Then
             animationPlayed = True
@@ -428,9 +421,7 @@ Public Class MainWindow
         StimBWatch.Stop()
         ResetGridVisuals()
 
-
         RecordData()
-
 
         trialCount += 1
         btnCount = 0
@@ -498,7 +489,7 @@ Public Class MainWindow
     Private Sub AutoSaveOnExit()
         Try
             Dim folder As String = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "PhidgetData"
         )
 
