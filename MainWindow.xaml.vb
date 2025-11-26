@@ -82,6 +82,9 @@ Public Class MainWindow
 
         ' Timer
         timer.Start()
+
+        ' Hide READY overlay on startup
+        StimGridReadyOverlay.Visibility = Visibility.Collapsed
     End Sub
 
     ' -------------------------------------------------------
@@ -115,9 +118,18 @@ Public Class MainWindow
                                   Return
                               End If
 
-                              If e.State AndAlso Not buttonPressed Then
-                                  ' Rising edge: button pressed
-                                  buttonPressed = True
+                              ' Update button press state
+                              buttonPressed = e.State
+
+                              ' Show READY overlay only if running and no trial is active
+                              If isRunning AndAlso Not buttonPressed Then
+                                  StimGridReadyOverlay.Visibility = Visibility.Visible
+                              Else
+                                  StimGridReadyOverlay.Visibility = Visibility.Collapsed
+                              End If
+
+                              If buttonPressed Then
+                                  ' Start trial
                                   HideReadyIndicator()
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
@@ -125,10 +137,8 @@ Public Class MainWindow
                                   btnCount += 1
                                   ActiveStimWatch.Restart()
                                   SetGridColor(btnCount) ' start stimulus for duration of press
-
-                              ElseIf Not e.State AndAlso buttonPressed Then
-                                  ' Falling edge: button released
-                                  buttonPressed = False
+                              Else
+                                  ' Button released
                                   RecordData()
                                   cc.State = False
                                   Latency.Start()
@@ -171,16 +181,11 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
         If Not isRunning Then
-            HideReadyIndicator()
+            StimGridReadyOverlay.Visibility = Visibility.Collapsed
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
             InitWatches()
-            Return
-        End If
-
-        If isRunning Then
-            ShowReadyIndicator()
             Return
         End If
 
@@ -217,14 +222,8 @@ Public Class MainWindow
                 ResetTrial()
                 isLockout = False
                 animationPlayed = False
-                ShowReadyIndicator()
                 Return
             End If
-        End If
-
-        If btnCount < 1 Then
-            Latency.Reset()
-            Latency.Stop()
         End If
 
         InitWatches()
@@ -263,12 +262,19 @@ Public Class MainWindow
                 StimBWatch.Stop()
                 StimGrid.Background = Brushes.DarkGray
                 StimSpy.Background = Brushes.DarkGray
+                ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
             Case 1
                 StimBWatch.Start()
                 StimAWatch.Stop()
                 StimGrid.Background = Brushes.LightGray
                 StimSpy.Background = Brushes.LightGray
+                ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
         End Select
+    End Sub
+
+    Private Sub ShowOverlay(img As Image, file As String)
+        img.Source = New BitmapImage(New Uri(file, UriKind.Relative))
+        img.Visibility = Visibility.Visible
     End Sub
 
     Private Sub ResetGridVisuals()
@@ -317,7 +323,6 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        'llc.State = False
         Latency.Reset()
         Latency.Stop()
     End Function
@@ -325,10 +330,8 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            'llc.State = False
             Await Task.Delay(150)
             flc.State = False
-            'llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -356,6 +359,7 @@ Public Class MainWindow
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
+        buttonPressed = False
 
         RecordData()
 
@@ -366,7 +370,11 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
-        buttonPressed = False
+
+        ' Show READY overlay after trial reset if running
+        If isRunning Then
+            StimGridReadyOverlay.Visibility = Visibility.Visible
+        End If
     End Sub
 
     Private Sub RecordData()
@@ -397,14 +405,14 @@ Public Class MainWindow
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        If Not isRunning Then
-            isRunning = True
-            ShowReadyIndicator()
+        isRunning = Not isRunning
+
+        If isRunning Then
+            StimGridReadyOverlay.Visibility = Visibility.Visible
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Violet
         Else
-            isRunning = False
-            HideReadyIndicator()
+            StimGridReadyOverlay.Visibility = Visibility.Collapsed
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
         End If
@@ -424,18 +432,18 @@ Public Class MainWindow
     Private Sub AutoSaveOnExit()
         Try
             Dim folder As String = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "PhidgetData"
-        )
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "PhidgetData"
+            )
 
             If Not IO.Directory.Exists(folder) Then
                 IO.Directory.CreateDirectory(folder)
             End If
 
             Dim file As String = System.IO.Path.Combine(
-            folder,
-            $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
-        )
+                folder,
+                $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
+            )
 
             IO.File.WriteAllText(file, TextBox1.Text)
 
@@ -453,7 +461,6 @@ Public Class MainWindow
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
 
