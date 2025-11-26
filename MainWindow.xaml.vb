@@ -48,7 +48,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
-    Private MasterStopWatch As New Stopwatch() ' <-- runs only during trial
+    Private MasterStopWatch As New Stopwatch() ' runs only during trial
 
     ' -------------------------------------------------------
     ' Constructor
@@ -131,7 +131,7 @@ Public Class MainWindow
                                       HideReadyIndicator()
                                   End If
 
-                                  ' NEW: Start master stopwatch only on first valid press
+                                  ' Start master stopwatch only on first valid press
                                   If Not MasterStopWatch.IsRunning AndAlso newTrialReady Then
                                       MasterStopWatch.Reset()
                                       MasterStopWatch.Start()
@@ -141,11 +141,12 @@ Public Class MainWindow
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
-                                  ' NEW: Only toggle stimulus on first press
+                                  ' Only toggle stimulus once per press
                                   If Not stimToggled Then
                                       btnCount += 1
                                       SetGridColor(btnCount)
                                       stimToggled = True
+                                      ActiveStimWatch.Start()
                                   End If
 
                               Else
@@ -213,6 +214,7 @@ Public Class MainWindow
 
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
+        ' Auto stop at 10 sec for safety
         If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
             rumbleCts?.Cancel()
             cc.State = False
@@ -225,9 +227,6 @@ Public Class MainWindow
 
         If Not isLockout Then
             If Not bc.State Then
-                ActiveStimWatch.Stop()
-                StimAWatch.Stop()
-                StimBWatch.Stop()
                 InitWatches()
                 Return
             End If
@@ -259,11 +258,6 @@ Public Class MainWindow
                 ShowReadyIndicator()
                 Return
             End If
-        End If
-
-        If btnCount < 1 Then
-            Latency.Reset()
-            Latency.Stop()
         End If
 
         InitWatches()
