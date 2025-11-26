@@ -137,7 +137,7 @@ Public Class MainWindow
             Return
         End If
 
-        ' Show ready button only if no trial in progress
+        ' Show play button only if no trial is in progress
         StimGridReadyOverlay.Visibility = If(Not trialInProgress, Visibility.Visible, Visibility.Collapsed)
 
         ' Start new trial on button press
@@ -335,10 +335,9 @@ Public Class MainWindow
     Private Sub AutoSaveOnExit()
         Try
             Dim folder As String = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "PhidgetData"
-        )
-
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "PhidgetData"
+            )
             If Not IO.Directory.Exists(folder) Then IO.Directory.CreateDirectory(folder)
             Dim file As String = System.IO.Path.Combine(
                 folder,
