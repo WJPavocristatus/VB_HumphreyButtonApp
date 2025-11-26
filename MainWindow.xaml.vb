@@ -27,13 +27,13 @@ Public Class MainWindow
 
 
     Public Sub New()
-        bc.DeviceSerialNumber = 705800
-        cc.DeviceSerialNumber = 705800
-        fc.DeviceSerialNumber = 705800
-        flc.DeviceSerialNumber = 705800
-        llc.DeviceSerialNumber = 705800
+        bc.DeviceSerialNumber = 705599
+        cc.DeviceSerialNumber = 705599
+        fc.DeviceSerialNumber = 705599
+        flc.DeviceSerialNumber = 705599
+        llc.DeviceSerialNumber = 705599
         cc.Channel = 6
-        bc.Channel = 0
+        bc.Channel = 1
         fc.Channel = 7
         flc.Channel = 9
         llc.Channel = 8
@@ -63,7 +63,7 @@ Public Class MainWindow
         MainWin.Left = 0
         MainWin.WindowStyle = WindowStyle.None
         MainWin.ResizeMode = ResizeMode.NoResize
-        
+
     End Sub
 
     Private Sub Clock() Handles timer.Elapsed
@@ -185,7 +185,7 @@ Public Class MainWindow
     Private Async Function TargetReached() As Task
 
         Await LockOutAsync(LockTime)
-            ResetTrial() 'reset the trial values
+        ResetTrial() 'reset the trial values
 
     End Function
 
