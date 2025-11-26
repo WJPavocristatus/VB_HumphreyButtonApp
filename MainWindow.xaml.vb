@@ -140,7 +140,7 @@ Public Class MainWindow
         ' Show ready button only if no trial in progress
         StimGridReadyOverlay.Visibility = If(Not trialInProgress, Visibility.Visible, Visibility.Collapsed)
 
-        ' Start a new trial if button is pressed and no trial is in progress
+        ' Start new trial on button press
         If buttonPressed AndAlso Not trialInProgress AndAlso Not isLockout Then
             trialInProgress = True
             btnCount += 1
@@ -153,16 +153,21 @@ Public Class MainWindow
             SetGridColor(activeStimulus)
         End If
 
-        ' While button is held, continue stimulus
+        ' Keep stimulus visible while button held
         If buttonPressed AndAlso stimulusActive Then
-            ActiveStimWatch.Start()
             Select Case activeStimulus
-                Case "A" : StimAWatch.Start() : StimBWatch.Stop()
-                Case "B" : StimBWatch.Start() : StimAWatch.Stop()
+                Case "A"
+                    StimAWatch.Start()
+                    StimBWatch.Stop()
+                    SetGridColor("A")
+                Case "B"
+                    StimBWatch.Start()
+                    StimAWatch.Stop()
+                    SetGridColor("B")
             End Select
         End If
 
-        ' When button is released, end stimulus
+        ' End stimulus on button release
         If Not buttonPressed AndAlso stimulusActive Then
             stimulusActive = False
             ResetGridVisuals()
@@ -172,11 +177,10 @@ Public Class MainWindow
             Latency.Start()
         End If
 
-        ' Check if total press reached target time
+        ' Lockout condition
         TargetTime = CInt(TargetTimeInput.Value) * 1000
         Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
         If totalPress >= TargetTime AndAlso trialInProgress AndAlso Not isLockout Then
-            ' Lockout + animation + feeder cycle
             isLockout = True
             stimulusActive = False
             cc.State = False
@@ -193,7 +197,6 @@ Public Class MainWindow
             animationPlayed = False
         End If
 
-        ' Update UI labels
         InitWatches()
     End Sub
 
@@ -206,7 +209,7 @@ Public Class MainWindow
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
         LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
-        MasterStopWatchVal.Content = $"{MasterStopWatch.ElapsedMilliseconds / 1000} secs"
+        'MasterStopWatchVal.Content = $"{MasterStopWatch.ElapsedMilliseconds / 1000} secs"
     End Sub
 
     ' -------------------------------------------------------
@@ -279,7 +282,7 @@ Public Class MainWindow
                 cc.State = False
                 Await Task.Delay(999, ct)
             End While
-        Catch ex As TaskCanceledException
+        Catch
         End Try
     End Function
 
