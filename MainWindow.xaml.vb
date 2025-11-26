@@ -17,7 +17,6 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    'Private llc As New DigitalOutput() ' Lockout LED
     Private btnLED As New DigitalOutput()
 
     ' -----------------------------
@@ -58,13 +57,11 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705599
         fc.DeviceSerialNumber = 705599
         flc.DeviceSerialNumber = 705599
-        'llc.DeviceSerialNumber = 705800
 
         bc.Channel = 1
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        'llc.Channel = 8
 
         ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -78,7 +75,6 @@ Public Class MainWindow
         bc.Open()
         fc.Open()
         flc.Open()
-        'llc.Open()
 
         ' Timer
         timer.Start()
@@ -107,7 +103,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Button → Stimulus Logic (press detection)
+    ' Button → Stimulus Logic
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
@@ -115,28 +111,29 @@ Public Class MainWindow
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
+                                  ResetGridVisuals()
                                   Return
                               End If
 
                               ' Update button press state
                               buttonPressed = e.State
 
-                              ' Show READY overlay only if running and no trial is active
+                              ' READY overlay visibility
                               If isRunning AndAlso Not buttonPressed Then
                                   StimGridReadyOverlay.Visibility = Visibility.Visible
                               Else
                                   StimGridReadyOverlay.Visibility = Visibility.Collapsed
                               End If
 
+                              ' Stimuli logic while button is pressed
                               If buttonPressed Then
-                                  ' Start trial
                                   HideReadyIndicator()
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
                                   btnCount += 1
-                                  ActiveStimWatch.Restart()
-                                  SetGridColor(btnCount) ' start stimulus for duration of press
+                                  ActiveStimWatch.Start()
+                                  SetGridColor(btnCount) ' Show stimuli for full press
                               Else
                                   ' Button released
                                   RecordData()
@@ -156,7 +153,6 @@ Public Class MainWindow
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Async Function()
                               If e.State Then
-                                  ' Pre-start or lockout: ignore
                                   If isLockout OrElse Not isRunning Then Return
                                   rumbleCts = New CancellationTokenSource()
                                   Await RumblePak(rumbleCts.Token)
@@ -177,7 +173,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' CONTROL LOOP (timing and lockout only)
+    ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
         If Not isRunning Then
@@ -203,12 +199,11 @@ Public Class MainWindow
             ActiveStimWatch.Reset()
         End If
 
-        ' Monitor total press time for lockout
+        ' Lockout logic based on total press
         If Not isLockout AndAlso buttonPressed Then
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
             If totalPress >= TargetTime Then
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
-
                 isLockout = True
                 cc.State = False
                 rumbleCts?.Cancel()
@@ -253,7 +248,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Alternating colors + overlays (Select Case style)
+    ' Alternating colors + overlays
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
         Select Case (count Mod 2)
@@ -301,27 +296,20 @@ Public Class MainWindow
     Public Async Function LockOut() As Task
         RecordData()
         ResetGridVisuals()
-
         Try
             bc.Close()
         Catch
         End Try
-
         Latency.Stop()
         MasterStopWatch.Reset()
-
-        If Not animationPlayed Then
-            animationPlayed = True
-        End If
+        If Not animationPlayed Then animationPlayed = True
         Await PlayLockoutLEDSequence()
         Await ActivateOut(fc, 50)
         Await Task.Delay(3000)
-
         Try
             bc.Open()
         Catch
         End Try
-
         flc.State = False
         Latency.Reset()
         Latency.Stop()
@@ -448,7 +436,6 @@ Public Class MainWindow
             IO.File.WriteAllText(file, TextBox1.Text)
 
         Catch ex As Exception
-            ' Silent fail – do not block app closure
         End Try
     End Sub
 
