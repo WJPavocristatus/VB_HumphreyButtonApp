@@ -36,6 +36,11 @@ Public Class MainWindow
     ' NEW: require button release before a new trial is allowed
     Private newTrialReady As Boolean = True
 
+    ' NEW: flags to prevent stimuli changes while button is held / latch target reached
+    Private btnHeld As Boolean = False
+    Private prevBtnState As Boolean = False
+    Private targetReached As Boolean = False
+
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -116,6 +121,8 @@ Public Class MainWindow
                                   If e.State = False Then
                                       newTrialReady = True
                                   End If
+                                  ' update prevBtnState and exit early
+                                  prevBtnState = e.State
                                   Return
                               End If
                               ' ----------------------------------------------------------
@@ -125,10 +132,19 @@ Public Class MainWindow
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
+                                  prevBtnState = e.State
                                   Return
                               End If
 
+                              ' Track hold state
                               If e.State = True Then
+                                  btnHeld = True
+                              Else
+                                  btnHeld = False
+                              End If
+
+                              ' Only run stimulus-change logic on the rising edge (press event)
+                              If e.State = True AndAlso Not prevBtnState Then
                                   ' Button pressed → hide ready overlay
                                   If isRunning AndAlso Not isLockout Then
                                       HideReadyIndicator()
@@ -143,16 +159,15 @@ Public Class MainWindow
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                   Else
-                                      ' Over 10sec -> reset visual and stim
+                                      ' Over 10sec -> reset visual and stim (only if press edge caused this)
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
                                       cc.State = False
                                       ResetGridVisuals()
                                   End If
-
-                              Else
-                                  ' Button released
+                              ElseIf e.State = False Then
+                                  ' Button released (falling edge)
                                   If Not isLockout Then
                                       RecordData()
                                   End If
@@ -162,10 +177,9 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
-
-                                  ' If this release comes after a lockout (or after reaching TargetTime),
-                                  ' it will set newTrialReady at the top of this handler on next events.
                               End If
+
+                              prevBtnState = e.State
 
                           End Sub)
     End Sub
@@ -181,19 +195,26 @@ Public Class MainWindow
                                   If e.State = False Then
                                       newTrialReady = True
                                   End If
+                                  prevBtnState = e.State
                                   Return
                               End If
                               ' ----------------------------------------------------------
 
+                              ' Prevent rumble when not allowed
+                              If isLockout OrElse Not isRunning Then
+                                  prevBtnState = e.State
+                                  Return
+                              End If
+
                               If e.State Then
-                                  ' Pre-start or lockout: ignore
-                                  If isLockout OrElse Not isRunning Then Return
                                   rumbleCts = New CancellationTokenSource()
                                   Await RumblePak(rumbleCts.Token)
                               Else
                                   rumbleCts?.Cancel()
                                   cc.State = False
                               End If
+
+                              prevBtnState = e.State
                           End Function)
     End Sub
 
@@ -234,11 +255,15 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
-            ResetGridVisuals()
+            ' Only reset visuals if button is not currently held — avoid changing stimuli while held
+            If Not bc.State Then
+                ResetGridVisuals()
+            End If
             ActiveStimWatch.Reset()
         End If
 
         If Not isLockout Then
+            ' If button isn't held, bail out — we only evaluate hold-time while button is physically down
             If Not bc.State Then
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
@@ -249,7 +274,7 @@ Public Class MainWindow
 
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
-            If totalPress >= TargetTime Then
+            If totalPress >= TargetTime AndAlso Not targetReached Then
                 ' Play chime
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
 
@@ -257,20 +282,28 @@ Public Class MainWindow
                 isLockout = True
                 cc.State = False
                 rumbleCts?.Cancel()
+
+                ' Stop and latch targetReached so we don't retrigger while still held
+                targetReached = True
+
+                ' Record and stop timing
                 RecordData()
                 MasterStopWatch.Stop()
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 animationPlayed = True
-                ' NEW: require release after lockout before allowing a new trial
+
+                ' Require a release before next trial is allowed
                 newTrialReady = False
 
                 Await LockOut()
                 ResetTrial()
+
+                ' Reset flags after lockout; do NOT allow a new trial until release occurs
                 isLockout = False
                 animationPlayed = False
-                ' Show ready overlay again after LockOut
+                ' Keep targetReached = True until a release happens — on release handler we'll clear it
                 ShowReadyIndicator()
                 Return
             End If
@@ -423,9 +456,7 @@ Public Class MainWindow
         StimBWatch.Stop()
         ResetGridVisuals()
 
-
         RecordData()
-
 
         trialCount += 1
         btnCount = 0
@@ -434,6 +465,9 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
+
+        ' Clear targetReached and allow new trial only after a release (if release already happened, newTrialReady will be True)
+        targetReached = False
     End Sub
 
     Private Sub RecordData()
@@ -485,6 +519,7 @@ Public Class MainWindow
 
         ' NEW: when starting, allow immediate trial (no release required)
         newTrialReady = True
+        targetReached = False
     End Sub
 
     ' -------------------------------------------------------
