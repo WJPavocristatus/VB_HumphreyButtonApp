@@ -17,8 +17,7 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    'Private llc As New DigitalOutput() ' Lockout LED
-    Private btnLED As New DigitalOutput()
+    Private llc As New DigitalOutput() ' Lockout LED
 
     ' -----------------------------
     ' Timer & State Variables
@@ -33,7 +32,8 @@ Public Class MainWindow
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
 
-
+    'Public StimAName As String
+    'Public StimBName As String
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -41,7 +41,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
-    Private MasterStopWatch As New Stopwatch()
+
 
     ' -------------------------------------------------------
     ' Constructor
@@ -54,13 +54,13 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705800
         fc.DeviceSerialNumber = 705800
         flc.DeviceSerialNumber = 705800
-        'llc.DeviceSerialNumber = 705800
+        llc.DeviceSerialNumber = 705800
 
         bc.Channel = 0
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        'llc.Channel = 8
+        llc.Channel = 8
 
         ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -74,7 +74,7 @@ Public Class MainWindow
         bc.Open()
         fc.Open()
         flc.Open()
-        'llc.Open()
+        llc.Open()
 
         ' Timer
         timer.Start()
@@ -198,10 +198,6 @@ Public Class MainWindow
             Return
         End If
 
-        If isRunning Then
-            MasterStopWatch.Start()
-        End If
-
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
         ' Auto stop at 10 sec
@@ -228,14 +224,12 @@ Public Class MainWindow
 
             If totalPress >= TargetTime Then
                 ' Play chime
-                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
+                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
 
                 ' Enter lockout
                 isLockout = True
-                cc.State = False
                 rumbleCts?.Cancel()
-                RecordData()
-                MasterStopWatch.Stop()
+                cc.State = False
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -333,7 +327,6 @@ Public Class MainWindow
     ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
-        RecordData()
         ResetGridVisuals()
 
         Try
@@ -342,7 +335,6 @@ Public Class MainWindow
         End Try
 
         Latency.Stop()
-        MasterStopWatch.Reset()
 
         If Not animationPlayed Then
             animationPlayed = True
@@ -357,7 +349,7 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        'llc.State = False
+        llc.State = False
         Latency.Reset()
         Latency.Stop()
     End Function
@@ -365,10 +357,10 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            'llc.State = True
+            llc.State = True
             Await Task.Delay(150)
             flc.State = False
-            'llc.State = False
+            llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -397,9 +389,9 @@ Public Class MainWindow
         StimBWatch.Stop()
         ResetGridVisuals()
 
-
-        RecordData()
-
+        If Not isLockout Then
+            RecordData()
+        End If
 
         trialCount += 1
         btnCount = 0
@@ -418,9 +410,8 @@ Public Class MainWindow
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Up time: {Latency.ElapsedMilliseconds / 1000} secs, " &
-            $"MasterStopWatch Time: {MasterStopWatch.ElapsedMilliseconds / 1000} secs" &
-        Environment.NewLine
+            $"Total Button Up time: {Latency.ElapsedMilliseconds} ms" &
+            Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
 
@@ -440,18 +431,17 @@ Public Class MainWindow
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         If Not isRunning Then
             isRunning = True
-            ShowReadyIndicator()
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Violet
+            ShowReadyIndicator()
         Else
             isRunning = False
-            HideReadyIndicator()
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
+            HideReadyIndicator()
         End If
 
         Latency.Reset()
-        Latency.Stop()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
@@ -459,41 +449,14 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Autosave
-    ' -------------------------------------------------------
-    Private Sub AutoSaveOnExit()
-        Try
-            Dim folder As String = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "PhidgetData"
-        )
-
-            If Not IO.Directory.Exists(folder) Then
-                IO.Directory.CreateDirectory(folder)
-            End If
-
-            Dim file As String = System.IO.Path.Combine(
-            folder,
-            $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
-        )
-
-            IO.File.WriteAllText(file, TextBox1.Text)
-
-        Catch ex As Exception
-            ' Silent fail – do not block app closure
-        End Try
-    End Sub
-
-    ' -------------------------------------------------------
     ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
-        AutoSaveOnExit()
         bc?.Close()
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        'llc?.Close()
+        llc?.Close()
         MyBase.OnClosed(e)
     End Sub
 
