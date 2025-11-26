@@ -155,7 +155,7 @@ Public Class MainWindow
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
         ' Show READY overlay only if trial is ready and button not pressed
-        If isTrialReady AndAlso Not buttonPressed Then
+        If isTrialReady AndAlso Not buttonPressed AndAlso Not isLockout Then
             StimGridReadyOverlay.Visibility = Visibility.Visible
         Else
             StimGridReadyOverlay.Visibility = Visibility.Collapsed
@@ -168,6 +168,9 @@ Public Class MainWindow
             ActiveStimWatch.Restart()
             stimulusActive = True
             isTrialReady = False
+
+            ' Hide play button while trial is in progress
+            StimGridReadyOverlay.Visibility = Visibility.Collapsed
 
             ' Activate the selected stimulus and overlay
             SetGridColor(btnCount)
@@ -186,7 +189,8 @@ Public Class MainWindow
             StimAWatch.Stop()
             StimBWatch.Stop()
             Latency.Start()
-            ' Trial is now ready for next button press
+
+            ' Trial now ready for next press
             isTrialReady = True
         End If
 
@@ -269,18 +273,6 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' READY overlay helpers
-    ' -------------------------------------------------------
-    Private Sub ShowReadyIndicator()
-        StimGridReadyOverlay.Source = New BitmapImage(New Uri("Assets/playbtn.png", UriKind.Relative))
-        StimGridReadyOverlay.Visibility = Visibility.Visible
-    End Sub
-
-    Private Sub HideReadyIndicator()
-        StimGridReadyOverlay.Visibility = Visibility.Collapsed
-    End Sub
-
-    ' -------------------------------------------------------
     ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
@@ -326,13 +318,16 @@ Public Class MainWindow
         End Try
     End Function
 
+    ' -------------------------------------------------------
+    ' Reset trial after lockout
+    ' -------------------------------------------------------
     Private Sub ResetTrial()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
-        buttonPressed = False
         stimulusActive = False
+        buttonPressed = False
         btnCount = 0
         Latency.Reset()
         Latency.Stop()
@@ -341,8 +336,11 @@ Public Class MainWindow
         StimBWatch.Reset()
         trialCount += 1
 
-        ' Ready overlay shown only if trial ready
-        If isRunning AndAlso isTrialReady Then
+        ' New trial is now ready
+        isTrialReady = True
+
+        ' Show READY overlay so user knows next trial can start
+        If isRunning AndAlso Not isLockout Then
             StimGridReadyOverlay.Visibility = Visibility.Visible
         End If
     End Sub
@@ -359,16 +357,6 @@ Public Class MainWindow
             $"MasterStopWatch Time: {MasterStopWatch.ElapsedMilliseconds / 1000} secs" &
         Environment.NewLine
         TextBox1.ScrollToEnd()
-    End Sub
-
-    Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
-        Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
-            .DefaultExt = ".csv"
-        }
-        If save.ShowDialog() Then
-            IO.File.WriteAllText(save.FileName, TextBox1.Text)
-        End If
     End Sub
 
     ' -------------------------------------------------------
