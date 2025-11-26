@@ -33,10 +33,6 @@ Public Class MainWindow
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
 
-    ' -----------------------------
-    ' NEW: require button release before a new trial is allowed
-    ' -----------------------------
-    Private newTrialReady As Boolean = True
 
     ' -----------------------------
     ' Stopwatches
@@ -108,20 +104,9 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
-    ' Minimal changes: added newTrialReady gating at top only
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
-
-                              ' NEW: require release before new trial can start
-                              If Not newTrialReady Then
-                                  ' If release detected, mark ready; otherwise ignore the event
-                                  If e.State = False Then
-                                      newTrialReady = True
-                                  End If
-                                  Return
-                              End If
-                              ' END NEW
 
                               ' Pre-start or lockout: ignore presses
                               If isLockout OrElse Not isRunning Then
@@ -166,7 +151,6 @@ Public Class MainWindow
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
 
-                                  ' If this release follows a lockout, it will set newTrialReady on the next handler call above
                               End If
 
                           End Sub)
@@ -175,19 +159,9 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' Button → Rumble Loop
-    ' Minimal change: respect newTrialReady at top
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Async Function()
-                              ' NEW: require release before new trial can start
-                              If Not newTrialReady Then
-                                  If e.State = False Then
-                                      newTrialReady = True
-                                  End If
-                                  Return
-                              End If
-                              ' END NEW
-
                               If e.State Then
                                   ' Pre-start or lockout: ignore
                                   If isLockout OrElse Not isRunning Then Return
@@ -213,7 +187,6 @@ Public Class MainWindow
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
-    ' Minimal change: set newTrialReady = False when entering lockout
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
         ' Pre-start: behave like lockout but no outputs
@@ -267,10 +240,6 @@ Public Class MainWindow
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 animationPlayed = True
-
-                ' NEW: require release after lockout before allowing a new trial
-                newTrialReady = False
-
                 Await LockOut()
                 ResetTrial()
                 isLockout = False
@@ -487,9 +456,6 @@ Public Class MainWindow
         StimAWatch.Reset()
         StimBWatch.Reset()
         btnCount = 0
-
-        ' NEW: when starting, allow immediate trial (no release required)
-        newTrialReady = True
     End Sub
 
     ' -------------------------------------------------------
