@@ -36,6 +36,7 @@ Public Class MainWindow
     ' Button press tracking
     ' -----------------------------
     Private buttonPressed As Boolean = False
+    Private stimulusActive As Boolean = False ' Track if a stimulus is active for current press
 
     ' -----------------------------
     ' Stopwatches
@@ -103,7 +104,7 @@ Public Class MainWindow
     End Sub
 
     ' -------------------------------------------------------
-    ' Button → Stimulus & Trial Logic
+    ' Button → State
     ' -------------------------------------------------------
     Private Sub Button_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
@@ -160,26 +161,42 @@ Public Class MainWindow
             StimGridReadyOverlay.Visibility = Visibility.Collapsed
         End If
 
-        ' Stimuli activation while button is held down
-        If buttonPressed AndAlso isTrialReady AndAlso Not isLockout Then
-            Latency.Stop()
-            ActiveStimWatch.Start()
+        ' Start new trial on button press
+        If buttonPressed AndAlso isTrialReady AndAlso Not stimulusActive AndAlso Not isLockout Then
+            ' Increment trial count once
             btnCount += 1
+            ActiveStimWatch.Restart()
+            stimulusActive = True
+            isTrialReady = False
+
+            ' Activate the selected stimulus and overlay
             SetGridColor(btnCount)
-        Else
+        End If
+
+        ' Keep the stimulus displayed while button is held
+        If buttonPressed AndAlso stimulusActive Then
+            ActiveStimWatch.Start()
+        End If
+
+        ' Button released: end stimulus
+        If Not buttonPressed AndAlso stimulusActive Then
+            stimulusActive = False
+            ResetGridVisuals()
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
-            ResetGridVisuals()
             Latency.Start()
+            ' Trial is now ready for next button press
+            isTrialReady = True
         End If
 
         ' Check for lockout / feeder trigger
-        If ActiveStimWatch.ElapsedMilliseconds + StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds >= TargetTime AndAlso buttonPressed AndAlso isTrialReady Then
+        Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+        If totalPress >= TargetTime AndAlso buttonPressed AndAlso Not isLockout Then
             PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beepBeep.wav"))
 
             isLockout = True
-            isTrialReady = False
+            stimulusActive = False
             cc.State = False
             rumbleCts?.Cancel()
             RecordData()
@@ -315,13 +332,13 @@ Public Class MainWindow
         StimBWatch.Stop()
         ResetGridVisuals()
         buttonPressed = False
+        stimulusActive = False
         btnCount = 0
         Latency.Reset()
         Latency.Stop()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
-
         trialCount += 1
 
         ' Ready overlay shown only if trial ready
@@ -359,6 +376,9 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         isRunning = Not isRunning
+        isTrialReady = True
+        stimulusActive = False
+        buttonPressed = False
 
         If isRunning Then
             StimGridReadyOverlay.Visibility = Visibility.Visible
@@ -376,8 +396,6 @@ Public Class MainWindow
         StimAWatch.Reset()
         StimBWatch.Reset()
         btnCount = 0
-        buttonPressed = False
-        isTrialReady = True
     End Sub
 
     ' -------------------------------------------------------
@@ -389,7 +407,6 @@ Public Class MainWindow
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "PhidgetData"
             )
-
             If Not IO.Directory.Exists(folder) Then IO.Directory.CreateDirectory(folder)
 
             Dim file As String = System.IO.Path.Combine(
