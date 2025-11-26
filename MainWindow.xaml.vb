@@ -75,6 +75,7 @@ Public Class MainWindow
         AddHandler cc.Attach, AddressOf OnAttachHandler
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
+        AddHandler Application.Current.Exit, AddressOf AutoSaveOnExit
 
         ' Open hardware
         cc.Open()
@@ -462,24 +463,31 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub AutoSaveOnExit()
         Try
+            ' Use Desktop\PhidgetData folder
             Dim folder As String = System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "PhidgetData"
         )
 
+            ' Ensure folder exists
             If Not IO.Directory.Exists(folder) Then
                 IO.Directory.CreateDirectory(folder)
             End If
 
-            Dim file As String = System.IO.Path.Combine(
-            folder,
-            $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv"
-        )
+            ' Clean up subject/stim names to be file-system safe
+            Dim safeSubject = String.Join("_", SubjectName.Text.Split(IO.Path.GetInvalidFileNameChars()))
+            Dim safeStimA = String.Join("_", StimAName.Text.Split(IO.Path.GetInvalidFileNameChars()))
+            Dim safeStimB = String.Join("_", StimBName.Text.Split(IO.Path.GetInvalidFileNameChars()))
 
-            IO.File.WriteAllText(file, TextBox1.Text)
+            ' Generate file path
+            Dim fileName As String = $"{safeSubject}_StimA-{safeStimA}_StimB-{safeStimB}_{DateTime.Now.ToFileTimeUtc}.csv"
+            Dim filePath As String = System.IO.Path.Combine(folder, fileName)
 
+            ' Write text content
+            IO.File.WriteAllText(filePath, TextBox1.Text)
         Catch ex As Exception
-            ' Silent fail – do not block app closure
+            ' Silent fail, but you can log if needed
+            Console.WriteLine($"Autosave failed: {ex.Message}")
         End Try
     End Sub
 
