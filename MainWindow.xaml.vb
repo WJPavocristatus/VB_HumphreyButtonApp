@@ -171,10 +171,16 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
         If Not isRunning Then
+            HideReadyIndicator()
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
             InitWatches()
+            Return
+        End If
+
+        If isRunning Then
+            ShowReadyIndicator()
             Return
         End If
 
