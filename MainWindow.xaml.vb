@@ -193,7 +193,20 @@ Public Class MainWindow
             animationPlayed = False
         End If
 
+        ' Update UI labels
         InitWatches()
+    End Sub
+
+    ' -------------------------------------------------------
+    ' Update UI watch labels
+    ' -------------------------------------------------------
+    Private Sub InitWatches()
+        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
+        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
+        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
+        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
+        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
+        MasterStopWatchVal.Content = $"{MasterStopWatch.ElapsedMilliseconds / 1000} secs"
     End Sub
 
     ' -------------------------------------------------------
@@ -344,4 +357,5 @@ Public Class MainWindow
         flc?.Close()
         MyBase.OnClosed(e)
     End Sub
+
 End Class
