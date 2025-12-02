@@ -402,6 +402,8 @@ Public Class MainWindow
 
         trialCount += 1
         btnCount = 0
+        MasterStopWatch.Reset()
+        MasterStopWatch.Stop()
         Latency.Reset()
         Latency.Stop()
         ActiveStimWatch.Reset()
@@ -448,13 +450,16 @@ Public Class MainWindow
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Violet
             ShowReadyIndicator()
+            MasterStopWatch.Start()
         Else
             isRunning = False
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Red
             HideReadyIndicator()
+            MasterStopWatch.Stop()
         End If
 
+       
         Latency.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
