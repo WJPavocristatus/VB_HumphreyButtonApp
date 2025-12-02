@@ -45,6 +45,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
+    Private MasterStopWatch As New Stopwatch()
 
 
     ' -------------------------------------------------------
@@ -278,7 +279,7 @@ Public Class MainWindow
         ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
+        LatencyVal.Content = $"{Latency.ElapsedMilliseconds / 1000} secs"
     End Sub
 
 
@@ -388,9 +389,11 @@ Public Class MainWindow
     End Function
 
     Private Sub ResetTrial()
+        MasterStopWatch.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
+        Latency.Stop()
         ResetGridVisuals()
 
         If Not isLockout Then
@@ -408,6 +411,7 @@ Public Class MainWindow
 
     Private Sub RecordData()
         TextBox1.Text &= $"{SubjectName.Text}, " &
+            $"Master Clock: {MasterStopWatch.ElapsedMilliseconds /1000} secs, "  &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
@@ -417,6 +421,12 @@ Public Class MainWindow
             $"Total Button Up time: {Latency.ElapsedMilliseconds} ms" &
             Environment.NewLine
         TextBox1.ScrollToEnd()
+    End Sub
+
+    Private Sub RecordTrial()
+        'TextBox2.Text &= $"{SubjectName.Text}, " &
+        '$Master Clock: {MasterStopWatch.ElapsedMilliseconds /1000} secs, "  &
+            
     End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
