@@ -119,6 +119,7 @@ Public Class MainWindow
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
+                                  Latency.Stop()
                                   Return
                               End If
 
@@ -427,8 +428,8 @@ Public Class MainWindow
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Up time: {Latency.ElapsedMilliseconds / 1000} secs" &
-            Environment.NewLine
+            $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
+        Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
 
@@ -439,7 +440,11 @@ Public Class MainWindow
             $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
             $"Target Hold Time: {TargetTime}, " &
             $"Stim A Presses: {aPressCt},  " &
+            $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Stim B Presses: {bPressCt}" &
+            $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+            $"Time Err ([Up + Down] - Master): {((StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) - MasterWatch.ElapsedMilliseconds) / 1000} secs, " &
+            $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
         Environment.NewLine
         TrialDataBox.ScrollToEnd()
     End Sub
