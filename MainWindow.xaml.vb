@@ -1,11 +1,7 @@
 ﻿Imports Phidget22
 Imports Phidget22.Events
 Imports System.Threading
-Imports System.Threading.Tasks
 Imports System.Windows.Threading
-Imports System.Diagnostics
-Imports System.Windows.Media
-Imports System.Windows.Media.Imaging
 Imports System.Media
 
 
@@ -37,6 +33,7 @@ Public Class MainWindow
     Private isRunning As Boolean = False ' Pre-start flag
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
+    Private trialReady As Boolean = False
 
     'Public StimAName As String
     'Public StimBName As String
@@ -113,6 +110,8 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
+
+                              If Not trialReady Then Return
 
                               ' Pre-start or lockout: ignore presses
                               If isLockout OrElse Not isRunning Then
@@ -324,6 +323,7 @@ Public Class MainWindow
     ' READY overlay helpers
     ' -------------------------------------------------------
     Private Sub ShowReadyIndicator()
+        If Not trialReady Then Return
         StimGridReadyOverlay.Source = New BitmapImage(New Uri("Assets/playbtn.png", UriKind.Relative))
         StimGridReadyOverlay.Visibility = Visibility.Visible
         MasterWatch.Start()
@@ -338,6 +338,7 @@ Public Class MainWindow
     ' Lockout sequence
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
+        trialReady = False
         ResetGridVisuals()
         RecordData()
         RecordTrial()
@@ -365,6 +366,8 @@ Public Class MainWindow
         Latency.Reset()
         Latency.Stop()
         ResetTrial()
+        trialReady = True
+
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
@@ -472,6 +475,7 @@ Public Class MainWindow
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+        trialReady = True
         RecordData()
         RecordTrial()
         If Not isRunning Then
