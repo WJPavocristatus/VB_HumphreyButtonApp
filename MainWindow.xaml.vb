@@ -395,10 +395,11 @@ Public Class MainWindow
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
+        RecordTrial()
 
-        If Not isLockout Then
-            RecordData()
-        End If
+        'If Not isLockout Then
+        RecordData()
+        'End If
 
         trialCount += 1
         btnCount = 0
@@ -424,6 +425,16 @@ Public Class MainWindow
         TextBox1.ScrollToEnd()
     End Sub
 
+    Private Sub RecordTrial()
+        TrialDataBox.Text &= $"{SubjectName.Text}, " &
+            $"Trial: {trialCount}, " &
+            $"Button Presses: {btnCount}, " &
+            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
+            $"Target Hold Time: {TargetTime}" &
+            Environment.NewLine
+        TrialDataBox.ScrollToEnd()
+    End Sub
+
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
             .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
@@ -434,11 +445,22 @@ Public Class MainWindow
         End If
     End Sub
 
+    Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
+        Dim save As New Microsoft.Win32.SaveFileDialog With {
+            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv",
+            .DefaultExt = ".csv"
+        }
+        If save.ShowDialog() Then
+            IO.File.WriteAllText(save.FileName, TrialDataBox.Text)
+        End If
+    End Sub
+
     ' -------------------------------------------------------
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         RecordData()
+        RecordTrial()
         If Not isRunning Then
             isRunning = True
             StBtn.Content = "Stop"
