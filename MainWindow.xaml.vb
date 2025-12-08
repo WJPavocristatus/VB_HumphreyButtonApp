@@ -195,6 +195,10 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
+        If Not trialReady Then
+            HideReadyIndicator()
+        End If
+
         ' Pre-start: behave like lockout but no outputs
         If Not isRunning Then
             ActiveStimWatch.Stop()
