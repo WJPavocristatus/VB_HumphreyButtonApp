@@ -334,7 +334,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
         ResetGridVisuals()
-
+        RecordData()
         Try
             bc.Close()
         Catch
@@ -419,7 +419,7 @@ Public Class MainWindow
             $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Up time: {Latency.ElapsedMilliseconds} ms" &
+            $"Total Button Up time: {Latency.ElapsedMilliseconds / 1000} secs" &
             Environment.NewLine
         TextBox1.ScrollToEnd()
     End Sub
