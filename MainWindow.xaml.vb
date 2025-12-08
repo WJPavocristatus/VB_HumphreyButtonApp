@@ -35,6 +35,8 @@ Public Class MainWindow
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
+    Private aPressCt As Integer = 0
+    Private bPressCt As Integer = 0
 
     'Public StimAName As String
     'Public StimBName As String
@@ -240,7 +242,7 @@ Public Class MainWindow
                 StimBWatch.Stop()
                 animationPlayed = True
                 Await LockOut()
-                ResetTrial()
+
                 isLockout = False
                 animationPlayed = False
                 ' Show ready overlay again after LockOut
@@ -293,11 +295,13 @@ Public Class MainWindow
         ActiveStimWatch.Start()
         If even Then
             StimAWatch.Start()
+            aPressCt += 1
             StimGrid.Background = Brushes.Gray
             StimSpy.Background = Brushes.Gray
             ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
         Else
             StimBWatch.Start()
+            bPressCt += 1
             StimGrid.Background = Brushes.LightGray
             StimSpy.Background = Brushes.LightGray
             ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
@@ -335,6 +339,7 @@ Public Class MainWindow
     Public Async Function LockOut() As Task
         ResetGridVisuals()
         RecordData()
+        RecordTrial()
         Try
             bc.Close()
         Catch
@@ -358,6 +363,7 @@ Public Class MainWindow
         'llc.State = False
         Latency.Reset()
         Latency.Stop()
+        ResetTrial()
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
@@ -395,16 +401,17 @@ Public Class MainWindow
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
-        RecordTrial()
 
-        'If Not isLockout Then
-        RecordData()
-        'End If
+
+        If Not isLockout Then
+            RecordData()
+        End If
 
         trialCount += 1
         btnCount = 0
-        Latency.Reset()
-        Latency.Stop()
+        aPressCt = 0
+        bPressCt = 0
+
         MasterWatch.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
@@ -430,8 +437,10 @@ Public Class MainWindow
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
-            $"Target Hold Time: {TargetTime}" &
-            Environment.NewLine
+            $"Target Hold Time: {TargetTime}, " &
+            $"Stim A Presses: {aPressCt},  " &
+            $"Stim B Presses: {bPressCt}" &
+        Environment.NewLine
         TrialDataBox.ScrollToEnd()
     End Sub
 
