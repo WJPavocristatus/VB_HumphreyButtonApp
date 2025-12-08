@@ -195,6 +195,8 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
+
+
         If Not trialReady Then
             HideReadyIndicator()
         End If
@@ -500,6 +502,11 @@ Public Class MainWindow
         StimBWatch.Reset()
         btnCount = 0
     End Sub
+
+    ' -------------------------------------------------------
+    ' disconnect exception handling
+    ' -------------------------------------------------------
+
 
     ' -------------------------------------------------------
     ' Clean Shutdown
