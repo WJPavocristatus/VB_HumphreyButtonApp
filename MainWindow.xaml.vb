@@ -21,7 +21,7 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    Private llc As New DigitalOutput() ' Lockout LED
+    'Private llc As New DigitalOutput() ' Lockout LED
 
     ' -----------------------------
     ' Timer & State Variables
@@ -45,7 +45,7 @@ Public Class MainWindow
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch()
-
+    Private MasterWatch As New Stopwatch()
 
     ' -------------------------------------------------------
     ' Constructor
@@ -58,13 +58,13 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705599
         fc.DeviceSerialNumber = 705599
         flc.DeviceSerialNumber = 705599
-        llc.DeviceSerialNumber = 705599
+        'llc.DeviceSerialNumber = 705599
 
         bc.Channel = 1
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        llc.Channel = 8
+        'llc.Channel = 8
 
         ' Events
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -78,7 +78,7 @@ Public Class MainWindow
         bc.Open()
         fc.Open()
         flc.Open()
-        llc.Open()
+        'llc.Open()
 
         ' Timer
         timer.Start()
@@ -198,6 +198,7 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
+            Latency.Stop()
             InitWatches()
             Return
         End If
@@ -278,7 +279,7 @@ Public Class MainWindow
         ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
         StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
         StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-        LatencyVal.Content = $"{Latency.ElapsedMilliseconds} msec"
+        LatencyVal.Content = $"{Latency.ElapsedMilliseconds / 1000} secs"
     End Sub
 
 
@@ -320,6 +321,7 @@ Public Class MainWindow
     Private Sub ShowReadyIndicator()
         StimGridReadyOverlay.Source = New BitmapImage(New Uri("Assets/playbtn.png", UriKind.Relative))
         StimGridReadyOverlay.Visibility = Visibility.Visible
+        MasterWatch.Start()
     End Sub
 
     Private Sub HideReadyIndicator()
@@ -353,7 +355,7 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        llc.State = False
+        'llc.State = False
         Latency.Reset()
         Latency.Stop()
     End Function
@@ -361,10 +363,10 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            llc.State = True
+            'llc.State = True
             Await Task.Delay(150)
             flc.State = False
-            llc.State = False
+            'llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -388,6 +390,7 @@ Public Class MainWindow
     End Function
 
     Private Sub ResetTrial()
+        MasterWatch.Stop()
         ActiveStimWatch.Stop()
         StimAWatch.Stop()
         StimBWatch.Stop()
@@ -401,6 +404,7 @@ Public Class MainWindow
         btnCount = 0
         Latency.Reset()
         Latency.Stop()
+        MasterWatch.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
@@ -408,6 +412,7 @@ Public Class MainWindow
 
     Private Sub RecordData()
         TextBox1.Text &= $"{SubjectName.Text}, " &
+            $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
@@ -460,7 +465,7 @@ Public Class MainWindow
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        llc?.Close()
+        'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
 
