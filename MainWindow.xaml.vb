@@ -1,12 +1,8 @@
-﻿Imports Phidget22
-Imports Phidget22.Events
+﻿Imports System.Media
 Imports System.Threading
-Imports System.Threading.Tasks
 Imports System.Windows.Threading
-Imports System.Diagnostics
-Imports System.Windows.Media
-Imports System.Windows.Media.Imaging
-Imports System.Media
+Imports Phidget22
+Imports Phidget22.Events
 
 
 ''' <summary>
