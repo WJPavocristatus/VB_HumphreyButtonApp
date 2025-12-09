@@ -17,7 +17,6 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    'Private llc As New DigitalOutput() ' Lockout LED
 
     ' -----------------------------
     ' Timer & State Variables
@@ -610,7 +609,6 @@ Public Class MainWindow
                               Catch ex As Exception
                                   Console.WriteLine($"Error saving on disconnect helper: {ex.Message}")
                               End Try
-                              ShowDisconnectOverlay()
                               Console.WriteLine($"Handled disconnect save: {reason}")
                           End Sub)
     End Sub
