@@ -35,6 +35,8 @@ Public Class MainWindow
     Private bPressCt As Integer = 0
     Private trialReady As Boolean = False
 
+    Private sessionStartTimeStamp As DateTime
+
     ' One-shot guard to prevent multiple saves on multi-channel disconnect
     Private hasSavedOnDisconnect As Boolean = False
 
@@ -120,32 +122,6 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
-    End Sub
-
-    ' -------------------------------------------------------
-    ' Start button
-    ' -------------------------------------------------------
-    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        trialReady = True
-        RecordData()
-        RecordTrial()
-        If Not isRunning Then
-            isRunning = True
-            StBtn.Content = "Stop"
-            StBtn.Background = Brushes.Violet
-            ShowReadyIndicator()
-        Else
-            isRunning = False
-            StBtn.Content = "Start"
-            StBtn.Background = Brushes.Red
-            HideReadyIndicator()
-        End If
-
-        Latency.Reset()
-        ActiveStimWatch.Reset()
-        StimAWatch.Reset()
-        StimBWatch.Reset()
-        btnCount = 0
     End Sub
 
 
@@ -388,9 +364,9 @@ Public Class MainWindow
     Private Sub SetGridColor(count As Integer)
         If isLockout OrElse Not isRunning Then Return
 
-        Dim even As Boolean = (count Mod 2 = 0)
+
         ActiveStimWatch.Start()
-        If even Then
+        If count Mod 2 = 0 Then
             StimAWatch.Start()
             aPressCt += 1
             StimGrid.Background = Brushes.Gray
@@ -521,7 +497,8 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        TextBox1.Text &= $"{SubjectName.Text}, " &
+        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToUniversalTime()} UTC, " &
+            $"{SubjectName.Text}, " &
             $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
@@ -535,7 +512,8 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        TrialDataBox.Text &= $"{SubjectName.Text}, " &
+        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToUniversalTime()} UTC, " &
+            $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
@@ -548,6 +526,36 @@ Public Class MainWindow
         Environment.NewLine
         TrialDataBox.ScrollToEnd()
     End Sub
+
+
+
+    ' -------------------------------------------------------
+    ' Start button
+    ' -------------------------------------------------------
+    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+        sessionStartTimeStamp = DateTime.UtcNow()
+        trialReady = True
+        RecordData()
+        RecordTrial()
+        If Not isRunning Then
+            isRunning = True
+            StBtn.Content = "Stop"
+            StBtn.Background = Brushes.Violet
+            ShowReadyIndicator()
+        Else
+            isRunning = False
+            StBtn.Content = "Start"
+            StBtn.Background = Brushes.Red
+            HideReadyIndicator()
+        End If
+
+        Latency.Reset()
+        ActiveStimWatch.Reset()
+        StimAWatch.Reset()
+        StimBWatch.Reset()
+        btnCount = 0
+    End Sub
+
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
