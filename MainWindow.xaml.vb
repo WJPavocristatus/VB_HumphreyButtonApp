@@ -497,7 +497,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToUniversalTime()} UTC, " &
+        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
             $"{SubjectName.Text}, " &
             $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Trial: {trialCount}, " &
@@ -512,7 +512,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToUniversalTime()} UTC, " &
+        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
             $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
@@ -533,7 +533,7 @@ Public Class MainWindow
     ' Start button
     ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        sessionStartTimeStamp = DateTime.UtcNow()
+        sessionStartTimeStamp = DateTime.Now()
         trialReady = True
         RecordData()
         RecordTrial()
@@ -559,7 +559,7 @@ Public Class MainWindow
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
+            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToLocalTime}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -570,7 +570,7 @@ Public Class MainWindow
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv",
+            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToLocalTime}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
