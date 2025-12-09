@@ -26,6 +26,7 @@ Public Class MainWindow
 
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
+    Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
     Private isLockout As Boolean = False
@@ -38,8 +39,8 @@ Public Class MainWindow
     ' One-shot guard to prevent multiple saves on multi-channel disconnect
     Private hasSavedOnDisconnect As Boolean = False
 
-    'Public StimAName As String
-    'Public StimBName As String
+    Private manualSave As Boolean = False
+    Private manualTrialSave As Boolean = False
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -60,13 +61,11 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705599
         fc.DeviceSerialNumber = 705599
         flc.DeviceSerialNumber = 705599
-        'llc.DeviceSerialNumber = 705599
 
         bc.Channel = 1
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        'llc.Channel = 8
 
         ' Events - Attach / Detach / Error
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -93,7 +92,6 @@ Public Class MainWindow
             bc.Open()
             fc.Open()
             flc.Open()
-            'llc.Open()
         Catch ex As Exception
             Console.WriteLine($"Error opening channels: {ex.Message}")
             ' If open fails, ensure we save what we have
@@ -258,7 +256,6 @@ Public Class MainWindow
                                   Console.WriteLine($"Error saving on detach: {ex.Message}")
                               End Try
 
-                              ShowDisconnectOverlay()
                           End Sub)
     End Sub
 
@@ -282,7 +279,6 @@ Public Class MainWindow
                                   Console.WriteLine($"Error saving on phidget error: {ex.Message}")
                               End Try
 
-                              ShowDisconnectOverlay()
                           End Sub)
     End Sub
 
@@ -309,8 +305,8 @@ Public Class MainWindow
 
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
-        ' Auto stop at 10 sec
-        If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
+        ' Auto stop at HoldLimit sec
+        If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
             rumbleCts?.Cancel()
             cc.State = False
             ActiveStimWatch.Stop()
@@ -475,10 +471,8 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            'llc.State = True
             Await Task.Delay(150)
             flc.State = False
-            'llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -564,6 +558,7 @@ Public Class MainWindow
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TextBox1.Text)
         End If
+        manualSave = True
     End Sub
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
@@ -574,6 +569,7 @@ Public Class MainWindow
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TrialDataBox.Text)
         End If
+        manualTrialSave = True
     End Sub
 
     ' -----------------------------
@@ -581,7 +577,7 @@ Public Class MainWindow
     ' -----------------------------
     Private Sub SaveDataAuto()
         Try
-            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PhidgetData")
+            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TextBox1.Text)
@@ -593,7 +589,7 @@ Public Class MainWindow
 
     Private Sub SaveTrialDataAuto()
         Try
-            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PhidgetData")
+            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TrialDataBox.Text)
@@ -603,24 +599,10 @@ Public Class MainWindow
         End Try
     End Sub
 
-    Private Sub ShowDisconnectOverlay()
-        Try
-            ' Non-blocking visual feedback for operator (optional asset)
-            StimGridOverlay.Visibility = Visibility.Visible
-            Try
-                StimGridOverlay.Source = New BitmapImage(New Uri("Assets/disconnected.png", UriKind.Relative))
-            Catch
-                ' If no image, leave overlay visible but blacked out
-                StimGridOverlay.Source = Nothing
-            End Try
-        Catch
-        End Try
-    End Sub
-
     Private Sub HandleDisconnectSave(reason As String)
         ' Helper to call autosave and show overlay from non-UI threads
         Dispatcher.Invoke(Sub()
-                              If hasSavedOnDisconnect Then Return
+                              If hasSavedOnDisconnect Or manualSave Or manualTrialSave Then Return
                               hasSavedOnDisconnect = True
                               Try
                                   SaveDataAuto()
