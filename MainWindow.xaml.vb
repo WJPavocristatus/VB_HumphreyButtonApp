@@ -3,7 +3,7 @@ Imports Phidget22.Events
 Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
-
+Imports System.IO
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
@@ -17,7 +17,6 @@ Public Class MainWindow
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-    'Private llc As New DigitalOutput() ' Lockout LED
 
     ' -----------------------------
     ' Timer & State Variables
@@ -26,6 +25,7 @@ Public Class MainWindow
 
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
+    Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
     Private isLockout As Boolean = False
@@ -35,8 +35,11 @@ Public Class MainWindow
     Private bPressCt As Integer = 0
     Private trialReady As Boolean = False
 
-    'Public StimAName As String
-    'Public StimBName As String
+    ' One-shot guard to prevent multiple saves on multi-channel disconnect
+    Private hasSavedOnDisconnect As Boolean = False
+
+    Private manualSave As Boolean = False
+    Private manualTrialSave As Boolean = False
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -57,27 +60,42 @@ Public Class MainWindow
         cc.DeviceSerialNumber = 705599
         fc.DeviceSerialNumber = 705599
         flc.DeviceSerialNumber = 705599
-        'llc.DeviceSerialNumber = 705599
 
         bc.Channel = 1
         cc.Channel = 6
         fc.Channel = 7
         flc.Channel = 9
-        'llc.Channel = 8
 
-        ' Events
+        ' Events - Attach / Detach / Error
         AddHandler bc.Attach, AddressOf OnAttachHandler
-        AddHandler fc.Attach, AddressOf OnAttachHandler
         AddHandler cc.Attach, AddressOf OnAttachHandler
+        AddHandler fc.Attach, AddressOf OnAttachHandler
+        AddHandler flc.Attach, AddressOf OnAttachHandler
+
+        AddHandler bc.Detach, AddressOf OnDetachHandler
+        AddHandler cc.Detach, AddressOf OnDetachHandler
+        AddHandler fc.Detach, AddressOf OnDetachHandler
+        AddHandler flc.Detach, AddressOf OnDetachHandler
+
+        AddHandler bc.Error, AddressOf OnErrorHandler
+        AddHandler cc.Error, AddressOf OnErrorHandler
+        AddHandler fc.Error, AddressOf OnErrorHandler
+        AddHandler flc.Error, AddressOf OnErrorHandler
+
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
         ' Open hardware
-        cc.Open()
-        bc.Open()
-        fc.Open()
-        flc.Open()
-        'llc.Open()
+        Try
+            cc.Open()
+            bc.Open()
+            fc.Open()
+            flc.Open()
+        Catch ex As Exception
+            Console.WriteLine($"Error opening channels: {ex.Message}")
+            ' If open fails, ensure we save what we have
+            HandleDisconnectSave("Error opening channels: " & ex.Message)
+        End Try
 
         ' Timer
         timer.Start()
@@ -102,6 +120,32 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
+    End Sub
+
+    ' -------------------------------------------------------
+    ' Start button
+    ' -------------------------------------------------------
+    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+        trialReady = True
+        RecordData()
+        RecordTrial()
+        If Not isRunning Then
+            isRunning = True
+            StBtn.Content = "Stop"
+            StBtn.Background = Brushes.Violet
+            ShowReadyIndicator()
+        Else
+            isRunning = False
+            StBtn.Content = "Start"
+            StBtn.Background = Brushes.Red
+            HideReadyIndicator()
+        End If
+
+        Latency.Reset()
+        ActiveStimWatch.Reset()
+        StimAWatch.Reset()
+        StimBWatch.Reset()
+        btnCount = 0
     End Sub
 
 
@@ -190,6 +234,53 @@ Public Class MainWindow
                           End Sub)
     End Sub
 
+    ' -------------------------------------------------------
+    ' Phidget Detach (disconnect) handler
+    ' -------------------------------------------------------
+    Private Sub OnDetachHandler(sender As Object, e As DetachEventArgs)
+        Dispatcher.Invoke(Sub()
+                              Console.WriteLine($"Phidget detached: {sender}")
+
+                              ' Save only once even if multiple channels detach
+                              If hasSavedOnDisconnect Then
+                                  Return
+                              End If
+                              hasSavedOnDisconnect = True
+
+                              Try
+                                  ' perform non-interactive autosave of both logs
+                                  SaveDataAuto()
+                                  SaveTrialDataAuto()
+                              Catch ex As Exception
+                                  Console.WriteLine($"Error saving on detach: {ex.Message}")
+                              End Try
+
+                          End Sub)
+    End Sub
+
+    ' -------------------------------------------------------
+    ' Phidget Error handler (device-level errors)
+    ' -------------------------------------------------------
+    Private Sub OnErrorHandler(sender As Object, e As Events.ErrorEventArgs)
+        Dispatcher.Invoke(Sub()
+                              Console.WriteLine($"Phidget error on {sender}: {e.Description}")
+
+                              ' Save only once on first error that we treat as critical
+                              If hasSavedOnDisconnect Then
+                                  Return
+                              End If
+                              hasSavedOnDisconnect = True
+
+                              Try
+                                  SaveDataAuto()
+                                  SaveTrialDataAuto()
+                              Catch ex As Exception
+                                  Console.WriteLine($"Error saving on phidget error: {ex.Message}")
+                              End Try
+
+                          End Sub)
+    End Sub
+
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
@@ -213,8 +304,8 @@ Public Class MainWindow
 
         TargetTime = CInt(TargetTimeInput.Value) * 1000
 
-        ' Auto stop at 10 sec
-        If ActiveStimWatch.ElapsedMilliseconds >= 10000 Then
+        ' Auto stop at HoldLimit sec
+        If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
             rumbleCts?.Cancel()
             cc.State = False
             ActiveStimWatch.Stop()
@@ -379,10 +470,8 @@ Public Class MainWindow
     Private Async Function PlayLockoutLEDSequence() As Task
         For i = 1 To 5
             flc.State = True
-            'llc.State = True
             Await Task.Delay(150)
             flc.State = False
-            'llc.State = False
             Await Task.Delay(150)
         Next
     End Function
@@ -405,6 +494,9 @@ Public Class MainWindow
         End Try
     End Function
 
+    ' -------------------------------------------------------
+    ' Reset Trial
+    ' -------------------------------------------------------
     Private Sub ResetTrial()
         MasterWatch.Stop()
         ActiveStimWatch.Stop()
@@ -465,6 +557,7 @@ Public Class MainWindow
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TextBox1.Text)
         End If
+        manualSave = True
     End Sub
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
@@ -475,43 +568,62 @@ Public Class MainWindow
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, TrialDataBox.Text)
         End If
+        manualTrialSave = True
     End Sub
 
-    ' -------------------------------------------------------
-    ' Start button
-    ' -------------------------------------------------------
-    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
-        trialReady = True
-        RecordData()
-        RecordTrial()
-        If Not isRunning Then
-            isRunning = True
-            StBtn.Content = "Stop"
-            StBtn.Background = Brushes.Violet
-            ShowReadyIndicator()
-        Else
-            isRunning = False
-            StBtn.Content = "Start"
-            StBtn.Background = Brushes.Red
-            HideReadyIndicator()
-        End If
-
-        Latency.Reset()
-        ActiveStimWatch.Reset()
-        StimAWatch.Reset()
-        StimBWatch.Reset()
-        btnCount = 0
+    ' -----------------------------
+    ' Non-interactive autosave helpers
+    ' -----------------------------
+    Private Sub SaveDataAuto()
+        Try
+            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
+            If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
+            Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv")
+            IO.File.WriteAllText(file, TextBox1.Text)
+            Console.WriteLine($"Autosaved data to {file}")
+        Catch ex As Exception
+            Console.WriteLine($"Error autosaving data: {ex.Message}")
+        End Try
     End Sub
 
-    ' -------------------------------------------------------
-    ' disconnect exception handling
-    ' -------------------------------------------------------
+    Private Sub SaveTrialDataAuto()
+        Try
+            Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
+            If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
+            Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv")
+            IO.File.WriteAllText(file, TrialDataBox.Text)
+            Console.WriteLine($"Autosaved trial data to {file}")
+        Catch ex As Exception
+            Console.WriteLine($"Error autosaving trial data: {ex.Message}")
+        End Try
+    End Sub
 
+    Private Sub HandleDisconnectSave(reason As String)
+        ' Helper to call autosave and show overlay from non-UI threads
+        Dispatcher.Invoke(Sub()
+                              If hasSavedOnDisconnect Or manualSave Or manualTrialSave Then Return
+                              hasSavedOnDisconnect = True
+                              Try
+                                  SaveDataAuto()
+                                  SaveTrialDataAuto()
+                              Catch ex As Exception
+                                  Console.WriteLine($"Error saving on disconnect helper: {ex.Message}")
+                              End Try
+                              Console.WriteLine($"Handled disconnect save: {reason}")
+                          End Sub)
+    End Sub
 
     ' -------------------------------------------------------
     ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
+        ' Ensure we try to save on normal shutdown as well
+        Try
+            SaveDataAuto()
+            SaveTrialDataAuto()
+        Catch
+        End Try
+
         bc?.Close()
         cc?.Close()
         fc?.Close()
