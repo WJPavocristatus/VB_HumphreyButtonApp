@@ -152,12 +152,12 @@ Public Class MainWindow
                                   Latency.Stop()
                                   ActivateOut(cc, 35)
 
-                                  If ActiveStimWatch.ElapsedMilliseconds < 10000 Then
+                                  If ActiveStimWatch.ElapsedMilliseconds < 5000 Then
                                       btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                   Else
-                                      ' Over 10sec -> reset visual and stim
+                                      ' Over 5sec -> reset visual and stim
                                       ActiveStimWatch.Reset()
                                       StimAWatch.Reset()
                                       StimBWatch.Reset()
