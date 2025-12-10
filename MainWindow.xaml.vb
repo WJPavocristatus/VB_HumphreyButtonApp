@@ -504,7 +504,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
+        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTime()}, " &
             $"{SubjectName.Text}, " &
             $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Trial: {trialCount}, " &
@@ -519,7 +519,7 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
+        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTime()}, " &
             $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
