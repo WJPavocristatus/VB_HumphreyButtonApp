@@ -78,14 +78,19 @@
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 <Label  Content="Subject" FontSize="14"/>
-                <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" >
-                    <ComboBoxItem Content="Test"></ComboBoxItem>
+                <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" KeyboardNavigation.DirectionalNavigation="Cycle">
                     <ComboBoxItem Content="Arthur"></ComboBoxItem>
                     <ComboBoxItem Content="Ben"></ComboBoxItem>
+                    <ComboBoxItem Content="Billy"></ComboBoxItem>
                     <ComboBoxItem Content="Rita"></ComboBoxItem>
                     <ComboBoxItem Content="Rowena"></ComboBoxItem>
                     <ComboBoxItem Content="Sue"></ComboBoxItem>
+                    <ComboBoxItem Content="Liza"></ComboBoxItem>
                     <ComboBoxItem Content="Evelyne"></ComboBoxItem>
+                    <ComboBoxItem Content="Test" ></ComboBoxItem>
+                    <!-- <ComboBoxItem Content="Lela"></ComboBoxItem>
+                    <ComboBoxItem Content="Drew"></ComboBoxItem>
+                    <ComboBoxItem Content="Chubbs"></ComboBoxItem> -->
                     <ComboBox.Resources>
                         <Style TargetType="TextBox">
                             <Setter Property="Focusable" Value="False"/>
