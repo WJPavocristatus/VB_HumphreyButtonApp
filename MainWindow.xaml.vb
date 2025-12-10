@@ -13,10 +13,10 @@ Public Class MainWindow
     ' -----------------------------
     ' Phidget Channels
     ' -----------------------------
-    Private bc As New DigitalInput()   ' Button Channel
-    Private cc As New DigitalOutput()  ' Clicker (rumble)
-    Private fc As New DigitalOutput()  ' Feeder Channel
-    Private flc As New DigitalOutput() ' Feeder LED
+    Public WithEvents bc As New DigitalInput()   ' Button Channel
+    Public WithEvents cc As New DigitalOutput()  ' Clicker (rumble)
+    Public WithEvents fc As New DigitalOutput()  ' Feeder Channel
+    Public WithEvents flc As New DigitalOutput() ' Feeder LED
 
     ' -----------------------------
     ' Timer & State Variables
@@ -63,10 +63,15 @@ Public Class MainWindow
         fc.DeviceSerialNumber = 705599
         flc.DeviceSerialNumber = 705599
 
-        bc.Channel = 1
-        cc.Channel = 6
-        fc.Channel = 7
+        bc.Channel = 8
+        cc.Channel = 14
+        fc.Channel = 15
         flc.Channel = 9
+
+        bc.IsLocal = True
+        cc.IsLocal = True
+        fc.IsLocal = True
+        flc.IsLocal = True
 
         ' Events - Attach / Detach / Error
         AddHandler bc.Attach, AddressOf OnAttachHandler
@@ -94,6 +99,7 @@ Public Class MainWindow
             fc.Open()
             flc.Open()
         Catch ex As Exception
+            MsgBox($"Error opening channels: {ex.Message}")
             Console.WriteLine($"Error opening channels: {ex.Message}")
             ' If open fails, ensure we save what we have
             HandleDisconnectSave("Error opening channels: " & ex.Message)
@@ -262,14 +268,15 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-
-
+        If Not bc.Attached Then
+            MsgBox("Check connections!")
+        End If
         If Not trialReady Then
             HideReadyIndicator()
         End If
 
-        ' Pre-start: behave like lockout but no outputs
-        If Not isRunning Then
+            ' Pre-start: behave like lockout but no outputs
+            If Not isRunning Then
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
