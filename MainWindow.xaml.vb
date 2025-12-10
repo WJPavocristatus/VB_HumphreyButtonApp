@@ -140,9 +140,7 @@ Public Class MainWindow
                                   StimBWatch.Stop()
                                   Latency.Stop()
                                   Return
-                              End If
-
-                              If e.State = True Then
+                              ElseIf e.State = True Then
                                   ' Button pressed → hide ready overlay
                                   If isRunning AndAlso Not isLockout Then
                                       HideReadyIndicator()
