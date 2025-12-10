@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
             <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
-            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="446">
+            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="820,164,0,0" Width="314" Height="446">
                 <Label Content="STATS" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
                 <Grid Height="294">
                     <Grid.ColumnDefinitions>
@@ -107,6 +107,12 @@
                 </Grid.ColumnDefinitions>
                 <Label Content="Target Time (seconds)" FontSize="14"/>
                 <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
+                <!-- <Label Content="Target Time (seconds)" FontSize="14"/>
+                <ComboBox x:Name="TTInput"  Height="32" Margin="267,371,1234,0" VerticalAlignment="Top" />
+                <ComboBoxItem Content="Train 3sec"></ComboBoxItem>
+                <ComboBoxItem Content="Train 10sec"></ComboBoxItem>
+                <ComboBoxItem Content="Test 10sec"></ComboBoxItem>
+                <ComboBoxItem Content="Test 20sec"></ComboBoxItem> -->
             </Grid>
 
             <Button x:Name="StBtn" Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"/>
