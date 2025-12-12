@@ -617,7 +617,7 @@ Public Class MainWindow
     Private Sub HandleDisconnectSave(reason As String)
         ' Helper to call autosave and show overlay from non-UI threads
         Dispatcher.Invoke(Sub()
-                              If hasSavedOnDisconnect Or manualSave Or manualTrialSave Then Return
+                              If hasSavedOnDisconnect Or manualSave AndAlso manualTrialSave Then Return
                               hasSavedOnDisconnect = True
                               Try
                                   SaveDataAuto()
