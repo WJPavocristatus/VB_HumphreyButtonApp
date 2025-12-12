@@ -18,138 +18,133 @@
         <!-- Grid defining both screens/views as Columns -->
         <Grid Name="ScreenSplitter" Background="DarkCyan" RenderTransformOrigin="0.500,0.500">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Name="ResearcherView" Width="1920"/>
-                <ColumnDefinition Name="SubjectView" Width="1024"/>
+                <ColumnDefinition Name="ResearcherView" Width="*"/>
+                <ColumnDefinition Name="SubjectView" Width="*"/>
             </Grid.ColumnDefinitions>
             <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
-            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="820,164,0,0" Width="314" Height="446">
-                <Label Content="STATS" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
-                <Grid Height="294">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Name="TimeLabels" Width="172"/>
-                        <ColumnDefinition Name="TimeVals" Width="140"/>
-                    </Grid.ColumnDefinitions>
-                    <ListBox Width="172" HorizontalAlignment="Center" Margin="0,0,0,36">
-                        <ListBoxItem Height="48">
-                            <Label Content="Cumulative Btn Hold:" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label Content="Current Hold Time:" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label Content="Stim A Hold Time:" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label Content="Stim B Hold Time:" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label Content="Cumulative Button Up:" Foreground="Black"/>
-                        </ListBoxItem>
-                    </ListBox>
-                    <ListBox Grid.Column="1" Margin="5,0,0,36">
-                        <ListBoxItem Height="48">
-                            <Label x:Name="PressWatchVal" Content="" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label x:Name="ActiveStimVal" Content="" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label x:Name="StimAWatchVal" Content="" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label x:Name="StimBWatchVal" Content="" Foreground="Black"/>
-                        </ListBoxItem>
-                        <ListBoxItem Height="48">
-                            <Label x:Name="LatencyVal" Content="" Foreground="Black"/>
-                        </ListBoxItem>
-                    </ListBox>
-                </Grid>
-                <Label Content="StimA Name" FontSize="12" Foreground="Black"/>
-                <TextBox x:Name="StimAName" Text="" Foreground="Black"></TextBox>
-                <Label Content="StimB Name" FontSize="12" Foreground="Black"/>
-                <TextBox x:Name="StimBName" Foreground="Black"/>
-            </StackPanel>
+            <Grid Grid.Column="0">
 
-            <!-- Research Subject Combo Box -->
-            <Grid Name="SubjectSelect" Margin="99,192,1234,766">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="200" />
-                </Grid.ColumnDefinitions>
-                <Label  Content="Subject" FontSize="14"/>
-                <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" KeyboardNavigation.DirectionalNavigation="Cycle">
-                    <ComboBoxItem Content="Arthur"></ComboBoxItem>
-                    <ComboBoxItem Content="Ben"></ComboBoxItem>
-                    <ComboBoxItem Content="Billy"></ComboBoxItem>
-                    <ComboBoxItem Content="Rita"></ComboBoxItem>
-                    <ComboBoxItem Content="Rowena"></ComboBoxItem>
-                    <ComboBoxItem Content="Sue"></ComboBoxItem>
-                    <ComboBoxItem Content="Liza"></ComboBoxItem>
-                    <ComboBoxItem Content="Evelyne"></ComboBoxItem>
-                    <ComboBoxItem Content="Test" ></ComboBoxItem>
-                    <!-- <ComboBoxItem Content="Lela"></ComboBoxItem>
+
+                <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="820,164,0,0" Width="314" Height="446">
+                    <Label Content="STATS" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
+                    <Grid Height="294">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Name="TimeLabels" Width="172"/>
+                            <ColumnDefinition Name="TimeVals" Width="140"/>
+                        </Grid.ColumnDefinitions>
+                        <ListBox Width="172" HorizontalAlignment="Center" Margin="0,0,0,36">
+                            <ListBoxItem Height="48">
+                                <Label Content="Cumulative Btn Hold:" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label Content="Current Hold Time:" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label Content="Stim A Hold Time:" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label Content="Stim B Hold Time:" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label Content="Cumulative Button Up:" Foreground="Black"/>
+                            </ListBoxItem>
+                        </ListBox>
+                        <ListBox Grid.Column="1" Margin="5,0,0,36">
+                            <ListBoxItem Height="48">
+                                <Label x:Name="PressWatchVal" Content="" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label x:Name="ActiveStimVal" Content="" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label x:Name="StimAWatchVal" Content="" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label x:Name="StimBWatchVal" Content="" Foreground="Black"/>
+                            </ListBoxItem>
+                            <ListBoxItem Height="48">
+                                <Label x:Name="LatencyVal" Content="" Foreground="Black"/>
+                            </ListBoxItem>
+                        </ListBox>
+                    </Grid>
+                    <Label Content="StimA Name" FontSize="12" Foreground="Black"/>
+                    <TextBox x:Name="StimAName" Text="" Foreground="Black"></TextBox>
+                    <Label Content="StimB Name" FontSize="12" Foreground="Black"/>
+                    <TextBox x:Name="StimBName" Foreground="Black"/>
+                </StackPanel>
+
+                <!-- Research Subject Combo Box -->
+                <Grid Name="SubjectSelect" Margin="99,192,1234,766">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+                    <Label  Content="Subject" FontSize="14"/>
+                    <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" KeyboardNavigation.DirectionalNavigation="Cycle">
+                        <ComboBoxItem Content="Arthur"></ComboBoxItem>
+                        <ComboBoxItem Content="Ben"></ComboBoxItem>
+                        <ComboBoxItem Content="Billy"></ComboBoxItem>
+                        <ComboBoxItem Content="Rita"></ComboBoxItem>
+                        <ComboBoxItem Content="Rowena"></ComboBoxItem>
+                        <ComboBoxItem Content="Sue"></ComboBoxItem>
+                        <ComboBoxItem Content="Liza"></ComboBoxItem>
+                        <ComboBoxItem Content="Evelyne"></ComboBoxItem>
+                        <ComboBoxItem Content="Test" ></ComboBoxItem>
+                        <!-- <ComboBoxItem Content="Lela"></ComboBoxItem>
                     <ComboBoxItem Content="Drew"></ComboBoxItem>
                     <ComboBoxItem Content="Chubbs"></ComboBoxItem> -->
-                    <ComboBox.Resources>
-                        <Style TargetType="TextBox">
-                            <Setter Property="Focusable" Value="False"/>
-                        </Style>
-                    </ComboBox.Resources>
-                </ComboBox>
-            </Grid>
+                        <ComboBox.Resources>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </ComboBox.Resources>
+                    </ComboBox>
+                </Grid>
 
-            <!-- Target Time Setter -->
-            <Grid Name="TimeSelect" Margin="99,292,1220,720">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="155" />
-                    <ColumnDefinition Width="145" />
-                </Grid.ColumnDefinitions>
-                <Label Content="Target Time (seconds)" FontSize="14"/>
-                <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
-                <!-- <Label Content="Target Time (seconds)" FontSize="14"/>
+                <!-- Target Time Setter -->
+                <Grid Name="TimeSelect" Margin="99,292,1220,720">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="155" />
+                        <ColumnDefinition Width="145" />
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Target Time (seconds)" FontSize="14"/>
+                    <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
+                    <!-- <Label Content="Target Time (seconds)" FontSize="14"/>
                 <ComboBox x:Name="TTInput"  Height="32" Margin="267,371,1234,0" VerticalAlignment="Top" />
                 <ComboBoxItem Content="Train 3sec"></ComboBoxItem>
                 <ComboBoxItem Content="Train 10sec"></ComboBoxItem>
                 <ComboBoxItem Content="Test 10sec"></ComboBoxItem>
                 <ComboBoxItem Content="Test 20sec"></ComboBoxItem> -->
-            </Grid>
+                </Grid>
 
-            <Button x:Name="StBtn" Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"/>
-            <!-- Data Collector & Save Button -->
-            <Grid Name="GridDataRecorder" Height="200" Margin="344,648,960,216" RenderTransformOrigin="0.5,-0.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0"></ColumnDefinition>
-                    <ColumnDefinition Width="150"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="150"></RowDefinition>
-                    <RowDefinition Height="50"></RowDefinition>
-                </Grid.RowDefinitions>
-                <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-466,0" />
-                <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" Height="45" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
-                <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
+                <Button x:Name="StBtn" Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"/>
+                <!-- Data Collector & Save Button -->
+                <Grid Name="GridDataRecorder" Height="200" Margin="344,648,960,216" RenderTransformOrigin="0.5,-0.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0"></ColumnDefinition>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="150"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-466,0" />
+                    <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" Height="45" HorizontalAlignment="Stretch"/>
+                    <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
+                    <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
+                </Grid>
+                <Frame x:Name="StimSpy" Background="Black" Margin="1208,240,322,545"/>
+                <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,869,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black">
+                    <Button x:Name="ExitButton" Background="Firebrick" Content="X" Click="XButton_Click" Width="49" HorizontalAlignment="Center"/>
+                </Expander>
             </Grid>
-            <Frame x:Name="StimSpy" Background="Black" Margin="1208,240,322,545"/>
-            <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,869,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black">
-                <Button x:Name="ExitButton" Background="Firebrick" Content="X" Click="XButton_Click" Width="49" HorizontalAlignment="Center"/>
-            </Expander>
         </Grid>
 
         <!-- ChimpView Column -->
-        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1876,-636,-844,-636">
+        <Grid x:Name="StimGrid" Background="Black" Margin="1952,0,0,0">
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
-            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="52,593,716,591">
-                <Image.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Image.RenderTransform>
-            </Image>
+            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="208,189,234,261"/>
         </Grid>
     </Grid>
 </Window>

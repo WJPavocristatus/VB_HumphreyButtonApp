@@ -4,6 +4,7 @@ Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
 Imports System.IO
+'Imports System.Windows.Forms
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
@@ -102,6 +103,37 @@ Public Class MainWindow
         ' Timer
         timer.Start()
     End Sub
+
+    ' -------------------------------------------------------
+    ' Window Placement
+    ' -------------------------------------------------------
+    Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        Dim screens = System.Windows.Forms.Screen.AllScreens
+
+        If screens.Length < 2 Then
+            MessageBox.Show("Two monitors are required.")
+            Return
+        End If
+
+        Dim researcherScreen = screens(0)
+        Dim subjectScreen = screens(1)
+
+        ' Total window spans both monitors
+        Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
+        Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+
+        Me.WindowStyle = WindowStyle.None
+        Me.ResizeMode = ResizeMode.NoResize
+        Me.Left = researcherScreen.Bounds.Left
+        Me.Top = researcherScreen.Bounds.Top
+        Me.Width = totalWidth
+        Me.Height = maxHeight
+
+        ' Resize columns to fit each monitor exactly
+        ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
+        SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
+    End Sub
+
 
 
     ' -------------------------------------------------------
