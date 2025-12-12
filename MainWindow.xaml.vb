@@ -122,6 +122,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
+
     End Sub
 
 
@@ -514,11 +515,11 @@ Public Class MainWindow
             $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
-            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
+            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Target Hold Time: {TargetTime}, " &
             $"Stim A Presses: {aPressCt},  " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Stim B Presses: {bPressCt}" &
+            $"Stim B Presses: {bPressCt}, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
         Environment.NewLine
@@ -554,10 +555,19 @@ Public Class MainWindow
         btnCount = 0
     End Sub
 
+    Private Sub XButton_Click(sender As Object, e As RoutedEventArgs) Handles ExitButton.Click
+        If manualSave AndAlso manualTrialSave Then
+            System.Windows.Application.Current.Dispatcher.InvokeShutdown()
+        Else
+            SaveDataAuto()
+            SaveTrialDataAuto()
+            System.Windows.Application.Current.Dispatcher.InvokeShutdown()
+        End If
+    End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToLocalTime}.csv",
+            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -568,7 +578,7 @@ Public Class MainWindow
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToLocalTime}.csv",
+            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -637,5 +647,6 @@ Public Class MainWindow
         'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
+
 
 End Class

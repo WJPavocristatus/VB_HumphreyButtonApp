@@ -132,17 +132,20 @@
                 <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
             </Grid>
             <Frame x:Name="StimSpy" Background="Black" Margin="1208,240,322,545"/>
+            <Expander HorizontalAlignment="Left" Height="100" Header="Expander" Margin="99,869,0,0" VerticalAlignment="Top" Width="100" IsExpanded="True">
+                <Button x:Name="ExitButton" Background="Firebrick" Content="X" Margin="10,0,0,0" Click="XButton_Click" Width="49"/>
+            </Expander>
         </Grid>
 
         <!-- ChimpView Column -->
-        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1920,-636,-888,-636">
+        <Grid x:Name="StimGrid" Background="Black" Panel.ZIndex="10" Margin="1876,-636,-844,-636">
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
-            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="35,494,733,466">
+            <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="52,593,716,591">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
                         <SkewTransform/>
-                        <RotateTransform Angle="-93"/>
+                        <RotateTransform Angle="-90"/>
                         <TranslateTransform/>
                     </TransformGroup>
                 </Image.RenderTransform>
