@@ -4,6 +4,7 @@ Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
 Imports System.IO
+'Imports System.Windows.Forms
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
@@ -103,6 +104,37 @@ Public Class MainWindow
         timer.Start()
     End Sub
 
+    ' -------------------------------------------------------
+    ' Window Placement
+    ' -------------------------------------------------------
+    Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        Dim screens = System.Windows.Forms.Screen.AllScreens
+
+        If screens.Length < 2 Then
+            MessageBox.Show("Two monitors are required.")
+            Return
+        End If
+
+        Dim researcherScreen = screens(0)
+        Dim subjectScreen = screens(1)
+
+        ' Total window spans both monitors
+        Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
+        Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+
+        Me.WindowStyle = WindowStyle.None
+        Me.ResizeMode = ResizeMode.NoResize
+        Me.Left = researcherScreen.Bounds.Left
+        Me.Top = researcherScreen.Bounds.Top
+        Me.Width = totalWidth
+        Me.Height = maxHeight
+
+        ' Resize columns to fit each monitor exactly
+        ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
+        SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
+    End Sub
+
+
 
     ' -------------------------------------------------------
     ' UI Initialization
@@ -122,6 +154,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
+
     End Sub
 
 
@@ -514,11 +547,11 @@ Public Class MainWindow
             $"{SubjectName.Text}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
-            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs," &
+            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Target Hold Time: {TargetTime}, " &
             $"Stim A Presses: {aPressCt},  " &
             $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Stim B Presses: {bPressCt}" &
+            $"Stim B Presses: {bPressCt}, " &
             $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
         Environment.NewLine
@@ -554,10 +587,19 @@ Public Class MainWindow
         btnCount = 0
     End Sub
 
+    Private Sub XButton_Click(sender As Object, e As RoutedEventArgs) Handles ExitButton.Click
+        If manualSave AndAlso manualTrialSave Then
+            System.Windows.Application.Current.Dispatcher.InvokeShutdown()
+        Else
+            SaveDataAuto()
+            SaveTrialDataAuto()
+            System.Windows.Application.Current.Dispatcher.InvokeShutdown()
+        End If
+    End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToLocalTime}.csv",
+            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -568,7 +610,7 @@ Public Class MainWindow
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToLocalTime}.csv",
+            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -607,7 +649,7 @@ Public Class MainWindow
     Private Sub HandleDisconnectSave(reason As String)
         ' Helper to call autosave and show overlay from non-UI threads
         Dispatcher.Invoke(Sub()
-                              If hasSavedOnDisconnect Or manualSave Or manualTrialSave Then Return
+                              If hasSavedOnDisconnect Or manualSave AndAlso manualTrialSave Then Return
                               hasSavedOnDisconnect = True
                               Try
                                   SaveDataAuto()
@@ -637,5 +679,6 @@ Public Class MainWindow
         'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
+
 
 End Class
