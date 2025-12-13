@@ -20,13 +20,8 @@
 
   <ItemGroup>
     <None Remove="Assets\beep.wav" />
-    <None Remove="Assets\beepBeep.wav" />
-    <None Remove="Assets\DefaultChime.wav" />
-    <None Remove="Assets\DingDing.wav" />
-    <None Remove="Assets\hd-wallpaper-7939241_1280.png" />
     <None Remove="Assets\invert_hd-wallpaper-7939241_1280.png" />
     <None Remove="Assets\playbtn.png" />
-    <None Remove="Assets\StartSynth.wav" />
     <None Remove="Assets\waves-9954690_1280.png" />
   </ItemGroup>
 
@@ -34,25 +29,10 @@
     <Content Include="Assets\beep.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\beepBeep.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\DefaultChime.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\DingDing.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\hd-wallpaper-7939241_1280.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\invert_hd-wallpaper-7939241_1280.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\playbtn.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\StartSynth.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -78,6 +58,10 @@
   <ItemGroup>
     <PackageReference Include="Phidget22.NET" Version="1.23.20251006" />
     <PackageReference Include="WPF-UI" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\Stimuli\" />
   </ItemGroup>
 
 </Project>

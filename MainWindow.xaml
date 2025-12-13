@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
             <!-- ResearcherView Column -->
             <!-- Stat tracker block for current session -->
-            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="858,169,0,0" Width="314" Height="446">
+            <StackPanel Name="StatTracker"  Background="LightGray"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="820,164,0,0" Width="314" Height="446">
                 <Label Content="STATS" Foreground="Black" FontSize="18" Height="32" HorizontalAlignment="Center"/>
                 <Grid Height="294">
                     <Grid.ColumnDefinitions>
@@ -78,13 +78,19 @@
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 <Label  Content="Subject" FontSize="14"/>
-                <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" >
-                    <ComboBoxItem Content="Billy"></ComboBoxItem>
+                <ComboBox Grid.Column="1" x:Name="SubjectName" Margin="10,0,-277,0" VerticalAlignment="Top" Height="37" FontSize="14" KeyboardNavigation.DirectionalNavigation="Cycle">
+                    <ComboBoxItem Content="Arthur"></ComboBoxItem>
                     <ComboBoxItem Content="Ben"></ComboBoxItem>
-                    <ComboBoxItem Content="Test"></ComboBoxItem>
-                    <ComboBoxItem Content="PrefWhite"></ComboBoxItem>
-                    <ComboBoxItem Content="PrefRed"></ComboBoxItem>
-                    <ComboBoxItem Content="FauxMacaque"></ComboBoxItem>
+                    <ComboBoxItem Content="Billy"></ComboBoxItem>
+                    <ComboBoxItem Content="Rita"></ComboBoxItem>
+                    <ComboBoxItem Content="Rowena"></ComboBoxItem>
+                    <ComboBoxItem Content="Sue"></ComboBoxItem>
+                    <ComboBoxItem Content="Liza"></ComboBoxItem>
+                    <ComboBoxItem Content="Evelyne"></ComboBoxItem>
+                    <ComboBoxItem Content="Test" ></ComboBoxItem>
+                    <!-- <ComboBoxItem Content="Lela"></ComboBoxItem>
+                    <ComboBoxItem Content="Drew"></ComboBoxItem>
+                    <ComboBoxItem Content="Chubbs"></ComboBoxItem> -->
                     <ComboBox.Resources>
                         <Style TargetType="TextBox">
                             <Setter Property="Focusable" Value="False"/>
@@ -101,21 +107,29 @@
                 </Grid.ColumnDefinitions>
                 <Label Content="Target Time (seconds)" FontSize="14"/>
                 <ui:NumberBox x:Name="TargetTimeInput" Height="32" TextAlignment="Right" Value="100" Grid.Column="1" Margin="27,0,-301,0" VerticalAlignment="Top" />
+                <!-- <Label Content="Target Time (seconds)" FontSize="14"/>
+                <ComboBox x:Name="TTInput"  Height="32" Margin="267,371,1234,0" VerticalAlignment="Top" />
+                <ComboBoxItem Content="Train 3sec"></ComboBoxItem>
+                <ComboBoxItem Content="Train 10sec"></ComboBoxItem>
+                <ComboBoxItem Content="Test 10sec"></ComboBoxItem>
+                <ComboBoxItem Content="Test 20sec"></ComboBoxItem> -->
             </Grid>
 
             <Button x:Name="StBtn" Background="Red" Content="Start" Margin="373,432,0,0" VerticalAlignment="Top" Height="132" Width="270"/>
             <!-- Data Collector & Save Button -->
-            <Grid Name="GridDataRecorder" Height="200" Margin="344,648,403,216" RenderTransformOrigin="0.518,-0.017">
+            <Grid Name="GridDataRecorder" Height="200" Margin="344,648,960,216" RenderTransformOrigin="0.5,-0.">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0"></ColumnDefinition>
-                    <ColumnDefinition Width="300"></ColumnDefinition>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="150"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-868,0" />
+                <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-466,0" />
                 <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" Margin="75,5,-75,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" Height="45" HorizontalAlignment="Stretch"/>
+                <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
+                <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
             </Grid>
             <Frame x:Name="StimSpy" Background="Black" Margin="1208,240,322,545"/>
         </Grid>
