@@ -1,9 +1,9 @@
-﻿Imports Phidget22
-Imports Phidget22.Events
+﻿Imports System.IO
+Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
-Imports System.Media
-Imports System.IO
+Imports Phidget22
+Imports Phidget22.Events
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
