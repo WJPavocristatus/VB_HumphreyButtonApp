@@ -4,7 +4,9 @@ Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
 Imports System.IO
-'Imports System.Windows.Forms
+Imports System.Windows.Forms
+'Imports Wpf.Ui.Controls
+Imports MessageBox = System.Windows.Forms.MessageBox
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
@@ -23,7 +25,7 @@ Public Class MainWindow
     ' Timer & State Variables
     ' -----------------------------
     Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
-
+    Private devMode As Boolean = False
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
     Private HoldLimit As Integer = 5000
@@ -35,7 +37,7 @@ Public Class MainWindow
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
     Private trialReady As Boolean = False
-
+    Private TrainingMode As Boolean = False
     Private sessionStartTimeStamp As DateTime
 
     ' One-shot guard to prevent multiple saves on multi-channel disconnect
@@ -88,6 +90,8 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
+
+
         ' Open hardware
         Try
             cc.Open()
@@ -111,27 +115,41 @@ Public Class MainWindow
         Dim screens = System.Windows.Forms.Screen.AllScreens
 
         If screens.Length < 2 Then
-            MessageBox.Show("Two monitors are required.")
-            Return
+            Dim res = MessageBox.Show("One monitor detected. Dev Mode?", "Confirmation", MessageBoxButtons.YesNo)
+            If res = MessageBoxResult.Yes Then
+                devMode = True
+                Dim screen = screens(0)
+                Dim screenWidth = screen.Bounds.Width
+
+                ResearcherView.Width = New GridLength(screenWidth)
+                ResearcherView.BringIntoView()
+                SubjectView.Width = New GridLength(0)
+
+            Else
+                devMode = False
+                Return
+            End If
+
+
+        Else
+            Dim researcherScreen = screens(0)
+            Dim subjectScreen = screens(1)
+
+            ' Total window spans both monitors
+            Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
+            Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+
+            Me.WindowStyle = WindowStyle.None
+            Me.ResizeMode = ResizeMode.NoResize
+            Me.Left = researcherScreen.Bounds.Left
+            Me.Top = researcherScreen.Bounds.Top
+            Me.Width = totalWidth
+            Me.Height = maxHeight
+
+            ' Resize columns to fit each monitor exactly
+            ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
+            SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
         End If
-
-        Dim researcherScreen = screens(0)
-        Dim subjectScreen = screens(1)
-
-        ' Total window spans both monitors
-        Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
-        Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
-
-        Me.WindowStyle = WindowStyle.None
-        Me.ResizeMode = ResizeMode.NoResize
-        Me.Left = researcherScreen.Bounds.Left
-        Me.Top = researcherScreen.Bounds.Top
-        Me.Width = totalWidth
-        Me.Height = maxHeight
-
-        ' Resize columns to fit each monitor exactly
-        ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
-        SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
     End Sub
 
 
@@ -139,14 +157,14 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
-    Private Sub InitMainWindow() Handles MyBase.Initialized
-        MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
-        MainWin.Height = SystemParameters.PrimaryScreenHeight
-        MainWin.Top = 0
-        MainWin.Left = 0
-        MainWin.WindowStyle = WindowStyle.None
-        MainWin.ResizeMode = ResizeMode.NoResize
-    End Sub
+    'Private Sub InitMainWindow() Handles MyBase.Initialized
+    '    MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+    '    MainWin.Height = SystemParameters.PrimaryScreenHeight
+    '    MainWin.Top = 0
+    '    MainWin.Left = 0
+    '    MainWin.WindowStyle = WindowStyle.None
+    '    MainWin.ResizeMode = ResizeMode.NoResize
+    'End Sub
 
 
     ' -------------------------------------------------------
@@ -154,7 +172,6 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
-
     End Sub
 
 
@@ -207,9 +224,7 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
-
                               End If
-
                           End Sub)
     End Sub
 
@@ -293,7 +308,12 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-
+        'If Not bc.Attached Then
+        '    If devMode Then Return
+        '    HideReadyIndicator()
+        '    MsgBox("Button Channel not attached. Please check connections.")
+        '    'Return
+        'End If
 
         If Not trialReady Then
             HideReadyIndicator()
@@ -301,15 +321,18 @@ Public Class MainWindow
 
         ' Pre-start: behave like lockout but no outputs
         If Not isRunning Then
+            HideReadyIndicator()
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
             Latency.Stop()
-            InitWatches()
             Return
         End If
 
-        TargetTime = CInt(TargetTimeInput.Value) * 1000
+        If TargetTimeInput.Text = "" Then
+            TargetTimeInput.Text = "3"
+        End If
+        TargetTime = CInt(TargetTimeInput.Text) * 1000
 
         ' Auto stop at HoldLimit sec
         If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
@@ -323,11 +346,11 @@ Public Class MainWindow
         End If
 
         If Not isLockout Then
+            If devMode Then Return
             If Not bc.State Then
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
-                InitWatches()
                 Return
             End If
 
@@ -358,6 +381,10 @@ Public Class MainWindow
         If btnCount < 1 Then
             Latency.Reset()
             Latency.Stop()
+        End If
+
+        If Not TrainingMode Then
+            trialCount = TrialSelect.Text
         End If
 
         InitWatches()
@@ -397,18 +424,22 @@ Public Class MainWindow
 
 
         ActiveStimWatch.Start()
-        If count Mod 2 = 0 Then
-            StimAWatch.Start()
-            aPressCt += 1
-            StimGrid.Background = Brushes.Gray
-            StimSpy.Background = Brushes.Gray
-            ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
+        If TrainingMode = True Then
+            If count Mod 2 = 0 Then
+                StimAWatch.Start()
+                aPressCt += 1
+                StimGrid.Background = Brushes.Gray
+                StimSpy.Background = Brushes.Gray
+                ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
+            Else
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.LightGray
+                StimSpy.Background = Brushes.LightGray
+                ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
+            End If
         Else
-            StimBWatch.Start()
-            bPressCt += 1
-            StimGrid.Background = Brushes.LightGray
-            StimSpy.Background = Brushes.LightGray
-            ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
+            'Case
         End If
     End Sub
 
@@ -466,12 +497,10 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        'llc.State = False
         Latency.Reset()
         Latency.Stop()
         ResetTrial()
         trialReady = True
-
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
@@ -517,6 +546,7 @@ Public Class MainWindow
         End If
 
         trialCount += 1
+        'TrialSelect.Text = trialCount.ToString()
         btnCount = 0
         aPressCt = 0
         bPressCt = 0
@@ -528,8 +558,11 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
+
+
+        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
             $"{SubjectName.Text}, " &
+             $"Training Mode?: {TrainingMode}, " &
             $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
@@ -543,8 +576,9 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
+        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
             $"{SubjectName.Text}, " &
+            $"Training Mode?: {TrainingMode}, " &
             $"Trial: {trialCount}, " &
             $"Button Presses: {btnCount}, " &
             $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -558,11 +592,20 @@ Public Class MainWindow
         TrialDataBox.ScrollToEnd()
     End Sub
 
+    ' -------------------------------------------------------
+    ' buttons
+    ' -------------------------------------------------------
+    Private Sub SetMode() Handles TrainingToggle.Click
+        If TrainingToggle.IsChecked Then
+            TrainingMode = True
+            TrialSelect.Visibility = Visibility.Collapsed
+        ElseIf Not TrainingToggle.IsChecked Then
+            TrainingMode = False
+            TrialSelect.Visibility = Visibility.Visible
+        End If
+    End Sub
 
 
-    ' -------------------------------------------------------
-    ' Start button
-    ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
         trialReady = True
@@ -571,12 +614,12 @@ Public Class MainWindow
         If Not isRunning Then
             isRunning = True
             StBtn.Content = "Stop"
-            StBtn.Background = Brushes.Violet
+            StBtn.Background = Brushes.Red
             ShowReadyIndicator()
         Else
             isRunning = False
             StBtn.Content = "Start"
-            StBtn.Background = Brushes.Red
+            StBtn.Background = Brushes.Blue
             HideReadyIndicator()
         End If
 
@@ -665,20 +708,19 @@ Public Class MainWindow
     ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
-        ' Ensure we try to save on normal shutdown as well
-        Try
-            SaveDataAuto()
-            SaveTrialDataAuto()
-        Catch
-        End Try
+        ' Ensure we try to save on normal shutdown when manual slave flags not set to true
+        If Not hasSavedOnDisconnect Or (manualSave AndAlso manualTrialSave) Then
+            Try
+                SaveDataAuto()
+                SaveTrialDataAuto()
+            Catch
+            End Try
+        End If
 
         bc?.Close()
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
-
-
 End Class
