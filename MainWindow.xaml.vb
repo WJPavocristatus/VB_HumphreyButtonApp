@@ -4,7 +4,9 @@ Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
 Imports System.IO
-Imports System.Windows.Forms
+'Imports System.Windows.Forms
+Imports VB_HumphreyButtonApp.StimulusSequence
+
 
 ''' <summary>
 ''' WORKING MVP VERSION OF APP!!!!
@@ -23,21 +25,25 @@ Public Class MainWindow
     ' Timer & State Variables
     ' -----------------------------
     Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
-
+    Private uiTimer As New System.Windows.Threading.DispatcherTimer With {
+        .Interval = TimeSpan.FromMilliseconds(50)
+    }
+    Private devMode As Boolean = False
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
+    Private idx As Integer = 0
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
     Private trialReady As Boolean = False
-
+    Private TrainingMode As Boolean = False
     Private sessionStartTimeStamp As DateTime
-
+    Private colorWatchOn As Boolean = False
     ' One-shot guard to prevent multiple saves on multi-channel disconnect
     Private hasSavedOnDisconnect As Boolean = False
 
@@ -49,8 +55,13 @@ Public Class MainWindow
     Private Latency As New Stopwatch()
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
-    Private StimBWatch As New Stopwatch()
+    Private StimBWatch As New Stopwatch() '<--- also used for the white/control stimulus during test
     Private MasterWatch As New Stopwatch()
+    Private BlueWatch As New Stopwatch()
+    Private GreenWatch As New Stopwatch()
+    Private YellowWatch As New Stopwatch()
+    Private OrangeWatch As New Stopwatch()
+    Private RedWatch As New Stopwatch()
 
     ' -------------------------------------------------------
     ' Constructor
@@ -88,6 +99,9 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
+        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
+        uiTimer.Start()
+
         ' Open hardware
         Try
             cc.Open()
@@ -111,27 +125,45 @@ Public Class MainWindow
         Dim screens = System.Windows.Forms.Screen.AllScreens
 
         If screens.Length < 2 Then
-            MessageBox.Show("Two monitors are required.")
-            Return
+            Dim res = System.Windows.Forms.MessageBox.Show(
+                "One monitor detected. Dev Mode?",
+                "Confirmation",
+                MessageBoxButtons.YesNo
+            )
+            If res = MessageBoxResult.Yes Then
+                devMode = True
+                Dim screen = screens(0)
+                Dim screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth
+
+                ResearcherView.Width = New GridLength(screenWidth)
+                ResearcherView.BringIntoView()
+                SubjectView.Width = New GridLength(0)
+
+            Else
+                devMode = False
+                Return
+            End If
+
+
+        Else
+            Dim researcherScreen = screens(0)
+            Dim subjectScreen = screens(1)
+
+            ' Total window spans both monitors
+            Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
+            Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+
+            Me.WindowStyle = WindowStyle.None
+            Me.ResizeMode = ResizeMode.NoResize
+            Me.Left = researcherScreen.Bounds.Left
+            Me.Top = researcherScreen.Bounds.Top
+            Me.Width = totalWidth
+            Me.Height = maxHeight
+
+            ' Resize columns to fit each monitor exactly
+            ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
+            SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
         End If
-
-        Dim researcherScreen = screens(0)
-        Dim subjectScreen = screens(1)
-
-        ' Total window spans both monitors
-        Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
-        Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
-
-        Me.WindowStyle = WindowStyle.None
-        Me.ResizeMode = ResizeMode.NoResize
-        Me.Left = researcherScreen.Bounds.Left
-        Me.Top = researcherScreen.Bounds.Top
-        Me.Width = totalWidth
-        Me.Height = maxHeight
-
-        ' Resize columns to fit each monitor exactly
-        ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
-        SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
     End Sub
 
 
@@ -139,14 +171,14 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
-    Private Sub InitMainWindow() Handles MyBase.Initialized
-        MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
-        MainWin.Height = SystemParameters.PrimaryScreenHeight
-        MainWin.Top = 0
-        MainWin.Left = 0
-        MainWin.WindowStyle = WindowStyle.None
-        MainWin.ResizeMode = ResizeMode.NoResize
-    End Sub
+    'Private Sub InitMainWindow() Handles MyBase.Initialized
+    '    MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+    '    MainWin.Height = SystemParameters.PrimaryScreenHeight
+    '    MainWin.Top = 0
+    '    MainWin.Left = 0
+    '    MainWin.WindowStyle = WindowStyle.None
+    '    MainWin.ResizeMode = ResizeMode.NoResize
+    'End Sub
 
 
     ' -------------------------------------------------------
@@ -154,10 +186,15 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub Clock() Handles timer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
-
     End Sub
 
-
+    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
+        ' Lightweight UI updates only. Avoid heavy logic here.
+        If isRunning Then
+            InitWatches()
+            ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
+        End If
+    End Sub
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
     ' -------------------------------------------------------
@@ -207,9 +244,7 @@ Public Class MainWindow
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
                                   ResetGridVisuals()
-
                               End If
-
                           End Sub)
     End Sub
 
@@ -218,19 +253,29 @@ Public Class MainWindow
     ' Button → Rumble Loop
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
-        Dispatcher.Invoke(Async Function()
-                              If e.State Then
-                                  ' Pre-start or lockout: ignore
-                                  If isLockout OrElse Not isRunning Then Return
-                                  rumbleCts = New CancellationTokenSource()
-                                  Await RumblePak(rumbleCts.Token)
-                              Else
-                                  rumbleCts?.Cancel()
-                                  cc.State = False
-                              End If
-                          End Function)
+        ' Do not block the UI thread with Invoke + async. Perform minimal dispatcher work.
+        If e.State Then
+            ' Cancel and dispose any existing CTS first
+            Try
+                rumbleCts?.Cancel()
+                rumbleCts?.Dispose()
+            Catch
+            End Try
+            rumbleCts = New CancellationTokenSource()
+            ' Start rumble on background thread (fire-and-forget)
+            _ = Task.Run(Function() RumblePak(rumbleCts.Token))
+    Else
+            ' Stop rumble
+            Try
+                rumbleCts?.Cancel()
+                rumbleCts?.Dispose()
+            Catch
+            End Try
+            rumbleCts = Nothing
+            ' Ensure the hardware is turned off on UI thread
+            Dispatcher.BeginInvoke(Sub() cc.State = False)
+        End If
     End Sub
-
 
     ' -------------------------------------------------------
     ' Phidget Attached
@@ -293,7 +338,12 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-
+        'If Not bc.Attached Then
+        '    If devMode Then Return
+        '    HideReadyIndicator()
+        '    MsgBox("Button Channel not attached. Please check connections.")
+        '    'Return
+        'End If
 
         If Not trialReady Then
             HideReadyIndicator()
@@ -301,15 +351,19 @@ Public Class MainWindow
 
         ' Pre-start: behave like lockout but no outputs
         If Not isRunning Then
+            HideReadyIndicator()
             ActiveStimWatch.Stop()
+            EndColorWatch()
             StimAWatch.Stop()
             StimBWatch.Stop()
             Latency.Stop()
-            InitWatches()
             Return
         End If
 
-        TargetTime = CInt(TargetTimeInput.Value) * 1000
+        If TargetTimeInput.Text = "" Then
+            TargetTimeInput.Text = "3"
+        End If
+        TargetTime = CInt(TargetTimeInput.Text) * 1000
 
         ' Auto stop at HoldLimit sec
         If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
@@ -318,16 +372,18 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
+            EndColorWatch()
             ResetGridVisuals()
             ActiveStimWatch.Reset()
         End If
 
         If Not isLockout Then
+            If devMode Then Return
             If Not bc.State Then
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
-                InitWatches()
+                EndColorWatch()
                 Return
             End If
 
@@ -342,6 +398,7 @@ Public Class MainWindow
                 rumbleCts?.Cancel()
                 cc.State = False
                 ActiveStimWatch.Stop()
+                EndColorWatch()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 animationPlayed = True
@@ -359,6 +416,8 @@ Public Class MainWindow
             Latency.Reset()
             Latency.Stop()
         End If
+
+
 
         InitWatches()
     End Sub
@@ -397,19 +456,143 @@ Public Class MainWindow
 
 
         ActiveStimWatch.Start()
-        If count Mod 2 = 0 Then
-            StimAWatch.Start()
-            aPressCt += 1
-            StimGrid.Background = Brushes.Gray
-            StimSpy.Background = Brushes.Gray
-            ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
+        If TrainingMode = True Then
+            If count Mod 2 = 0 Then
+                StimAWatch.Start()
+                aPressCt += 1
+                StimGrid.Background = Brushes.Gray
+                StimSpy.Background = Brushes.Gray
+                ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
+            Else
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.LightGray
+                StimSpy.Background = Brushes.LightGray
+                ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
+            End If
         Else
-            StimBWatch.Start()
-            bPressCt += 1
-            StimGrid.Background = Brushes.LightGray
-            StimSpy.Background = Brushes.LightGray
-            ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
+
+            Select Case trialCount
+                Case 0
+                    TrialToggler(idx, StimulusSequence.Trial0)
+                Case 1
+                    TrialToggler(idx, StimulusSequence.Trial1)
+                Case 2
+                    TrialToggler(idx, StimulusSequence.Trial2)
+                Case 3
+                    TrialToggler(idx, StimulusSequence.Trial3)
+                Case 4
+                    TrialToggler(idx, StimulusSequence.Trial4)
+                Case 5
+                    TrialToggler(idx, StimulusSequence.Trial5)
+                Case 6
+                    TrialToggler(idx, StimulusSequence.Trial6)
+                Case 7
+                    TrialToggler(idx, StimulusSequence.Trial7)
+                Case 8
+                    TrialToggler(idx, StimulusSequence.Trial8)
+                Case 9
+                    TrialToggler(idx, StimulusSequence.Trial9)
+            End Select
         End If
+    End Sub
+
+    Private Sub TrialToggler(xidx As Integer, stimSeq As StimulusSequence)
+        Select Case xidx
+            Case 0
+                StimAWatch.Start()
+                RunColorWatch(stimSeq.Color1)
+                aPressCt += 1
+                StimGrid.Background = stimSeq.Color1
+                StimSpy.Background = stimSeq.Color1
+                xidx += 1
+            Case 1
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
+                xidx += 1
+            Case 2
+                StimAWatch.Start()
+                RunColorWatch(stimSeq.Color2)
+                aPressCt += 1
+                StimGrid.Background = stimSeq.Color2
+                StimSpy.Background = stimSeq.Color2
+                xidx += 1
+            Case 3
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
+                xidx += 1
+            Case 4
+                StimAWatch.Start()
+                RunColorWatch(stimSeq.Color3)
+                aPressCt += 1
+                StimGrid.Background = stimSeq.Color3
+                StimSpy.Background = stimSeq.Color3
+                xidx += 1
+            Case 5
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
+                xidx += 1
+            Case 6
+                StimAWatch.Start()
+                RunColorWatch(stimSeq.Color4)
+                aPressCt += 1
+                StimGrid.Background = stimSeq.Color4
+                StimSpy.Background = stimSeq.Color4
+                xidx += 1
+            Case 7
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
+                xidx += 1
+            Case 8
+                StimAWatch.Start()
+                RunColorWatch(stimSeq.Color5)
+                aPressCt += 1
+                StimGrid.Background = stimSeq.Color5
+                StimSpy.Background = stimSeq.Color5
+                xidx += 1
+            Case 9
+                StimBWatch.Start()
+                bPressCt += 1
+                StimGrid.Background = Brushes.White
+                StimSpy.Background = Brushes.White
+                xidx = 0
+        End Select
+        idx = (xidx + 1) Mod 10
+    End Sub
+
+    Private Sub RunColorWatch(brush As SolidColorBrush)
+        colorWatchOn = True
+        Dim c = brush.Color
+
+        If c = Brushes.Blue.Color Then
+            BlueWatch.Start()
+        ElseIf c = Brushes.Green.Color Then
+            GreenWatch.Start()
+        ElseIf c = Brushes.Yellow.Color Then
+            YellowWatch.Start()
+        ElseIf c = Brushes.Orange.Color Then
+            OrangeWatch.Start()
+        ElseIf c = Brushes.Red.Color Then
+            RedWatch.Start()
+        End If
+
+    End Sub
+
+    Private Sub EndColorWatch()
+        BlueWatch.Stop()
+        GreenWatch.Stop()
+        YellowWatch.Stop()
+        OrangeWatch.Stop()
+        RedWatch.Stop()
+        colorWatchOn = False
     End Sub
 
     Private Sub ShowOverlay(img As Image, file As String)
@@ -466,12 +649,10 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        'llc.State = False
         Latency.Reset()
         Latency.Stop()
         ResetTrial()
         trialReady = True
-
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
@@ -492,12 +673,18 @@ Public Class MainWindow
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
             While Not ct.IsCancellationRequested
-                cc.State = True
+                ' Set hardware state via Dispatcher (short non-blocking marshal)
+                Dispatcher.BeginInvoke(Sub() cc.State = True)
                 Await Task.Delay(100, ct)
-                cc.State = False
+                Dispatcher.BeginInvoke(Sub() cc.State = False)
                 Await Task.Delay(999, ct)
             End While
         Catch ex As TaskCanceledException
+            ' expected cancellation — ensure hardware off
+            Dispatcher.BeginInvoke(Sub() cc.State = False)
+        Catch ex As Exception
+            ' log and surface critical error
+            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
@@ -507,6 +694,7 @@ Public Class MainWindow
     Private Sub ResetTrial()
         MasterWatch.Stop()
         ActiveStimWatch.Stop()
+        EndColorWatch()
         StimAWatch.Stop()
         StimBWatch.Stop()
         ResetGridVisuals()
@@ -517,10 +705,16 @@ Public Class MainWindow
         End If
 
         trialCount += 1
+        'TrialSelect.Text = trialCount.ToString()
         btnCount = 0
         aPressCt = 0
         bPressCt = 0
 
+        BlueWatch.Reset()
+        GreenWatch.Reset()
+        YellowWatch.Reset()
+        OrangeWatch.Reset()
+        RedWatch.Reset()
         MasterWatch.Reset()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
@@ -528,41 +722,95 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
-            $"{SubjectName.Text}, " &
-            $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Trial: {trialCount}, " &
-            $"Button Presses: {btnCount}, " &
-            $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
-            $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-        Environment.NewLine
-        TextBox1.ScrollToEnd()
+        If TrainingMode Then
+            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName.Text}, " &
+                $"Training Mode?: {TrainingMode}, " &
+                $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Trial: {trialCount}, " &
+                $"Button Presses: {btnCount}, " &
+                $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
+                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
+            Environment.NewLine
+            TextBox1.ScrollToEnd()
+        Else
+            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName.Text}, " &
+                $"Training Mode?: {TrainingMode}, " &
+                $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Trial: {trialCount}, " &
+                $"Button Presses: {btnCount}, " &
+                $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Blue Time: {BlueWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Green Time: {GreenWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Yellow Time: {YellowWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Orange Time: {OrangeWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
+                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
+            Environment.NewLine
+            TextBox1.ScrollToEnd()
+        End If
     End Sub
 
     Private Sub RecordTrial()
-        TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToLocalTime()}, " &
-            $"{SubjectName.Text}, " &
-            $"Trial: {trialCount}, " &
-            $"Button Presses: {btnCount}, " &
-            $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Target Hold Time: {TargetTime}, " &
-            $"Stim A Presses: {aPressCt},  " &
-            $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Stim B Presses: {bPressCt}, " &
-            $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-            $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
-        Environment.NewLine
-        TrialDataBox.ScrollToEnd()
+        If TrainingMode Then
+            TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName.Text}, " &
+                $"Training Mode?: {TrainingMode}, " &
+                $"Trial: {trialCount}, " &
+                $"Button Presses: {btnCount}, " &
+                $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Target Hold Time: {TargetTime}, " &
+                $"Stim A Presses: {aPressCt},  " &
+                $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Stim B Presses: {bPressCt}, " &
+                $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
+                Environment.NewLine
+            TrialDataBox.ScrollToEnd()
+        Else
+            TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName.Text}, " &
+                $"Training Mode?: {TrainingMode}, " &
+                $"Trial: {trialCount}, " &
+                $"Button Presses: {btnCount}, " &
+                $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Target Hold Time: {TargetTime}, " &
+                $"Stim A Presses: {aPressCt},  " &
+                $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Stim B Presses: {bPressCt}, " &
+                $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Blue Time: {BlueWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Green Time: {GreenWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Yellow Time: {YellowWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Orange Time: {OrangeWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
+                Environment.NewLine
+            TrialDataBox.ScrollToEnd()
+        End If
+    End Sub
+
+    ' -------------------------------------------------------
+    ' buttons
+    ' -------------------------------------------------------
+    Private Sub SetMode() Handles TrainingToggle.Click
+        If TrainingToggle.IsChecked Then
+            TrainingMode = True
+            TrialSelect.Visibility = Visibility.Collapsed
+        ElseIf Not TrainingToggle.IsChecked Then
+            TrainingMode = False
+            TrialSelect.Visibility = Visibility.Visible
+        End If
     End Sub
 
 
-
-    ' -------------------------------------------------------
-    ' Start button
-    ' -------------------------------------------------------
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
         trialReady = True
@@ -571,12 +819,12 @@ Public Class MainWindow
         If Not isRunning Then
             isRunning = True
             StBtn.Content = "Stop"
-            StBtn.Background = Brushes.Violet
+            StBtn.Background = Brushes.Red
             ShowReadyIndicator()
         Else
             isRunning = False
             StBtn.Content = "Start"
-            StBtn.Background = Brushes.Red
+            StBtn.Background = Brushes.Blue
             HideReadyIndicator()
         End If
 
@@ -665,20 +913,19 @@ Public Class MainWindow
     ' Clean Shutdown
     ' -------------------------------------------------------
     Protected Overrides Sub OnClosed(e As EventArgs)
-        ' Ensure we try to save on normal shutdown as well
-        Try
-            SaveDataAuto()
-            SaveTrialDataAuto()
-        Catch
-        End Try
+        ' Ensure we try to save on normal shutdown when manual slave flags not set to true
+        If Not hasSavedOnDisconnect Or (manualSave AndAlso manualTrialSave) Then
+            Try
+                SaveDataAuto()
+                SaveTrialDataAuto()
+            Catch
+            End Try
+        End If
 
         bc?.Close()
         cc?.Close()
         fc?.Close()
         flc?.Close()
-        'llc?.Close()
         MyBase.OnClosed(e)
     End Sub
-
-
 End Class
