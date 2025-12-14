@@ -30,6 +30,7 @@ Public Class MainWindow
     }
     Private devMode As Boolean = False
     Private rumbleCts As CancellationTokenSource
+    Private rumbleTask As Task = Nothing
     Private TargetTime As Integer
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
@@ -252,29 +253,82 @@ Public Class MainWindow
     ' Button → Rumble Loop
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
-        ' Do not block the UI thread with Invoke + async. Perform minimal dispatcher work.
+        ' Handle rumble lifecycle safely and observe the task.
         If e.State Then
-            ' Cancel and dispose any existing CTS first
+            ' Cancel and dispose any existing CTS and wait for previous task to complete (non-blocking).
             Try
-                rumbleCts?.Cancel()
-                rumbleCts?.Dispose()
-            Catch
+                If rumbleCts IsNot Nothing Then
+                    rumbleCts.Cancel()
+                    rumbleCts.Dispose()
+                    rumbleCts = Nothing
+                End If
+            Catch ex As Exception
+                Console.WriteLine($"Error cancelling previous rumble CTS: {ex.Message}")
             End Try
+
             rumbleCts = New CancellationTokenSource()
-            ' Start rumble on background thread (fire-and-forget)
-            Task.Run(Function() RumblePak(rumbleCts.Token))
+            Dim ct = rumbleCts.Token
+
+            ' Start rumble task and keep reference so we can observe exceptions and await cancellation if needed.
+            rumbleTask = Task.Run(Function() RumblePak(ct))
+            ' Observe exceptions in continuation to avoid unobserved exceptions.
+            rumbleTask.ContinueWith(Sub(t)
+                                        If t.Exception IsNot Nothing Then
+                                            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble task error: {t.Exception.Flatten().Message}"))
+                                        End If
+                                    End Sub, TaskContinuationOptions.OnlyOnFaulted)
         Else
-            ' Stop rumble
+            ' Request cancellation and attach continuation to ensure hardware is turned off.
             Try
-                rumbleCts?.Cancel()
-                rumbleCts?.Dispose()
-            Catch
+                If rumbleCts IsNot Nothing Then
+                    rumbleCts.Cancel()
+                End If
+            Catch ex As Exception
+                Console.WriteLine($"Error cancelling rumble CTS: {ex.Message}")
             End Try
-            rumbleCts = Nothing
-            ' Ensure the hardware is turned off on UI thread
-            Dispatcher.BeginInvoke(Sub() cc.State = False)
+
+            ' After requesting cancellation, observe/cleanup the task asynchronously.
+            Dim tRef = rumbleTask
+            rumbleTask = Nothing
+
+            If tRef IsNot Nothing Then
+                tRef.ContinueWith(Sub(t)
+                                      ' Dispose CTS after task completes to avoid race with token usage.
+                                      Try
+                                          rumbleCts?.Dispose()
+                                      Catch
+                                      End Try
+                                      rumbleCts = Nothing
+                                      ' Ensure hardware off.
+                                      Dispatcher.BeginInvoke(Sub() cc.State = False)
+                                  End Sub)
+            Else
+                Try
+                    rumbleCts?.Dispose()
+                Catch
+                End Try
+                rumbleCts = Nothing
+                Dispatcher.BeginInvoke(Sub() cc.State = False)
+            End If
         End If
     End Sub
+
+    Private Async Function RumblePak(ct As CancellationToken) As Task
+        Try
+            While Not ct.IsCancellationRequested
+                ' Set hardware state via Dispatcher (short non-blocking marshal)
+                Dispatcher.BeginInvoke(Sub() cc.State = True)
+                Await Task.Delay(100, ct)
+                Dispatcher.BeginInvoke(Sub() cc.State = False)
+                Await Task.Delay(999, ct)
+            End While
+        Catch ex As TaskCanceledException
+            ' expected cancellation — ensure hardware off
+            Dispatcher.BeginInvoke(Sub() cc.State = False)
+        Catch ex As Exception
+            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+        End Try
+    End Function
 
     ' -------------------------------------------------------
     ' Phidget Attached
@@ -669,24 +723,6 @@ Public Class MainWindow
         chan.State = False
     End Function
 
-    Private Async Function RumblePak(ct As CancellationToken) As Task
-        Try
-            While Not ct.IsCancellationRequested
-                ' Set hardware state via Dispatcher (short non-blocking marshal)
-                Dispatcher.BeginInvoke(Sub() cc.State = True)
-                Await Task.Delay(100, ct)
-                Dispatcher.BeginInvoke(Sub() cc.State = False)
-                Await Task.Delay(999, ct)
-            End While
-        Catch ex As TaskCanceledException
-            ' expected cancellation — ensure hardware off
-            Dispatcher.BeginInvoke(Sub() cc.State = False)
-        Catch ex As Exception
-            ' log and surface critical error
-            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
-        End Try
-    End Function
-
     ' -------------------------------------------------------
     ' Reset Trial
     ' -------------------------------------------------------
@@ -733,7 +769,7 @@ Public Class MainWindow
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
                 $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
+                Environment.NewLine
             TextBox1.ScrollToEnd()
         Else
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
@@ -752,7 +788,7 @@ Public Class MainWindow
                 $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
                 $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
+                Environment.NewLine
             TextBox1.ScrollToEnd()
         End If
     End Sub
