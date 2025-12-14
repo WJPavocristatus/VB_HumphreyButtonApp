@@ -31,6 +31,7 @@ Public Class MainWindow
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
+    Private idx As Integer = 0
     Private isLockout As Boolean = False
     Private animationPlayed As Boolean = False
     Private isRunning As Boolean = False ' Pre-start flag
@@ -446,118 +447,117 @@ Public Class MainWindow
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
-            Dim idx As Integer = 0
-            Select Case (trialCount)
-                Case trialCount.Equals(0)
+
+            Select Case trialCount
+                Case 0
                     TrialToggler(idx, StimulusSequence.Trial0)
-                Case trialCount.Equals(1)
+                Case 1
                     TrialToggler(idx, StimulusSequence.Trial1)
-                Case trialCount.Equals(2)
+                Case 2
                     TrialToggler(idx, StimulusSequence.Trial2)
-                Case trialCount.Equals(3)
+                Case 3
                     TrialToggler(idx, StimulusSequence.Trial3)
-                Case trialCount.Equals(4)
+                Case 4
                     TrialToggler(idx, StimulusSequence.Trial4)
-                Case trialCount.Equals(5)
+                Case 5
                     TrialToggler(idx, StimulusSequence.Trial5)
-                Case trialCount.Equals(6)
+                Case 6
                     TrialToggler(idx, StimulusSequence.Trial6)
-                Case trialCount.Equals(7)
+                Case 7
                     TrialToggler(idx, StimulusSequence.Trial7)
-                Case trialCount.Equals(8)
+                Case 8
                     TrialToggler(idx, StimulusSequence.Trial8)
-                Case trialCount.Equals(9)
+                Case 9
                     TrialToggler(idx, StimulusSequence.Trial9)
             End Select
         End If
     End Sub
 
-    Private Sub TrialToggler(idx As Integer, stimSeq As StimulusSequence)
-        Select Case idx
+    Private Sub TrialToggler(xidx As Integer, stimSeq As StimulusSequence)
+        Select Case xidx
             Case 0
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color1)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color1
                 StimSpy.Background = stimSeq.Color1
-                idx += 1
+                xidx += 1
             Case 1
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                idx += 1
+                xidx += 1
             Case 2
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color2)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color2
                 StimSpy.Background = stimSeq.Color2
-                idx += 1
+                xidx += 1
             Case 3
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                idx += 1
+                xidx += 1
             Case 4
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color3)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color3
                 StimSpy.Background = stimSeq.Color3
-                idx += 1
+                xidx += 1
             Case 5
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                idx += 1
+                xidx += 1
             Case 6
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color4)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color4
                 StimSpy.Background = stimSeq.Color4
-                idx += 1
+                xidx += 1
             Case 7
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                idx += 1
+                xidx += 1
             Case 8
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color5)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color5
                 StimSpy.Background = stimSeq.Color5
-                idx += 1
+                xidx += 1
             Case 9
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                idx = 0
+                xidx = 0
         End Select
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
         colorWatchOn = True
-        Dim color = brush.Color.ToString()
+        Dim c = brush.Color
 
-        Select Case color
-            Case color.Equals(Brushes.Blue.Color.ToString())
-                BlueWatch.Start()
-            Case color.Equals(Brushes.Green.Color.ToString())
-                GreenWatch.Start()
-            Case color.Equals(Brushes.Yellow.Color.ToString())
-                YellowWatch.Start()
-            Case color.Equals(Brushes.Orange.Color.ToString())
-                OrangeWatch.Start()
-            Case color.Equals(Brushes.Red.Color.ToString())
-                RedWatch.Start()
-        End Select
+        If c = Brushes.Blue.Color Then
+            BlueWatch.Start()
+        ElseIf c = Brushes.Green.Color Then
+            GreenWatch.Start()
+        ElseIf c = Brushes.Yellow.Color Then
+            YellowWatch.Start()
+        ElseIf c = Brushes.Orange.Color Then
+            OrangeWatch.Start()
+        ElseIf c = Brushes.Red.Color Then
+            RedWatch.Start()
+        End If
 
     End Sub
 
