@@ -49,6 +49,10 @@ Public Class MainWindow
 
     Private manualSave As Boolean = False
     Private manualTrialSave As Boolean = False
+
+    ' Add these fields near the other state variables (after existing fields)
+    Private holdLimitExceededFlag As Integer = 0    ' 0 = false, 1 = true (set by 1ms timer)
+    Private targetReachedFlag As Integer = 0       ' 0 = false, 1 = true 
     ' -----------------------------
     ' Stopwatches
     ' -----------------------------
@@ -183,17 +187,31 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
     ' -------------------------------------------------------
+    ' Replace existing Clock() – this runs on the 1 ms System.Timers.Timer thread.
+    ' It performs only lightweight, thread-safe flag updates based on Stopwatches.
     Private Sub Clock() Handles timer.Elapsed
-        Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
+        Try
+            ' Compute hold-limit flag (ActiveStimWatch used for continuous press)
+            If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
+                Interlocked.Exchange(holdLimitExceededFlag, 1)
+            Else
+                Interlocked.Exchange(holdLimitExceededFlag, 0)
+            End If
+
+            ' Compute target reached based on cumulative StimA + StimB times.
+            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+            Dim localTarget As Integer = TargetTime ' read atomically
+            If localTarget > 0 AndAlso totalPress >= localTarget Then
+                Interlocked.Exchange(targetReachedFlag, 1)
+            Else
+                Interlocked.Exchange(targetReachedFlag, 0)
+            End If
+        Catch ex As Exception
+            ' Keep this lightweight — log to console for debugging
+            Console.WriteLine($"Clock error: {ex.Message}")
+        End Try
     End Sub
 
-    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
-        ' Lightweight UI updates only. Avoid heavy logic here.
-        If isRunning Then
-            InitWatches()
-            ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
-        End If
-    End Sub
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
     ' -------------------------------------------------------
@@ -336,92 +354,74 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' CONTROL LOOP
     ' -------------------------------------------------------
-    Private Async Sub ControlLoop()
-        'If Not bc.Attached Then
-        '    If devMode Then Return
-        '    HideReadyIndicator()
-        '    MsgBox("Button Channel not attached. Please check connections.")
-        '    'Return
-        'End If
+    ' Replace UiTimer_Tick to call the UI control loop (50ms tick).
+    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
+        ' The DispatcherTimer runs on the UI thread; invoke the UI control loop directly.
+        ' UiControlLoop is an Async Sub so we fire-and-forget on the UI thread.
+        UiControlLoop()
+    End Sub
 
-        If Not trialReady Then
-            HideReadyIndicator()
-        End If
-
-        ' Pre-start: behave like lockout but no outputs
-        If Not isRunning Then
-            HideReadyIndicator()
-            ActiveStimWatch.Stop()
-            EndColorWatch()
-            StimAWatch.Stop()
-            StimBWatch.Stop()
-            Latency.Stop()
-            Return
-        End If
-
-        If TargetTimeInput.Text = "" Then
-            TargetTimeInput.Text = "3"
-        End If
-        TargetTime = CInt(TargetTimeInput.Text) * 1000
-
-        ' Auto stop at HoldLimit sec
-        If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
-            rumbleCts?.Cancel()
+    ' New UI control loop: reads flags set by the 1ms timer and performs UI/stimulus actions.
+    Private Async Sub UiControlLoop()
+        ' 1) Handle hold-limit exceeded state (UI/actuators)
+        Dim holdFlag = Interlocked.CompareExchange(holdLimitExceededFlag, 0, 0)
+        If holdFlag = 1 Then
+            ' Stop rumble and visual stimulus; reset relevant watches (UI-safe)
+            Try
+                rumbleCts?.Cancel()
+            Catch
+            End Try
             cc.State = False
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
             EndColorWatch()
             ResetGridVisuals()
-            ActiveStimWatch.Reset()
+
+            ' Clear flag so we only handle it once per condition realization
+            Interlocked.Exchange(holdLimitExceededFlag, 0)
         End If
 
-        If Not isLockout Then
-            If devMode Then Return
-            If Not bc.State Then
-                ActiveStimWatch.Stop()
-                StimAWatch.Stop()
-                StimBWatch.Stop()
-                EndColorWatch()
-                Return
-            End If
+        ' 2) Handle target reached -> Lockout sequence (only if not already lockout)
+        Dim reached = Interlocked.CompareExchange(targetReachedFlag, 0, 0)
+        If reached = 1 AndAlso Not isLockout Then
+            ' Mark lockout so UI/handlers ignore presses while sequence runs
+            isLockout = True
 
-            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-
-            If totalPress >= TargetTime Then
-                ' Play chime
-                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
-
-                ' Enter lockout
-                isLockout = True
+            ' Ensure rumble/outputs stopped
+            Try
                 rumbleCts?.Cancel()
-                cc.State = False
-                ActiveStimWatch.Stop()
-                EndColorWatch()
-                StimAWatch.Stop()
-                StimBWatch.Stop()
-                animationPlayed = True
+            Catch
+            End Try
+            cc.State = False
+
+            ' Stop watches and visuals
+            ActiveStimWatch.Stop()
+            EndColorWatch()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+
+            ' Play chime (fire-and-forget is fine; PlaySound handles exceptions)
+            PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
+
+            ' Run the lockout / reward sequence
+            Try
                 Await LockOut()
-
+            Catch ex As Exception
+                Console.WriteLine($"LockOut error: {ex.Message}")
+            Finally
+                ' Ensure we clear the targetReached flag and exit lockout state
+                Interlocked.Exchange(targetReachedFlag, 0)
                 isLockout = False
-                animationPlayed = False
-                ' Show ready overlay again after LockOut
                 ShowReadyIndicator()
-                Return
-            End If
+            End Try
         End If
 
-        If btnCount < 1 Then
-            Latency.Reset()
-            Latency.Stop()
+        ' 3) Regular UI updates (watches, labels) — only when running
+        If isRunning Then
+            InitWatches()
         End If
-
-
-
-        InitWatches()
     End Sub
-
-
     ' -------------------------------------------------------
     ' Play WAV file
     ' -------------------------------------------------------
@@ -733,7 +733,7 @@ Public Class MainWindow
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
                 $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
+                Environment.NewLine
             TextBox1.ScrollToEnd()
         Else
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
@@ -752,7 +752,7 @@ Public Class MainWindow
                 $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
                 $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
+                Environment.NewLine
             TextBox1.ScrollToEnd()
         End If
     End Sub
@@ -927,4 +927,6 @@ Public Class MainWindow
         flc?.Close()
         MyBase.OnClosed(e)
     End Sub
+
+
 End Class
