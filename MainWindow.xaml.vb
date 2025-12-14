@@ -125,26 +125,25 @@ Public Class MainWindow
         Dim screens = System.Windows.Forms.Screen.AllScreens
 
         If screens.Length < 2 Then
-            Dim res = System.Windows.Forms.MessageBox.Show(
+            ' Use WPF MessageBox (System.Windows.MessageBox) and keep Screen.AllScreens for monitor detection.
+            Dim res = System.Windows.MessageBox.Show(
                 "One monitor detected. Dev Mode?",
                 "Confirmation",
-                MessageBoxButtons.YesNo
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
             )
             If res = MessageBoxResult.Yes Then
                 devMode = True
                 Dim screen = screens(0)
-                Dim screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth
+                Dim screenWidth = screen.Bounds.Width ' keep WinForms screen measurement
 
                 ResearcherView.Width = New GridLength(screenWidth)
                 ResearcherView.BringIntoView()
                 SubjectView.Width = New GridLength(0)
-
             Else
                 devMode = False
                 Return
             End If
-
-
         Else
             Dim researcherScreen = screens(0)
             Dim subjectScreen = screens(1)
@@ -263,8 +262,8 @@ Public Class MainWindow
             End Try
             rumbleCts = New CancellationTokenSource()
             ' Start rumble on background thread (fire-and-forget)
-            _ = Task.Run(Function() RumblePak(rumbleCts.Token))
-    Else
+            Task.Run(Function() RumblePak(rumbleCts.Token))
+        Else
             ' Stop rumble
             Try
                 rumbleCts?.Cancel()
