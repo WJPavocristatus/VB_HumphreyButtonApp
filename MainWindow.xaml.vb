@@ -4,7 +4,7 @@ Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Media
 Imports System.IO
-Imports System.Windows.Forms
+'Imports System.Windows.Forms
 Imports VB_HumphreyButtonApp.StimulusSequence
 
 
@@ -25,6 +25,9 @@ Public Class MainWindow
     ' Timer & State Variables
     ' -----------------------------
     Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
+    Private uiTimer As New System.Windows.Threading.DispatcherTimer With {
+        .Interval = TimeSpan.FromMilliseconds(50)
+    }
     Private devMode As Boolean = False
     Private rumbleCts As CancellationTokenSource
     Private TargetTime As Integer
@@ -96,7 +99,8 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
-
+        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
+        uiTimer.Start()
 
         ' Open hardware
         Try
@@ -121,11 +125,15 @@ Public Class MainWindow
         Dim screens = System.Windows.Forms.Screen.AllScreens
 
         If screens.Length < 2 Then
-            Dim res = MessageBox.Show("One monitor detected. Dev Mode?", "Confirmation", MessageBoxButtons.YesNo)
+            Dim res = System.Windows.Forms.MessageBox.Show(
+                "One monitor detected. Dev Mode?",
+                "Confirmation",
+                MessageBoxButtons.YesNo
+            )
             If res = MessageBoxResult.Yes Then
                 devMode = True
                 Dim screen = screens(0)
-                Dim screenWidth = screen.Bounds.Width
+                Dim screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth
 
                 ResearcherView.Width = New GridLength(screenWidth)
                 ResearcherView.BringIntoView()
@@ -180,7 +188,13 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-
+    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
+        ' Lightweight UI updates only. Avoid heavy logic here.
+        If isRunning Then
+            InitWatches()
+            ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
+        End If
+    End Sub
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
     ' -------------------------------------------------------
@@ -239,19 +253,29 @@ Public Class MainWindow
     ' Button → Rumble Loop
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
-        Dispatcher.Invoke(Async Function()
-                              If e.State Then
-                                  ' Pre-start or lockout: ignore
-                                  If isLockout OrElse Not isRunning Then Return
-                                  rumbleCts = New CancellationTokenSource()
-                                  Await RumblePak(rumbleCts.Token)
-                              Else
-                                  rumbleCts?.Cancel()
-                                  cc.State = False
-                              End If
-                          End Function)
+        ' Do not block the UI thread with Invoke + async. Perform minimal dispatcher work.
+        If e.State Then
+            ' Cancel and dispose any existing CTS first
+            Try
+                rumbleCts?.Cancel()
+                rumbleCts?.Dispose()
+            Catch
+            End Try
+            rumbleCts = New CancellationTokenSource()
+            ' Start rumble on background thread (fire-and-forget)
+            _ = Task.Run(Function() RumblePak(rumbleCts.Token))
+    Else
+            ' Stop rumble
+            Try
+                rumbleCts?.Cancel()
+                rumbleCts?.Dispose()
+            Catch
+            End Try
+            rumbleCts = Nothing
+            ' Ensure the hardware is turned off on UI thread
+            Dispatcher.BeginInvoke(Sub() cc.State = False)
+        End If
     End Sub
-
 
     ' -------------------------------------------------------
     ' Phidget Attached
@@ -541,6 +565,7 @@ Public Class MainWindow
                 StimSpy.Background = Brushes.White
                 xidx = 0
         End Select
+        idx = (xidx + 1) Mod 10
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
@@ -562,19 +587,12 @@ Public Class MainWindow
     End Sub
 
     Private Sub EndColorWatch()
-
-
-
         BlueWatch.Stop()
         GreenWatch.Stop()
-
         YellowWatch.Stop()
-
         OrangeWatch.Stop()
-
         RedWatch.Stop()
         colorWatchOn = False
-
     End Sub
 
     Private Sub ShowOverlay(img As Image, file As String)
@@ -655,12 +673,18 @@ Public Class MainWindow
     Private Async Function RumblePak(ct As CancellationToken) As Task
         Try
             While Not ct.IsCancellationRequested
-                cc.State = True
+                ' Set hardware state via Dispatcher (short non-blocking marshal)
+                Dispatcher.BeginInvoke(Sub() cc.State = True)
                 Await Task.Delay(100, ct)
-                cc.State = False
+                Dispatcher.BeginInvoke(Sub() cc.State = False)
                 Await Task.Delay(999, ct)
             End While
         Catch ex As TaskCanceledException
+            ' expected cancellation — ensure hardware off
+            Dispatcher.BeginInvoke(Sub() cc.State = False)
+        Catch ex As Exception
+            ' log and surface critical error
+            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
