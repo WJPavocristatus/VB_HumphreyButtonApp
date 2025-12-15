@@ -683,7 +683,7 @@ Public Class MainWindow
             Dispatcher.BeginInvoke(Sub() cc.State = False)
         Catch ex As Exception
             ' log and surface critical error
-            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+            'Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
