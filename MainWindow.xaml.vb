@@ -462,19 +462,21 @@ Public Class MainWindow
                 EndColorWatch()
                 Return
             End If
-
-            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-
-            If totalPress >= TargetTime Then
-
-                ' Enter lockout
-                ActiveStimWatch.Stop()
-                EndColorWatch()
-                StimAWatch.Stop()
-                StimBWatch.Stop()
-                Return
-            End If
         End If
+
+        Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+
+        If totalPress >= TargetTime AndAlso isLockout Then
+
+            ' Enter lockout
+            ActiveStimWatch.Stop()
+            EndColorWatch()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+
+            Return
+        End If
+
 
         If btnCount < 1 Then
             Latency.Reset()
