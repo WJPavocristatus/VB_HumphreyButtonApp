@@ -360,10 +360,9 @@ Public Class MainWindow
         '    MsgBox("Button Channel not attached. Please check connections.")
         '    'Return
         'End If
-        If trialCount > 9 Then
+        If trialCount > 9 And Not TrainingMode Then
             trialReady = False
             isRunning = False
-            TrialSequenceCompleted()
         End If
 
         If Not trialReady Then
@@ -583,6 +582,10 @@ Public Class MainWindow
 
         ' Advance persisted index exactly once per stimulus event.
         idx = (idx + 1) Mod 10
+        If trialCount > 9 Then
+            TrialSequenceCompleted()
+
+        End If
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
