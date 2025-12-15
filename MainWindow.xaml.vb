@@ -170,19 +170,21 @@ Public Class MainWindow
     End Sub
 
 
-
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
-    'Private Sub InitMainWindow() Handles MyBase.Initialized
-    '    MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
-    '    MainWin.Height = SystemParameters.PrimaryScreenHeight
-    '    MainWin.Top = 0
-    '    MainWin.Left = 0
-    '    MainWin.WindowStyle = WindowStyle.None
-    '    MainWin.ResizeMode = ResizeMode.NoResize
-    'End Sub
+    Private Sub InitMainWindow() Handles MyBase.Initialized
+        'MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+        'MainWin.Height = SystemParameters.PrimaryScreenHeight
+        'MainWin.Top = 0
+        'MainWin.Left = 0
+        MainWin.WindowStyle = WindowStyle.None
+        MainWin.ResizeMode = ResizeMode.NoResize
+    End Sub
 
+    Public Sub Window_loading() Handles MyBase.Initialized
+        StimSpy.Fill = New VisualBrush(StimGrid)
+    End Sub
 
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
@@ -384,43 +386,43 @@ Public Class MainWindow
 
         ' 2) Handle target reached -> Lockout sequence (only if not already lockout)
         Dim reached = Interlocked.CompareExchange(targetReachedFlag, 0, 0)
-        If reached = 1 AndAlso Not isLockout Then
-            ' Mark lockout so UI/handlers ignore presses while sequence runs
-            isLockout = True
+                If reached = 1 AndAlso Not isLockout Then
+                    ' Mark lockout so UI/handlers ignore presses while sequence runs
+                    isLockout = True
 
-            ' Ensure rumble/outputs stopped
-            Try
-                rumbleCts?.Cancel()
-            Catch
-            End Try
-            cc.State = False
+                    ' Ensure rumble/outputs stopped
+                    Try
+                        rumbleCts?.Cancel()
+                    Catch
+                    End Try
+                    cc.State = False
 
-            ' Stop watches and visuals
-            ActiveStimWatch.Stop()
-            EndColorWatch()
-            StimAWatch.Stop()
-            StimBWatch.Stop()
+                    ' Stop watches and visuals
+                    ActiveStimWatch.Stop()
+                    EndColorWatch()
+                    StimAWatch.Stop()
+                    StimBWatch.Stop()
 
-            ' Play chime (fire-and-forget is fine; PlaySound handles exceptions)
-            PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
+                    ' Play chime (fire-and-forget is fine; PlaySound handles exceptions)
+                    PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
 
-            ' Run the lockout / reward sequence
-            Try
-                Await LockOut()
-            Catch ex As Exception
-                Console.WriteLine($"LockOut error: {ex.Message}")
-            Finally
-                ' Ensure we clear the targetReached flag and exit lockout state
-                Interlocked.Exchange(targetReachedFlag, 0)
-                isLockout = False
-                ShowReadyIndicator()
-            End Try
-        End If
+                    ' Run the lockout / reward sequence
+                    Try
+                        Await LockOut()
+                    Catch ex As Exception
+                        Console.WriteLine($"LockOut error: {ex.Message}")
+                    Finally
+                        ' Ensure we clear the targetReached flag and exit lockout state
+                        Interlocked.Exchange(targetReachedFlag, 0)
+                        isLockout = False
+                        ShowReadyIndicator()
+                    End Try
+                End If
 
-        ' 3) Regular UI updates (watches, labels) — only when running
-        If isRunning Then
-            InitWatches()
-        End If
+                ' 3) Regular UI updates (watches, labels) — only when running
+                If isRunning Then
+                    InitWatches()
+                End If
     End Sub
     ' -------------------------------------------------------
     ' Play WAV file
@@ -453,118 +455,98 @@ Public Class MainWindow
     Private Sub SetGridColor(count As Integer)
         If isLockout OrElse Not isRunning Then Return
 
-
         ActiveStimWatch.Start()
         If TrainingMode = True Then
             If count Mod 2 = 0 Then
                 StimAWatch.Start()
                 aPressCt += 1
                 StimGrid.Background = Brushes.Gray
-                StimSpy.Background = Brushes.Gray
                 ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
             Else
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.LightGray
-                StimSpy.Background = Brushes.LightGray
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
-
+            ' Use persisted idx as the authoritative step index.
             Select Case trialCount
                 Case 0
-                    TrialToggler(idx, StimulusSequence.Trial0)
+                    TrialToggler(StimulusSequence.Trial0)
                 Case 1
-                    TrialToggler(idx, StimulusSequence.Trial1)
+                    TrialToggler(StimulusSequence.Trial1)
                 Case 2
-                    TrialToggler(idx, StimulusSequence.Trial2)
+                    TrialToggler(StimulusSequence.Trial2)
                 Case 3
-                    TrialToggler(idx, StimulusSequence.Trial3)
+                    TrialToggler(StimulusSequence.Trial3)
                 Case 4
-                    TrialToggler(idx, StimulusSequence.Trial4)
+                    TrialToggler(StimulusSequence.Trial4)
                 Case 5
-                    TrialToggler(idx, StimulusSequence.Trial5)
+                    TrialToggler(StimulusSequence.Trial5)
                 Case 6
-                    TrialToggler(idx, StimulusSequence.Trial6)
+                    TrialToggler(StimulusSequence.Trial6)
                 Case 7
-                    TrialToggler(idx, StimulusSequence.Trial7)
+                    TrialToggler(StimulusSequence.Trial7)
                 Case 8
-                    TrialToggler(idx, StimulusSequence.Trial8)
+                    TrialToggler(StimulusSequence.Trial8)
                 Case 9
-                    TrialToggler(idx, StimulusSequence.Trial9)
+                    TrialToggler(StimulusSequence.Trial9)
             End Select
         End If
     End Sub
 
-    Private Sub TrialToggler(xidx As Integer, stimSeq As StimulusSequence)
-        Select Case xidx
+    ' Simplified TrialToggler: use persisted field `idx` and advance it exactly once.
+    Private Sub TrialToggler(stimSeq As StimulusSequence)
+        Select Case idx
             Case 0
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color1)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color1
-                StimSpy.Background = stimSeq.Color1
-                xidx += 1
             Case 1
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
-                xidx += 1
             Case 2
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color2)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color2
-                StimSpy.Background = stimSeq.Color2
-                xidx += 1
             Case 3
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
-                xidx += 1
             Case 4
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color3)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color3
-                StimSpy.Background = stimSeq.Color3
-                xidx += 1
             Case 5
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
-                xidx += 1
             Case 6
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color4)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color4
-                StimSpy.Background = stimSeq.Color4
-                xidx += 1
             Case 7
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
-                xidx += 1
             Case 8
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color5)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color5
-                StimSpy.Background = stimSeq.Color5
-                xidx += 1
             Case 9
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
-                xidx = 0
         End Select
-        idx = (xidx + 1) Mod 10
+
+        ' Advance persisted index exactly once per stimulus event.
+        idx = (idx + 1) Mod 10
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
@@ -601,7 +583,6 @@ Public Class MainWindow
 
     Private Sub ResetGridVisuals()
         StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
     End Sub
 
@@ -808,7 +789,6 @@ Public Class MainWindow
             TrialSelect.Visibility = Visibility.Visible
         End If
     End Sub
-
 
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
