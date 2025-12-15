@@ -215,7 +215,7 @@ Public Class MainWindow
                               End If
                               lastButtonState = e.State
 
-                              If Not trialReady Then Return
+                              If Not trialReady OrElse trialCount >= 10 Then Return
 
                               ' Pre-start or lockout: ignore presses
                               If isLockout OrElse Not isRunning Then
@@ -361,6 +361,11 @@ Public Class MainWindow
         '    MsgBox("Button Channel not attached. Please check connections.")
         '    'Return
         'End If
+        If trialReady >= 10 Then
+            trialReady = False
+            isRunning = False
+
+        End If
 
         If Not trialReady Then
             HideReadyIndicator()
@@ -467,7 +472,7 @@ Public Class MainWindow
 
 
     ' -------------------------------------------------------
-    ' Alternating colors + overlays
+    ' Alternating colors
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
         If isLockout OrElse Not isRunning Then Return
@@ -604,6 +609,9 @@ Public Class MainWindow
         colorWatchOn = False
     End Sub
 
+    ' -------------------------------------------------------
+    ' READY/TrainingMode overlay helpers
+    ' -------------------------------------------------------
     Private Sub ShowOverlay(img As Image, file As String)
         img.Source = New BitmapImage(New Uri(file, UriKind.Relative))
         img.Visibility = Visibility.Visible
@@ -614,11 +622,8 @@ Public Class MainWindow
         StimGridOverlay.Visibility = Visibility.Collapsed
     End Sub
 
-    ' -------------------------------------------------------
-    ' READY overlay helpers
-    ' -------------------------------------------------------
     Private Sub ShowReadyIndicator()
-        If Not trialReady Then Return
+        If Not trialReady OrElse trialCount >= 10 Then Return
         StimGridReadyOverlay.Source = New BitmapImage(New Uri("Assets/playbtn.png", UriKind.Relative))
         StimGridReadyOverlay.Visibility = Visibility.Visible
         MasterWatch.Start()
@@ -628,9 +633,8 @@ Public Class MainWindow
         StimGridReadyOverlay.Visibility = Visibility.Collapsed
     End Sub
 
-
     ' -------------------------------------------------------
-    ' Lockout sequence
+    ' Async Tasks: Lockout & activations for LEDs + feeder
     ' -------------------------------------------------------
     Public Async Function LockOut() As Task
         trialReady = False
@@ -729,6 +733,10 @@ Public Class MainWindow
         StimBWatch.Reset()
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' Data Writing
+    ' -------------------------------------------------------
     Private Sub RecordData()
         If TrainingMode Then
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
@@ -802,6 +810,28 @@ Public Class MainWindow
                 $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
+        End If
+    End Sub
+
+    ' -------------------------------------------------------
+    ' Trials Complete Helper
+    ' -------------------------------------------------------
+
+    Private Sub TrialSequenceCompleted()
+        If trialCount >= 10 Then
+            Dim res = System.Windows.MessageBox.Show(
+                "All ten trial sequences completed. Reset?",
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            )
+            If res = MessageBoxResult.Yes Then
+                trialCount = 0
+            Else
+                Return
+            End If
+        Else
+            Return
         End If
     End Sub
 
