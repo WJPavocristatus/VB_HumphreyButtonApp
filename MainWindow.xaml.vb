@@ -202,6 +202,8 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
+                              If Not trialReady OrElse trialCount >= 10 Then Return
+
                               Dim now = DateTime.UtcNow
                               ' Debounce: ignore events that arrive too quickly
                               If (now - lastButtonEvent).TotalMilliseconds < DebounceMs Then
@@ -214,8 +216,6 @@ Public Class MainWindow
                                   Return
                               End If
                               lastButtonState = e.State
-
-                              If Not trialReady OrElse trialCount >= 10 Then Return
 
                               ' Pre-start or lockout: ignore presses
                               If isLockout OrElse Not isRunning Then
@@ -364,7 +364,7 @@ Public Class MainWindow
         If trialReady >= 10 Then
             trialReady = False
             isRunning = False
-
+            TrialSequenceCompleted()
         End If
 
         If Not trialReady Then
@@ -385,6 +385,10 @@ Public Class MainWindow
         If TargetTimeInput.Text = "" Then
             TargetTimeInput.Text = "3"
         End If
+        If SubjectName.Text = "" Then
+            SubjectName.Text = "Test"
+        End If
+
         TargetTime = CInt(TargetTimeInput.Text) * 1000
 
         ' Auto stop at HoldLimit sec
@@ -818,6 +822,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
 
     Private Sub TrialSequenceCompleted()
+        If TrainingMode Then Return
         If trialCount >= 10 Then
             Dim res = System.Windows.MessageBox.Show(
                 "All ten trial sequences completed. Reset?",
