@@ -201,7 +201,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         Dispatcher.Invoke(Sub()
-                              If Not trialReady OrElse trialCount >= 10 Then Return
+                              If Not trialReady OrElse (trialCount > 9 And TrainingMode) Then Return
 
                               Dim now = DateTime.UtcNow
                               ' Debounce: ignore events that arrive too quickly
@@ -360,7 +360,7 @@ Public Class MainWindow
         '    MsgBox("Button Channel not attached. Please check connections.")
         '    'Return
         'End If
-        If trialReady >= 10 Then
+        If trialCount > 9 Then
             trialReady = False
             isRunning = False
             TrialSequenceCompleted()
@@ -822,7 +822,7 @@ Public Class MainWindow
 
     Private Sub TrialSequenceCompleted()
         If TrainingMode Then Return
-        If trialCount >= 10 Then
+        If trialCount > 9 Then
             Dim res = System.Windows.MessageBox.Show(
                 "All ten trial sequences completed. Reset?",
                 "Confirmation",
