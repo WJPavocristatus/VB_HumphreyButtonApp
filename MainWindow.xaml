@@ -173,7 +173,7 @@
         <!-- ChimpView Column -->
 
 
-        <Grid x:Name="StimGrid" Background="Black" Margin="1952,0,0,0">
+        <Grid x:Name="StimGrid" Background="Black" Margin="1920,0,0,0" Grid.Column="1">
 
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
             <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="208,189,234,261"/>
