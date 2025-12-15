@@ -168,6 +168,9 @@
             </Grid>
             <Rectangle Name="StimSpy" Stroke="Black" Margin="1269,-981,0,205"  HorizontalAlignment="Left" Width="300" Height="426" Grid.ColumnSpan="2"/>
             <CheckBox x:Name="TrainingToggle" Content="Training?" Margin="588,349,0,0" VerticalAlignment="Top" Checked="SetMode" Height="32" Width="120"/>
+            <ProgressBar x:Name="buttonProg" HorizontalAlignment="Left" Height="40" Margin="356,47,0,0" VerticalAlignment="Top" Width="674"/>
+            <ProgressBar x:Name="trialProg" HorizontalAlignment="Left" Height="40" Margin="356,87,0,0" VerticalAlignment="Top" Width="674"/>
+
         </Grid>
 
         <!-- ChimpView Column -->
