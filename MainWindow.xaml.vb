@@ -44,6 +44,11 @@ Public Class MainWindow
     ' -----------------------------
     Private sessionStartTimeStamp As DateTime
     Private rumbleCts As CancellationTokenSource
+    Private pendingDebounceCts As CancellationTokenSource = Nothing
+    ' File logger
+    Private logWriter As StreamWriter = Nothing
+    Private logLock As New Object()
+    Private logFilePath As String = String.Empty
 
     Private TargetTime As Integer
     Private HoldLimit As Integer = 5000
@@ -66,7 +71,6 @@ Public Class MainWindow
     Private lastButtonState As Boolean = False
     Private manualSave As Boolean = False
     Private manualTrialSave As Boolean = False
-
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -120,6 +124,18 @@ Public Class MainWindow
         ' Timer
         uiTimer.Start()
         timer.Start()
+
+        Try
+            Dim folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData", "logs")
+            If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
+            logFilePath = Path.Combine(folder, $"phidget_log_{DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}.log")
+            logWriter = New StreamWriter(New FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read)) With {
+                .AutoFlush = True
+            }
+            Log($"Log started: {DateTime.UtcNow:o}")
+        Catch ex As Exception
+            Console.WriteLine($"Failed to open log file: {ex.Message}")
+        End Try
     End Sub
 
     ' -------------------------------------------------------
@@ -201,68 +217,120 @@ Public Class MainWindow
     ' Button → Stimulus Logic
     ' -------------------------------------------------------
     Private Sub ButtonStim_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
-        Dispatcher.Invoke(Sub()
-                              Dim now = DateTime.UtcNow
-                              ' Debounce: ignore events that arrive too quickly
-                              If (now - lastButtonEvent).TotalMilliseconds < DebounceMs Then
-                                  Return
-                              End If
-                              lastButtonEvent = now
+        Dim arrivalTs = DateTime.UtcNow
+        Log($"{arrivalTs:o} - Raw event received: State={e.State}")
 
-                              ' Ignore repeated identical state events
-                              If e.State = lastButtonState Then
-                                  Return
-                              End If
-                              lastButtonState = e.State
+        ' Cancel any earlier pending confirmation so only the newest transition will be validated
+        Try
+            pendingDebounceCts?.Cancel()
+            pendingDebounceCts?.Dispose()
+        Catch
+        End Try
+        Log($"{DateTime.UtcNow:o} - Pending debounce cancelled (if any)")
+        pendingDebounceCts = New CancellationTokenSource()
+        Dim localCts = pendingDebounceCts
+        Dim capturedState = e.State
 
-                              If Not trialReady Then Return
+        ' Confirm the input is stable for DebounceMs before acting
+        Task.Run(Async Function()
+                     Try
+                         Log($"{DateTime.UtcNow:o} - Debounce window start for capturedState={capturedState}, DebounceMs={DebounceMs}")
+                         Await Task.Delay(DebounceMs, localCts.Token)
 
-                              ' Pre-start or lockout: ignore presses
-                              If isLockout OrElse Not isRunning Then
-                                  ActiveStimWatch.Stop()
-                                  StimAWatch.Stop()
-                                  StimBWatch.Stop()
-                                  Latency.Stop()
-                                  Return
-                              ElseIf e.State = True Then
-                                  ' Button pressed → hide ready overlay
-                                  If isRunning AndAlso Not isLockout Then
-                                      HideReadyIndicator()
-                                  End If
+                         ' Confirm actual hardware state after debounce window (fallback to captured)
+                         Dim actualState As Boolean
+                         Try
+                             actualState = bc.State
+                         Catch ex As Exception
+                             Log($"{DateTime.UtcNow:o} - Warning: failed to read bc.State ({ex.Message}), falling back to capturedState")
+                             actualState = capturedState
+                         End Try
 
-                                  ' Button pressed
-                                  Latency.Stop()
-                                  ActivateOut(cc, 35) 'fire-and-forget
+                         Log($"{DateTime.UtcNow:o} - Debounce window end. captured={capturedState}, actual={actualState}")
 
-                                  If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
-                                      btnCount += 1
-                                      ActiveStimWatch.Reset()
-                                      SetGridColor(btnCount)
-                                  Else
-                                      ' Over 5sec -> reset visual and stim
-                                      rumbleCts?.Cancel()
-                                      cc.State = False
-                                      ActiveStimWatch.Stop()
-                                      StimAWatch.Stop()
-                                      StimBWatch.Stop()
-                                      EndColorWatch()
-                                      ResetGridVisuals()
-                                      ActiveStimWatch.Reset()
-                                  End If
+                         ' If state changed during debounce window, ignore event
+                         If actualState <> capturedState Then
+                             Log($"{DateTime.UtcNow:o} - Ignored: state changed during debounce (captured->{capturedState}, actual->{actualState})")
+                             Return
+                         End If
 
-                              Else
-                                  ' Button released
-                                  If Not isLockout Then
-                                      RecordData()
-                                  End If
-                                  cc.State = False
-                                  Latency.Start()
-                                  ActiveStimWatch.Stop()
-                                  StimAWatch.Stop()
-                                  StimBWatch.Stop()
-                                  ResetGridVisuals()
-                              End If
-                          End Sub)
+                         ' Avoid processing duplicate identical states
+                         If actualState = lastButtonState Then
+                             Log($"{DateTime.UtcNow:o} - Ignored duplicate stable state: {actualState}")
+                             Return
+                         End If
+
+                         lastButtonState = actualState
+                         Log($"{DateTime.UtcNow:o} - Stable confirmed; dispatching UI handler for state={actualState}")
+
+                         ' Marshal the validated, stable event to UI thread and run your logic
+                         Dispatcher.Invoke(Sub()
+                                               Log($"{DateTime.UtcNow:o} - UI handler start for state={actualState}")
+
+                                               If Not trialReady Then
+                                                   Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
+                                                   Return
+                                               End If
+
+                                               ' Pre-start or lockout: ignore presses
+                                               If isLockout OrElse Not isRunning Then
+                                                   ActiveStimWatch.Stop()
+                                                   StimAWatch.Stop()
+                                                   StimBWatch.Stop()
+                                                   Latency.Stop()
+                                                   Log($"{DateTime.UtcNow:o} - Ignored: lockout or not running")
+                                                   Return
+                                               ElseIf actualState = True Then
+                                                   ' Button pressed → hide ready overlay
+                                                   If isRunning AndAlso Not isLockout Then
+                                                       HideReadyIndicator()
+                                                   End If
+
+                                                   ' Button pressed
+                                                   Latency.Stop()
+                                                   ActivateOut(cc, 35) ' fire-and-forget
+
+                                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
+                                                       btnCount += 1
+                                                       ActiveStimWatch.Reset()
+                                                       SetGridColor(btnCount)
+                                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
+                                                   Else
+                                                       ' Over HoldLimit -> reset visual and stim
+                                                       rumbleCts?.Cancel()
+                                                       cc.State = False
+                                                       ActiveStimWatch.Stop()
+                                                       StimAWatch.Stop()
+                                                       StimBWatch.Stop()
+                                                       EndColorWatch()
+                                                       ResetGridVisuals()
+                                                       ActiveStimWatch.Reset()
+                                                       Log($"{DateTime.UtcNow:o} - HoldLimit exceeded; reset visuals")
+                                                   End If
+
+                                               Else
+                                                   ' Button released
+                                                   If Not isLockout Then
+                                                       RecordData()
+                                                   End If
+                                                   cc.State = False
+                                                   Latency.Start()
+                                                   ActiveStimWatch.Stop()
+                                                   StimAWatch.Stop()
+                                                   StimBWatch.Stop()
+                                                   ResetGridVisuals()
+                                                   Log($"{DateTime.UtcNow:o} - Processed release")
+                                               End If
+
+                                               Log($"{DateTime.UtcNow:o} - UI handler end for state={actualState}")
+                                           End Sub)
+
+                     Catch ex As TaskCanceledException
+                         Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
+                     Catch ex As Exception
+                         Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
+                     End Try
+                 End Function)
     End Sub
 
 
@@ -377,6 +445,9 @@ Public Class MainWindow
             Return
         End If
 
+        If SubjectName.Text = "" Then
+            SubjectName.Text = "Test"
+        End If
         If TargetTimeInput.Text = "" Then
             TargetTimeInput.Text = "3"
         End If
@@ -435,8 +506,6 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
-
-
         InitWatches()
     End Sub
 
@@ -453,6 +522,25 @@ Public Class MainWindow
         End Try
     End Sub
 
+
+    ' -------------------------------------------------------
+    ' logger
+    ' -------------------------------------------------------
+    Private Sub Log(message As String)
+        Dim line = $"{DateTime.UtcNow:o} - {message}"
+        SyncLock logLock
+            Try
+                If logWriter IsNot Nothing Then
+                    logWriter.WriteLine(line)
+                Else
+                    ' fallback to console if writer not available
+                    Console.WriteLine(line)
+                End If
+            Catch ex As Exception
+                Console.WriteLine($"Logging error: {ex.Message}")
+            End Try
+        End SyncLock
+    End Sub
 
     ' -------------------------------------------------------
     ' Update UI watch labels
@@ -933,6 +1021,17 @@ Public Class MainWindow
         cc?.Close()
         fc?.Close()
         flc?.Close()
+        ' Close log writer
+        Try
+            If logWriter IsNot Nothing Then
+                Log($"Log closed: {DateTime.UtcNow:o}")
+                logWriter.Flush()
+                logWriter.Close()
+                logWriter.Dispose()
+                logWriter = Nothing
+            End If
+        Catch
+        End Try
         MyBase.OnClosed(e)
     End Sub
 End Class
