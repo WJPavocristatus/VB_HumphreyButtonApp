@@ -25,9 +25,7 @@ Public Class MainWindow
     ' Timers & Stopwatches
     ' -----------------------------
     Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
-    Private uiTimer As New System.Windows.Threading.DispatcherTimer With {
-        .Interval = TimeSpan.FromMilliseconds(50)
-    }
+    Friend WithEvents uiTimer As New System.Timers.Timer(50) '50 ms tick
     Private Latency As New Stopwatch()
     Private ActiveStimWatch As New Stopwatch()
     Private StimAWatch As New Stopwatch()
@@ -107,7 +105,6 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
-        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
 
         ' Open hardware
         Try
@@ -121,21 +118,21 @@ Public Class MainWindow
             HandleDisconnectSave("Error opening channels: " & ex.Message)
         End Try
 
-        ' Timer
-        uiTimer.Start()
-        timer.Start()
-
         Try
             Dim folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData", "logs")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             logFilePath = Path.Combine(folder, $"phidget_log_{DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}.log")
             logWriter = New StreamWriter(New FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read)) With {
-                .AutoFlush = True
+            .AutoFlush = True
             }
             Log($"Log started: {DateTime.UtcNow:o}")
         Catch ex As Exception
             Console.WriteLine($"Failed to open log file: {ex.Message}")
         End Try
+        ' Timers
+        uiTimer.Start()
+        timer.Start()
+
     End Sub
 
     ' -------------------------------------------------------
@@ -206,12 +203,8 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
-        ' Lightweight UI updates only. Avoid heavy logic here.
-        If isRunning Then
-            InitWatches()
-            ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
-        End If
+    Private Sub UiTimer_Tick(sender As Object, e As EventArgs) Handles uiTimer.Elapsed
+        Application.Current.Dispatcher.BeginInvoke(AddressOf UiControlLoop)
     End Sub
     ' -------------------------------------------------------
     ' Button → Stimulus Logic
@@ -445,13 +438,7 @@ Public Class MainWindow
             Return
         End If
 
-        If SubjectName.Text = "" Then
-            SubjectName.Text = "Test"
-        End If
-        If TargetTimeInput.Text = "" Then
-            TargetTimeInput.Text = "3"
-        End If
-        TargetTime = CInt(TargetTimeInput.Text) * 1000
+
 
         ' Auto stop at HoldLimit sec
         'If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
@@ -479,24 +466,12 @@ Public Class MainWindow
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
             If totalPress >= TargetTime Then
-                ' Play chime
-                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
 
                 ' Enter lockout
-                isLockout = True
-                rumbleCts?.Cancel()
-                cc.State = False
                 ActiveStimWatch.Stop()
                 EndColorWatch()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
-                animationPlayed = True
-                Await LockOut()
-
-                isLockout = False
-                animationPlayed = False
-                ' Show ready overlay again after LockOut
-                ShowReadyIndicator()
                 Return
             End If
         End If
@@ -506,10 +481,41 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
-        InitWatches()
     End Sub
 
+    Private Async Sub UiControlLoop()
+        ' Lightweight UI updates only. Avoid heavy logic here.
+        If isRunning Then
+            InitWatches()
+            ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
 
+            If SubjectName.Text = "" Then
+                SubjectName.Text = "Test"
+            End If
+            If TargetTimeInput.Text = "" Then
+                TargetTimeInput.Text = "3"
+            End If
+
+            TargetTime = CInt(TargetTimeInput.Text) * 1000
+
+            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+
+            If totalPress >= TargetTime Then
+                ' Play chime
+                PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
+                rumbleCts?.Cancel()
+                cc.State = False
+                isLockout = True
+                Await LockOut()
+
+                isLockout = False
+
+                ' Show ready overlay again after LockOut
+                ShowReadyIndicator()
+
+            End If
+        End If
+    End Sub
     ' -------------------------------------------------------
     ' Play WAV file
     ' -------------------------------------------------------
