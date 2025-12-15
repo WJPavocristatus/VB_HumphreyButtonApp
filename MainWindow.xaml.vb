@@ -166,19 +166,21 @@ Public Class MainWindow
     End Sub
 
 
-
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
-    'Private Sub InitMainWindow() Handles MyBase.Initialized
-    '    MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
-    '    MainWin.Height = SystemParameters.PrimaryScreenHeight
-    '    MainWin.Top = 0
-    '    MainWin.Left = 0
-    '    MainWin.WindowStyle = WindowStyle.None
-    '    MainWin.ResizeMode = ResizeMode.NoResize
-    'End Sub
+    Private Sub InitMainWindow() Handles MyBase.Initialized
+        'MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+        'MainWin.Height = SystemParameters.PrimaryScreenHeight
+        'MainWin.Top = 0
+        'MainWin.Left = 0
+        MainWin.WindowStyle = WindowStyle.None
+        MainWin.ResizeMode = ResizeMode.NoResize
+    End Sub
 
+    Public Sub Window_loading() Handles MyBase.Initialized
+        StimSpy.Fill = New VisualBrush(StimGrid)
+    End Sub
 
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
@@ -460,13 +462,11 @@ Public Class MainWindow
                 StimAWatch.Start()
                 aPressCt += 1
                 StimGrid.Background = Brushes.Gray
-                StimSpy.Background = Brushes.Gray
                 ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
             Else
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.LightGray
-                StimSpy.Background = Brushes.LightGray
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
@@ -504,56 +504,46 @@ Public Class MainWindow
                 RunColorWatch(stimSeq.Color1)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color1
-                StimSpy.Background = stimSeq.Color1
             Case 1
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
             Case 2
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color2)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color2
-                StimSpy.Background = stimSeq.Color2
             Case 3
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
             Case 4
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color3)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color3
-                StimSpy.Background = stimSeq.Color3
             Case 5
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
             Case 6
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color4)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color4
-                StimSpy.Background = stimSeq.Color4
             Case 7
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
             Case 8
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color5)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color5
-                StimSpy.Background = stimSeq.Color5
             Case 9
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
-                StimSpy.Background = Brushes.White
         End Select
 
         ' Advance persisted index exactly once per stimulus event.
@@ -594,7 +584,6 @@ Public Class MainWindow
 
     Private Sub ResetGridVisuals()
         StimGrid.Background = Brushes.Black
-        StimSpy.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
     End Sub
 

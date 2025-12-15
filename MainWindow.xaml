@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- ResearcherView Column -->
-            <Grid Grid.Column="0" Margin="0,0,2,0" x:Name="r">
+            <Grid Grid.Column="0" Margin="0,0,2,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="99*"/>
                     <RowDefinition Height="167*"/>
@@ -137,7 +137,7 @@
                         <ColumnDefinition Width="155*" />
                         <ColumnDefinition Width="145*" />
                     </Grid.ColumnDefinitions>
-                    <Label Content="Target Time (seconds)" FontSize="14" Margin="0,1,0,-1"/>
+                    <Label Content="Target Time (seconds)" FontSize="14" Margin="0,1,0,-1" VerticalAlignment="Top" Grid.Column="0" Height="32"/>
 
                     <ComboBox x:Name="TargetTimeInput"  Height="32" Margin="17,0,22,0" VerticalAlignment="Top" Grid.Column="1">
                         <ComboBoxItem Content="3"></ComboBoxItem>
@@ -147,7 +147,7 @@
                 </Grid>
 
                 <!-- Data Collectors & Save Buttons -->
-                <Grid Name="GridDataRecorder" Height="200" Margin="344,252,960,216" RenderTransformOrigin="0.5,-0." Grid.Row="1">
+                <Grid Name="GridDataRecorder" Height="200" Margin="344,-750,960,216" Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0"></ColumnDefinition>
                         <ColumnDefinition Width="150"></ColumnDefinition>
@@ -159,23 +159,26 @@
                     <TextBox x:Name="TextBox1"  Grid.ColumnSpan="2" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Center"  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,0,-466,0" />
                     <Button x:Name="BtnSave" Background="PaleGreen"  Content="Save Data" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" Height="45" HorizontalAlignment="Stretch"/>
                     <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
-                    <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
+                    <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
                 </Grid>
-                <Frame x:Name="StimSpy" Background="Black" Margin="1208,164,0,621" HorizontalAlignment="Left" Width="426" Grid.RowSpan="2"/>
-                <Button x:Name="StBtn" Background="Blue" Content="Start" Margin="99,410,0,0" VerticalAlignment="Top" Height="40" Width="112" Grid.Row="1"/>
-                <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,473,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black" Grid.Row="1">
+                <Button x:Name="StBtn" Background="Blue" Content="Start" Margin="99,10,0,0" VerticalAlignment="Top" Height="40" Width="112" Grid.Row="1"/>
+                <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,73,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black" Grid.Row="1">
                     <Button x:Name="ExitButton" Background="Firebrick" Content="X" Click="XButton_Click" Width="49" HorizontalAlignment="Center"/>
                 </Expander>
             </Grid>
+            <Rectangle Name="StimSpy" Stroke="Black" Margin="1269,-981,0,205"  HorizontalAlignment="Left" Width="300" Height="426" Grid.ColumnSpan="2"/>
             <CheckBox x:Name="TrainingToggle" Content="Training?" Margin="588,349,0,0" VerticalAlignment="Top" Checked="SetMode" Height="32" Width="120"/>
         </Grid>
 
         <!-- ChimpView Column -->
-        <Grid x:Name="StimGrid" Background="Black" Margin="1952,0,0,0">
+
+
+        <Grid x:Name="StimGrid" Background="Black" Margin="1920,0,0,0" Grid.Column="1">
 
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
             <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="208,189,234,261"/>
 
         </Grid>
+
     </Grid>
 </Window>
