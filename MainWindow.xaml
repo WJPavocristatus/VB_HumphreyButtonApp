@@ -161,7 +161,7 @@
                     <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
                     <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1" RenderTransformOrigin="0.52,0.603"/>
                 </Grid>
-                <Frame x:Name="StimSpy" Background="Black" Margin="1208,164,0,621" HorizontalAlignment="Left" Width="426" Grid.RowSpan="2"/>
+                <Rectangle Name="StimSpy" Stroke="Black" Margin="1301,164,0,474" HorizontalAlignment="Left" Width="300" Height="426" Grid.RowSpan="2"/>
                 <Button x:Name="StBtn" Background="Blue" Content="Start" Margin="99,410,0,0" VerticalAlignment="Top" Height="40" Width="112" Grid.Row="1"/>
                 <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,473,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black" Grid.Row="1">
                     <Button x:Name="ExitButton" Background="Firebrick" Content="X" Click="XButton_Click" Width="49" HorizontalAlignment="Center"/>
@@ -171,11 +171,14 @@
         </Grid>
 
         <!-- ChimpView Column -->
+      
+            
         <Grid x:Name="StimGrid" Background="Black" Margin="1952,0,0,0">
 
             <Image x:Name="StimGridOverlay" Source="Assets/invert_hd-wallpaper-7939241_1280.png" Stretch="UniformToFill" Visibility="Collapsed"/>
             <Image x:Name="StimGridReadyOverlay" Source="Assets/playbtn.png" Stretch="None"  RenderTransformOrigin="0.5,0.5" Margin="208,189,234,261"/>
 
         </Grid>
+        
     </Grid>
 </Window>
