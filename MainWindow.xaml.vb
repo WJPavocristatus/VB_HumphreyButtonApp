@@ -52,7 +52,7 @@ Public Class MainWindow
     Private idx As Integer = 0
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
-    Private DebounceMs As Integer = 40 ' adjust as needed (30-60 ms is typical)
+    Private DebounceMs As Integer = 20 ' adjust as needed (30-60 ms is typical)
 
     Private devMode As Boolean = False
     Private isLockout As Boolean = False
