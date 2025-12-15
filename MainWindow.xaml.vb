@@ -378,6 +378,7 @@ Public Class MainWindow
 
         If Not isLockout Then
             If devMode Then Return
+            If Not bc.Attached Then Return
             If Not bc.State Then
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
@@ -675,7 +676,7 @@ Public Class MainWindow
             Dispatcher.BeginInvoke(Sub() cc.State = False)
         Catch ex As Exception
             ' log and surface critical error
-            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+            'Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
@@ -800,7 +801,6 @@ Public Class MainWindow
             TrialSelect.Visibility = Visibility.Visible
         End If
     End Sub
-
 
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
