@@ -462,19 +462,19 @@ Public Class MainWindow
                 EndColorWatch()
                 Return
             End If
-        End If
 
-        Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
-        If totalPress >= TargetTime AndAlso isLockout Then
-
-            ' Enter lockout
-            ActiveStimWatch.Stop()
-            EndColorWatch()
-            StimAWatch.Stop()
-            StimBWatch.Stop()
-
-            Return
+            If totalPress >= TargetTime Then
+                isLockout = True
+                ' Enter lockout
+                ActiveStimWatch.Stop()
+                EndColorWatch()
+                StimAWatch.Stop()
+                StimBWatch.Stop()
+                Await LockOut()
+                Return
+            End If
         End If
 
 
@@ -502,14 +502,12 @@ Public Class MainWindow
 
             Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
 
-            If totalPress >= TargetTime Then
+            If isLockout Then
                 ' Play chime
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
                 rumbleCts?.Cancel()
                 cc.State = False
-                isLockout = True
-                Await LockOut()
-
+                Await Task.Delay(3500)
                 isLockout = False
 
                 ' Show ready overlay again after LockOut
