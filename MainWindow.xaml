@@ -161,12 +161,12 @@
                     <TextBox x:Name="TrialDataBox" Text="" Height="150" Margin="711,0,-1177,0" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
                     <Button x:Name="TrialSave" Background="PaleGreen" Content="Save Trial Data" Margin="711,5,-718,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
                 </Grid>
-                <Button x:Name="StBtn" Background="Blue" Content="Start" Margin="99,410,0,0" VerticalAlignment="Top" Height="40" Width="112" Grid.Row="1"/>
-                <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,473,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black" Grid.Row="1">
+                <Button x:Name="StBtn" Background="Blue" Content="Start" Margin="99,10,0,0" VerticalAlignment="Top" Height="40" Width="112" Grid.Row="1"/>
+                <Expander HorizontalAlignment="Left" Height="100" Header="Shutdown" Margin="99,73,0,0" VerticalAlignment="Top" Width="112" IsExpanded="False" Background="Black" Grid.Row="1">
                     <Button x:Name="ExitButton" Background="Firebrick" Content="X" Click="XButton_Click" Width="49" HorizontalAlignment="Center"/>
                 </Expander>
             </Grid>
-                    <Rectangle Name="StimSpy" Stroke="Black" Margin="869,-481,0,205"  HorizontalAlignment="Left" Width="300" Height="426" Grid.ColumnSpan="2"/>
+            <Rectangle Name="StimSpy" Stroke="Black" Margin="1269,-981,0,205"  HorizontalAlignment="Left" Width="300" Height="426" Grid.ColumnSpan="2"/>
             <CheckBox x:Name="TrainingToggle" Content="Training?" Margin="588,349,0,0" VerticalAlignment="Top" Checked="SetMode" Height="32" Width="120"/>
         </Grid>
 
