@@ -165,22 +165,22 @@ Public Class MainWindow
         End If
     End Sub
 
-    Public Sub Window_loading() Handles MyBase.Initialized
-        StimSpy.Fill = New VisualBrush(StimGrid)
-    End Sub
 
     ' -------------------------------------------------------
     ' UI Initialization
     ' -------------------------------------------------------
-    'Private Sub InitMainWindow() Handles MyBase.Initialized
-    '    MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
-    '    MainWin.Height = SystemParameters.PrimaryScreenHeight
-    '    MainWin.Top = 0
-    '    MainWin.Left = 0
-    '    MainWin.WindowStyle = WindowStyle.None
-    '    MainWin.ResizeMode = ResizeMode.NoResize
-    'End Sub
+    Private Sub InitMainWindow() Handles MyBase.Initialized
+        MainWin.Width = SystemParameters.PrimaryScreenWidth * 2
+        MainWin.Height = SystemParameters.PrimaryScreenHeight
+        MainWin.Top = 0
+        MainWin.Left = 0
+        MainWin.WindowStyle = WindowStyle.None
+        MainWin.ResizeMode = ResizeMode.NoResize
+    End Sub
 
+    Public Sub Window_loading() Handles MyBase.Initialized
+        StimSpy.Fill = New VisualBrush(StimGrid)
+    End Sub
 
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
