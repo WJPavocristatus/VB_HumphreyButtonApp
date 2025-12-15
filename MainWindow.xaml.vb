@@ -378,6 +378,7 @@ Public Class MainWindow
 
         If Not isLockout Then
             If devMode Then Return
+            If Not bc.Attached Then Return
             If Not bc.State Then
                 ActiveStimWatch.Stop()
                 StimAWatch.Stop()
@@ -453,7 +454,6 @@ Public Class MainWindow
     Private Sub SetGridColor(count As Integer)
         If isLockout OrElse Not isRunning Then Return
 
-
         ActiveStimWatch.Start()
         If TrainingMode = True Then
             If count Mod 2 = 0 Then
@@ -470,101 +470,94 @@ Public Class MainWindow
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
-
+            ' Use persisted idx as the authoritative step index.
             Select Case trialCount
                 Case 0
-                    TrialToggler(idx, StimulusSequence.Trial0)
+                    TrialToggler(StimulusSequence.Trial0)
                 Case 1
-                    TrialToggler(idx, StimulusSequence.Trial1)
+                    TrialToggler(StimulusSequence.Trial1)
                 Case 2
-                    TrialToggler(idx, StimulusSequence.Trial2)
+                    TrialToggler(StimulusSequence.Trial2)
                 Case 3
-                    TrialToggler(idx, StimulusSequence.Trial3)
+                    TrialToggler(StimulusSequence.Trial3)
                 Case 4
-                    TrialToggler(idx, StimulusSequence.Trial4)
+                    TrialToggler(StimulusSequence.Trial4)
                 Case 5
-                    TrialToggler(idx, StimulusSequence.Trial5)
+                    TrialToggler(StimulusSequence.Trial5)
                 Case 6
-                    TrialToggler(idx, StimulusSequence.Trial6)
+                    TrialToggler(StimulusSequence.Trial6)
                 Case 7
-                    TrialToggler(idx, StimulusSequence.Trial7)
+                    TrialToggler(StimulusSequence.Trial7)
                 Case 8
-                    TrialToggler(idx, StimulusSequence.Trial8)
+                    TrialToggler(StimulusSequence.Trial8)
                 Case 9
-                    TrialToggler(idx, StimulusSequence.Trial9)
+                    TrialToggler(StimulusSequence.Trial9)
             End Select
         End If
     End Sub
 
-    Private Sub TrialToggler(xidx As Integer, stimSeq As StimulusSequence)
-        Select Case xidx
+    ' Simplified TrialToggler: use persisted field `idx` and advance it exactly once.
+    Private Sub TrialToggler(stimSeq As StimulusSequence)
+        Select Case idx
             Case 0
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color1)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color1
                 StimSpy.Background = stimSeq.Color1
-                xidx += 1
             Case 1
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                xidx += 1
             Case 2
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color2)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color2
                 StimSpy.Background = stimSeq.Color2
-                xidx += 1
             Case 3
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                xidx += 1
             Case 4
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color3)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color3
                 StimSpy.Background = stimSeq.Color3
-                xidx += 1
             Case 5
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                xidx += 1
             Case 6
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color4)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color4
                 StimSpy.Background = stimSeq.Color4
-                xidx += 1
             Case 7
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                xidx += 1
             Case 8
                 StimAWatch.Start()
                 RunColorWatch(stimSeq.Color5)
                 aPressCt += 1
                 StimGrid.Background = stimSeq.Color5
                 StimSpy.Background = stimSeq.Color5
-                xidx += 1
             Case 9
                 StimBWatch.Start()
                 bPressCt += 1
                 StimGrid.Background = Brushes.White
                 StimSpy.Background = Brushes.White
-                xidx = 0
         End Select
-        idx = (xidx + 1) Mod 10
+
+        ' Advance persisted index exactly once per stimulus event.
+        idx = (idx + 1) Mod 10
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
@@ -683,7 +676,7 @@ Public Class MainWindow
             Dispatcher.BeginInvoke(Sub() cc.State = False)
         Catch ex As Exception
             ' log and surface critical error
-            Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+            'Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
@@ -808,7 +801,6 @@ Public Class MainWindow
             TrialSelect.Visibility = Visibility.Visible
         End If
     End Sub
-
 
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
