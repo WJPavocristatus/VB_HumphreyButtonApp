@@ -77,7 +77,7 @@ Public Class MainWindow
         flc.DeviceSerialNumber = 705599
 
         bc.Channel = 8
-        cc.Channel = 14
+        cc.Channel = 13 'change to 14 for real device
         fc.Channel = 15
         flc.Channel = 9
 
