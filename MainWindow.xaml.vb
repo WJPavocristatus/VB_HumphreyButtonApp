@@ -150,18 +150,18 @@ Public Class MainWindow
 
             ' Total window spans both monitors
             Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
-            Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+            'Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
 
-            Me.WindowStyle = WindowStyle.None
-            Me.ResizeMode = ResizeMode.NoResize
+            'Me.WindowStyle = WindowStyle.None
+            'Me.ResizeMode = ResizeMode.NoResize
             Me.Left = researcherScreen.Bounds.Left
             Me.Top = researcherScreen.Bounds.Top
             Me.Width = totalWidth
-            Me.Height = maxHeight
+            'Me.Height = maxHeight
 
             ' Resize columns to fit each monitor exactly
             ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
-            SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
+            SubjectView.Width = New GridLength(subjectScreen.Bounds.Height)
         End If
     End Sub
 
