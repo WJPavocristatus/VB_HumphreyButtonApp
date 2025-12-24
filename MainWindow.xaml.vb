@@ -147,9 +147,9 @@ Public Class MainWindow
             Dim researcherScreen = screens(0)
             Dim subjectScreen = screens(1)
 
-            'Me.WindowStyle = WindowStyle.None
-            'Me.ResizeMode = ResizeMode.NoResize
-            'Me.WindowStartupLocation = WindowStartupLocation.Manual
+            Me.WindowStyle = WindowStyle.None
+            Me.ResizeMode = ResizeMode.NoResize
+            Me.WindowStartupLocation = WindowStartupLocation.Manual
 
             Me.Left = researcherScreen.Bounds.Left
             Me.Top = researcherScreen.Bounds.Top
