@@ -14,13 +14,12 @@ Imports VB_HumphreyButtonApp.StimulusSequence
 Public Class MainWindow
 
     ' -----------------------------
-    ' Phidget Channels
+    ' Phidget Channels, Etc.
     ' -----------------------------
     Private bc As New DigitalInput()   ' Button Channel
     Private cc As New DigitalOutput()  ' Clicker (rumble)
     Private fc As New DigitalOutput()  ' Feeder Channel
     Private flc As New DigitalOutput() ' Feeder LED
-
     ' -----------------------------
     ' Timers & Stopwatches
     ' -----------------------------
@@ -142,7 +141,7 @@ Public Class MainWindow
     ' Window Placement
     ' -------------------------------------------------------
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        Dim screens = System.Windows.Forms.Screen.AllScreens
+        Dim screens = Screen.AllScreens
 
         If screens.Length < 2 Then
             ' Use WPF MessageBox (System.Windows.MessageBox) and keep Screen.AllScreens for monitor detection.
@@ -157,9 +156,9 @@ Public Class MainWindow
                 Dim screen = screens(0)
                 Dim screenWidth = screen.Bounds.Width ' keep WinForms screen measurement
 
-                ResearcherView.Width = New GridLength(screenWidth)
+                ResearcherView.Width = screenWidth
                 ResearcherView.BringIntoView()
-                SubjectView.Width = New GridLength(0)
+                SubjectView.Width = 0
             Else
                 devMode = False
                 Return
@@ -168,20 +167,20 @@ Public Class MainWindow
             Dim researcherScreen = screens(0)
             Dim subjectScreen = screens(1)
 
-            ' Total window spans both monitors
-            Dim totalWidth = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
-            Dim maxHeight = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
-
             Me.WindowStyle = WindowStyle.None
             Me.ResizeMode = ResizeMode.NoResize
+            Me.WindowStartupLocation = WindowStartupLocation.Manual
+
             Me.Left = researcherScreen.Bounds.Left
             Me.Top = researcherScreen.Bounds.Top
-            Me.Width = totalWidth
-            Me.Height = maxHeight
+            Me.Width = researcherScreen.Bounds.Width + subjectScreen.Bounds.Width
+            Me.Height = Math.Max(researcherScreen.Bounds.Height, subjectScreen.Bounds.Height)
+            StimSpy.Fill = New VisualBrush(StimGrid)
+            'Me.Height = maxHeight
 
             ' Resize columns to fit each monitor exactly
-            ResearcherView.Width = New GridLength(researcherScreen.Bounds.Width)
-            SubjectView.Width = New GridLength(subjectScreen.Bounds.Width)
+            ResearcherCol.Width = New GridLength(researcherScreen.Bounds.Width)
+            SubjectCol.Width = New GridLength(subjectScreen.Bounds.Width)
         End If
     End Sub
 
@@ -195,9 +194,6 @@ Public Class MainWindow
         MainWin.ResizeMode = ResizeMode.NoResize
     End Sub
 
-    Public Sub Window_loading() Handles MyBase.Initialized
-        StimSpy.Fill = New VisualBrush(StimGrid)
-    End Sub
 
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
