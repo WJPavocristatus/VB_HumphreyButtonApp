@@ -5,6 +5,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>VB_HumphreyButtonApp</RootNamespace>
     <UseWPF>true</UseWPF>
+    <ImportedNamespaces>System.Windows=False,System.Windows.Controls=False,System.Windows.Data=False,System.Windows.Documents=False,System.Windows.Forms=False,System.Windows.Input=False,System.Windows.Media=False,System.Windows.Media.Imaging=False,System.Windows.Navigation=False,System.Windows.Shapes=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,VB_HumphreyButtonApp=True</ImportedNamespaces>
+    <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,15 @@
     <None Remove="Assets\invert_hd-wallpaper-7939241_1280.png" />
     <None Remove="Assets\playbtn.png" />
     <None Remove="Assets\waves-9954690_1280.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +59,7 @@
     <Import Include="System.Windows.Controls" />
     <Import Include="System.Windows.Data" />
     <Import Include="System.Windows.Documents" />
+    <Import Include="System.Windows.Forms" />
     <Import Include="System.Windows.Input" />
     <Import Include="System.Windows.Media" />
     <Import Include="System.Windows.Media.Imaging" />
