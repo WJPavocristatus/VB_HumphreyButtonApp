@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
+        xmlns:vb_humphreybuttonapp="clr-namespace:VB_HumphreyButtonApp" 
+        d:DataContext="{d:DesignInstance Type=vb_humphreybuttonapp:MainWindowViewModel}"
         mc:Ignorable="d"
         x:Name="MainWin"
         Title="MainWindow"
@@ -11,6 +13,8 @@
         ShowInTaskbar="False"
         AllowDrop="False">
 
+    
+    
     <Grid x:Name="ScreenSplitter" Background="DarkCyan">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="ResearcherCol" />
@@ -152,7 +156,7 @@
                                      x:Name="SessionDataBox"/>
                             <Button x:Name="BtnSave"
                                     Content="Save Data"
-                                    Background="PaleGreen"
+                                    Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"
                                     Click="Save_Click"/>
@@ -168,7 +172,7 @@
                                      x:Name="TrialDataBox"/>
                             <Button x:Name="TrialSave"
                                     Content="Save Trial Data"
-                                    Background="PaleGreen"
+                                    Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"
                                     Click="Save_Trial_Click"/>
@@ -209,7 +213,7 @@
                         <!-- Shutdown -->
                         <Button x:Name="StBtn"
                                 Content="Start"
-                                Background="Blue"
+                                Background="PaleGreen"
                                 Width="112"
                                 Height="40" 
                                 Grid.Column="2" 

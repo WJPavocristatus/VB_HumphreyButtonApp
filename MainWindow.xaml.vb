@@ -97,6 +97,9 @@ Public Class MainWindow
         fc.Channel = 15
         flc.Channel = 9
 
+        AddHandler _viewModel.SessionStartRequested, AddressOf OnSessionStartRequested
+        AddHandler _viewModel.SaveDataRequested, AddressOf OnSaveDataRequested
+        AddHandler _viewModel.SaveTrialDataRequested, AddressOf OnSaveTrialDataRequested
         ' Events - Attach / Detach / Error
         AddHandler bc.Attach, AddressOf OnAttachHandler
         AddHandler cc.Attach, AddressOf OnAttachHandler
@@ -116,7 +119,7 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
-        'AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
+        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
 
         ' Open hardware
         Try
@@ -237,6 +240,18 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
+    ' New event handlers for ViewModel commands
+    Private Sub OnSessionStartRequested(sender As Object, e As EventArgs)
+        StartButton_Click(Nothing, Nothing)
+    End Sub
+
+    Private Sub OnSaveDataRequested(sender As Object, e As EventArgs)
+        Save_Click(Nothing, Nothing)
+    End Sub
+
+    Private Sub OnSaveTrialDataRequested(sender As Object, e As EventArgs)
+        Save_Trial_Click(Nothing, Nothing)
+    End Sub
 
     Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
         ' Lightweight UI updates only. Avoid heavy logic here.
@@ -962,7 +977,7 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs)
         sessionStartTimeStamp = DateTime.Now()
 
         If Not isRunning Then
@@ -970,6 +985,7 @@ Public Class MainWindow
             Log($"{DateTime.UtcNow:o} - START button clicked: starting session")
             isRunning = True
             trialReady = True
+            _viewModel.IsSessionRunning = True
 
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Red
@@ -990,9 +1006,10 @@ Public Class MainWindow
             Log($"{DateTime.UtcNow:o} - STOP button clicked: stopping session")
             isRunning = False
             trialReady = False
+            _viewModel.IsSessionRunning = False
 
             StBtn.Content = "Start"
-            StBtn.Background = Brushes.Blue
+            StBtn.Background = Brushes.PaleGreen
 
             HideReadyIndicator()
             Log($"{DateTime.UtcNow:o} - Session stopped")
@@ -1010,6 +1027,11 @@ Public Class MainWindow
     End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
+        If _viewModel.HasValidationErrors Then
+            System.Windows.MessageBox.Show("Cannot save: " & _viewModel.GetError("SessionData"), "Validation Error")
+            Return
+        End If
+
         Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
                              CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
                              "Unknown")
@@ -1022,11 +1044,17 @@ Public Class MainWindow
         }
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, _viewModel.SessionData)
+            _viewModel.ClearValidationErrors()
         End If
         manualSave = True
     End Sub
 
     Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
+        If _viewModel.HasValidationErrors Then
+            System.Windows.MessageBox.Show("Cannot save: " & _viewModel.GetError("TrialData"), "Validation Error")
+            Return
+        End If
+
         Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
                              CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
                              "Unknown")
@@ -1037,6 +1065,7 @@ Public Class MainWindow
         }
         If save.ShowDialog() Then
             IO.File.WriteAllText(save.FileName, _viewModel.TrialData)
+            _viewModel.ClearValidationErrors()
         End If
         manualTrialSave = True
     End Sub
