@@ -227,7 +227,7 @@
         <!-- ================================================= -->
         <!-- SUBJECT VIEW (UNCHANGED) -->
         <!-- ================================================= -->
-        <Grid Grid.Column="2" x:Name="SubjectView">
+        <Grid Grid.Column="1" x:Name="SubjectView">
             <Grid x:Name="StimGrid"
                   
                   Background="Black">

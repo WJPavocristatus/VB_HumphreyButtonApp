@@ -28,6 +28,11 @@ Public Class SessionController
         ResetWatches()
     End Sub
 
+    Public Sub ResetAllWatches()
+        MasterWatch.Reset()
+        ResetWatches()
+    End Sub
+
     Private Sub ResetWatches()
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
@@ -60,10 +65,6 @@ Public Class SessionController
         End If
     End Sub
 
-    ''' <summary>
-    ''' Convenience: increment StimA or StimB runs depending on which is active.
-    ''' Call from UI logic that knows whether the new press maps to StimA or StimB.
-    ''' </summary>
     Public Sub StartStimA()
         If Not StimAWatch.IsRunning Then StimAWatch.Start()
     End Sub
