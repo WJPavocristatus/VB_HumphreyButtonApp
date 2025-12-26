@@ -74,11 +74,17 @@ Public Class MainWindow
     Private progressControllerTotalPress As ProgressBarController
     Private progressControllerActiveStim As ProgressBarController
     Private progressControllerStimA As ProgressBarController
+    Private _viewModel As MainWindowViewModel
+
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
     Public Sub New()
         InitializeComponent()
+
+        ' Initialize ViewModel and set as DataContext
+        _viewModel = New MainWindowViewModel()
+        Me.DataContext = _viewModel
 
         ' Assign device serial
         bc.DeviceSerialNumber = 705599
@@ -327,15 +333,15 @@ Public Class MainWindow
                                   Log($"{DateTime.UtcNow:o} - Processed release")
                               End If
 
-                              Log($"{DateTime.UtcNow:o} - UI handler end for state={actualState}")
+                              Log($"{DateTime.UtcNow:o} - UI handler end for state={bc.State}")
                           End Sub)
 
-        Catch ex As TaskCanceledException
-        Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
-        Catch ex As Exception
-        Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
-        End Try
-        End Function)
+        'Catch ex As TaskCanceledException
+        'Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
+        'Catch ex As Exception
+        'Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
+        'End Try
+        'End Function)
     End Sub
     ' -------------------------------------------------------
     ' Button → Rumble Loop
@@ -559,11 +565,26 @@ Public Class MainWindow
     ' Update UI watch labels
     ' -------------------------------------------------------
     Private Sub InitWatches()
-        PressWatchVal.Content = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
-        ActiveStimVal.Content = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
-        StimAWatchVal.Content = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
-        StimBWatchVal.Content = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
-        LatencyVal.Content = $"{Latency.ElapsedMilliseconds / 1000} secs"
+
+        ' Update ViewModel properties - bindings automatically update UI
+        _viewModel.CumulativeButtonHoldTime = $"{(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs"
+        _viewModel.CurrentHoldTime = $"{ActiveStimWatch.ElapsedMilliseconds / 1000} secs"
+        _viewModel.StimAHoldTime = $"{StimAWatch.ElapsedMilliseconds / 1000} secs"
+        _viewModel.StimBHoldTime = $"{StimBWatch.ElapsedMilliseconds / 1000} secs"
+        _viewModel.CumulativeButtonUpTime = $"{Latency.ElapsedMilliseconds / 1000} secs"
+
+        ' Update progress bar values (0-100 scale)
+        If progressControllerTotalPress IsNot Nothing Then
+            _viewModel.TotalPressValue = progressControllerTotalPress.GetProgressPercentage()
+        End If
+
+        If progressControllerActiveStim IsNot Nothing Then
+            _viewModel.ActiveStimValue = progressControllerActiveStim.GetProgressPercentage()
+        End If
+
+        If progressControllerStimA IsNot Nothing Then
+            _viewModel.StimAValue = progressControllerStimA.GetProgressPercentage()
+        End If
     End Sub
 
 
@@ -843,13 +864,12 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
+        Dim dataEntry As String
 
         If TrainingMode Then
-            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+            dataEntry =
+                $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialCount}, " &
@@ -858,12 +878,13 @@ Public Class MainWindow
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
-                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
-            TextBox1.ScrollToEnd()
+                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs" &
+                Environment.NewLine
+            SessionDataBox.ScrollToEnd()
         Else
-            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+            dataEntry =
+                $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialCount}, " &
@@ -877,20 +898,19 @@ Public Class MainWindow
                 $"Orange Time: {OrangeWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
-                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
-            Environment.NewLine
-            TextBox1.ScrollToEnd()
+                $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs" &
+                Environment.NewLine
+            SessionDataBox.ScrollToEnd()
         End If
+
+        _viewModel.SessionData &= dataEntry
     End Sub
-
     Private Sub RecordTrial()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
-
+        Dim trialDataEntry As String
         If TrainingMode Then
-            TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+            trialDataEntry =
+                $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
@@ -904,8 +924,9 @@ Public Class MainWindow
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
         Else
-            TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+            trialDataEntry =
+                $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
@@ -924,6 +945,8 @@ Public Class MainWindow
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
         End If
+
+        _viewModel.TrialData &= trialDataEntry
     End Sub
 
     ' -------------------------------------------------------
@@ -998,9 +1021,24 @@ Public Class MainWindow
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
-            IO.File.WriteAllText(save.FileName, TextBox1.Text)
+            IO.File.WriteAllText(save.FileName, _viewModel.SessionData)
         End If
         manualSave = True
+    End Sub
+
+    Private Sub Save_Trial_Click(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
+        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
+                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
+                             "Unknown")
+
+        Dim save As New Microsoft.Win32.SaveFileDialog With {
+            .FileName = $"{subjectText}_Trials_{Date.Now.ToFileTimeUtc}.csv",
+            .DefaultExt = ".csv"
+        }
+        If save.ShowDialog() Then
+            IO.File.WriteAllText(save.FileName, _viewModel.TrialData)
+        End If
+        manualTrialSave = True
     End Sub
 
     Private Sub SaveDataAuto()
@@ -1014,7 +1052,7 @@ Public Class MainWindow
             Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_StimA-{stimAText}_StimB-{stimBText}_{Date.Now.ToFileTimeUtc}.csv")
-            IO.File.WriteAllText(file, TextBox1.Text)
+            IO.File.WriteAllText(file, _viewModel.SessionData)
             Console.WriteLine($"Autosaved data to {file}")
         Catch ex As Exception
             Console.WriteLine($"Error autosaving data: {ex.Message}")
@@ -1030,7 +1068,7 @@ Public Class MainWindow
             Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_Trials_{Date.Now.ToFileTimeUtc}.csv")
-            IO.File.WriteAllText(file, TrialDataBox.Text)
+            IO.File.WriteAllText(file, _viewModel.TrialData)
             Console.WriteLine($"Autosaved trial data to {file}")
         Catch ex As Exception
             Console.WriteLine($"Error autosaving trial data: {ex.Message}")

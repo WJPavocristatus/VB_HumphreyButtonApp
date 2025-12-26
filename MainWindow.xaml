@@ -9,15 +9,11 @@
         Title="MainWindow"
         Background="Gray"
         ShowInTaskbar="False"
-        AllowDrop="False"
-  >
-
-
+        AllowDrop="False">
 
     <Grid x:Name="ScreenSplitter" Background="DarkCyan">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="ResearcherCol" />
-
             <ColumnDefinition x:Name="SubjectCol"/>
         </Grid.ColumnDefinitions>
 
@@ -82,7 +78,6 @@
 
                         <!-- Start -->
                         <StackPanel Grid.Column="3" Margin="24,0,0,0" VerticalAlignment="Bottom">
-
                             <CheckBox x:Name="TrainingToggle"
                                       Content="Training?"
                                       Height="32"
@@ -98,10 +93,9 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Stats -->
+                        <!-- Stats - NOW USING DATA BINDING -->
                         <StackPanel x:Name="StatTracker"
                                     Background="Gray"
-
                                     Margin="12,12,24,12">
                             <Label Content="STATS"
                                    FontSize="18"
@@ -123,17 +117,17 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1">
-                                    <Label x:Name="PressWatchVal"/>
-                                    <Label x:Name="ActiveStimVal"/>
-                                    <Label x:Name="StimAWatchVal"/>
-                                    <Label x:Name="StimBWatchVal"/>
-                                    <Label x:Name="LatencyVal"/>
+                                    <Label Content="{Binding CumulativeButtonHoldTime}"/>
+                                    <Label Content="{Binding CurrentHoldTime}"/>
+                                    <Label Content="{Binding StimAHoldTime}"/>
+                                    <Label Content="{Binding StimBHoldTime}"/>
+                                    <Label Content="{Binding CumulativeButtonUpTime}"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
 
                         <!-- Stimulus Names -->
-                        <StackPanel Grid.Column="1" Background="Gray" >
+                        <StackPanel Grid.Column="1" Background="Gray">
                             <Label Content="StimA Name" FontSize="12"/>
                             <TextBox x:Name="StimAName"/>
                             <Label Content="StimB Name" FontSize="12" Margin="0,12,0,0"/>
@@ -141,7 +135,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- ================= DATA RECORDING ================= -->
+                    <!-- ================= DATA RECORDING - USING DATA BINDING ================= -->
                     <Grid Margin="0,0,0,24">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
@@ -151,33 +145,37 @@
                         <!-- Session Data -->
                         <StackPanel Margin="0,0,12,0">
                             <Label Content="Session Data"/>
-                            <TextBox x:Name="TextBox1"
-                                     Height="150"
+                            <TextBox Height="150"
                                      TextWrapping="Wrap"
-                                     VerticalScrollBarVisibility="Visible"/>
+                                     VerticalScrollBarVisibility="Visible"
+                                     Text="{Binding SessionData, UpdateSourceTrigger=PropertyChanged}"
+                                     x:Name="SessionDataBox"/>
                             <Button x:Name="BtnSave"
                                     Content="Save Data"
                                     Background="PaleGreen"
                                     Height="45"
-                                    Margin="0,6,0,0"/>
+                                    Margin="0,6,0,0"
+                                    Click="Save_Click"/>
                         </StackPanel>
 
                         <!-- Trial Data -->
                         <StackPanel Grid.Column="1">
                             <Label Content="Trial Data"/>
-                            <TextBox x:Name="TrialDataBox"
-                                     Height="150"
+                            <TextBox Height="150"
                                      TextWrapping="Wrap"
-                                     VerticalScrollBarVisibility="Visible"/>
+                                     VerticalScrollBarVisibility="Visible"
+                                     Text="{Binding TrialData, UpdateSourceTrigger=PropertyChanged}"
+                                     x:Name="TrialDataBox"/>
                             <Button x:Name="TrialSave"
                                     Content="Save Trial Data"
                                     Background="PaleGreen"
                                     Height="45"
-                                    Margin="0,6,0,0"/>
+                                    Margin="0,6,0,0"
+                                    Click="Save_Trial_Click"/>
                         </StackPanel>
                     </Grid>
 
-                    <!-- ================= SYSTEM / DIAGNOSTICS ================= -->
+                    <!-- ================= SYSTEM / DIAGNOSTICS - USING DATA BINDING ================= -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -185,17 +183,19 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Progress Bars -->
-                        <!-- In the XAML Progress Bars section -->
+                        <!-- Progress Bars - NOW USING DATA BINDING -->
                         <StackPanel>
                             <Label Content="Total Press Progress (Target: 3s)" FontSize="12"/>
-                            <ProgressBar x:Name="ProgressBar0" Height="30" Width="500" Foreground="Green"/>
+                            <ProgressBar x:Name="ProgressBar0" Height="30" Width="500" Foreground="Green"
+                                         Value="{Binding TotalPressValue}"/>
 
                             <Label Content="Active Stimulus (Hold Limit: 5s)" FontSize="12" Margin="0,12,0,0"/>
-                            <ProgressBar x:Name="ProgressBar1" Height="30" Width="500" Foreground="Orange"/>
+                            <ProgressBar x:Name="ProgressBar1" Height="30" Width="500" Foreground="Orange"
+                                         Value="{Binding ActiveStimValue}"/>
 
                             <Label Content="Stim A Progress" FontSize="12" Margin="0,12,0,0"/>
-                            <ProgressBar x:Name="ProgressBar2" Height="30" Width="500" Foreground="Blue"/>
+                            <ProgressBar x:Name="ProgressBar2" Height="30" Width="500" Foreground="Blue"
+                                         Value="{Binding StimAValue}"/>
                         </StackPanel>
 
                         <!-- Stim Spy -->
@@ -208,15 +208,20 @@
 
                         <!-- Shutdown -->
                         <Button x:Name="StBtn"
-                             Content="Start"
-                             Background="Blue"
-                             Width="112"
-                             Height="40" Grid.Column="2" Margin="156,101,0,0" VerticalAlignment="Top"/>
+                                Content="Start"
+                                Background="Blue"
+                                Width="112"
+                                Height="40" 
+                                Grid.Column="2" 
+                                Margin="156,101,0,0" 
+                                VerticalAlignment="Top"
+                                Click="StartButton_Click"/>
                         <Expander Grid.Column="2"
                                   Header="Shutdown"
                                   Background="Black"
                                   HorizontalAlignment="Left"
-                                  Width="112" Margin="156,0,0,0">
+                                  Width="112" 
+                                  Margin="156,0,0,0">
                             <Button x:Name="ExitButton"
                                     Content="X"
                                     Background="Firebrick"
@@ -229,19 +234,16 @@
                 </StackPanel>
             </ScrollViewer>
         </Grid>
+
         <!-- ================================================= -->
-        <!-- SUBJECT VIEW (UNCHANGED) -->
+        <!-- SUBJECT VIEW -->
         <!-- ================================================= -->
         <Grid Grid.Column="2" x:Name="SubjectView">
-            <Grid x:Name="StimGrid"
-                  
-                  Background="Black">
-
+            <Grid x:Name="StimGrid" Background="Black">
                 <Image x:Name="StimGridOverlay"
                        Source="Assets/invert_hd-wallpaper-7939241_1280.png"
                        Stretch="UniformToFill"
                        Visibility="Collapsed"/>
-
                 <Image x:Name="StimGridReadyOverlay"
                        Source="Assets/playbtn.png"
                        Stretch="None"
