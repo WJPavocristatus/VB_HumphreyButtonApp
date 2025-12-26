@@ -242,7 +242,7 @@
         <!-- ================================================= -->
         <!-- SUBJECT VIEW -->
         <!-- ================================================= -->
-        <Grid Grid.Column="2" x:Name="SubjectView">
+        <Grid Grid.Column="1" x:Name="SubjectView">
             <Grid x:Name="StimGrid" Background="Black">
                 <Image x:Name="StimGridOverlay"
                        Source="Assets/invert_hd-wallpaper-7939241_1280.png"

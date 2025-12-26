@@ -76,6 +76,9 @@ Public Class MainWindow
     Private progressControllerStimA As ProgressBarController
     Private _viewModel As MainWindowViewModel
 
+    ' Add a field to hold the synthetic combined stopwatch
+    Private combinedStopwatch As New Stopwatch()
+
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -211,25 +214,23 @@ Public Class MainWindow
 
     ' Add to MainWindow_Loaded or after InitializeComponent:
     Private Sub InitializeProgressBars()
-        ' Total Press (StimA + StimB combined) with TargetTime threshold
+        ' Use ACTUAL stopwatches, not synthetic ones
         progressControllerTotalPress = New ProgressBarController(
-            ProgressBar0, ' Reference the first ProgressBar in XAML
-            New Stopwatch(), ' Will be populated from StimAWatch + StimBWatch
-            TargetTime ' Uses the target hold time as max
+            ProgressBar0,
+            combinedStopwatch,  ' Use the combined stopwatch field
+            TargetTime ' Default, will be updated in StartButton_Click
         )
 
-        ' Active Stimulus with HoldLimit threshold
         progressControllerActiveStim = New ProgressBarController(
             ProgressBar1,
             ActiveStimWatch,
             HoldLimit
         )
 
-        ' Stim A specific with half of TargetTime as example threshold
         progressControllerStimA = New ProgressBarController(
             ProgressBar2,
             StimAWatch,
-            TargetTime / 2
+            TargetTime ' Default
         )
     End Sub
 
@@ -254,14 +255,12 @@ Public Class MainWindow
     End Sub
 
     Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
-        ' Lightweight UI updates only. Avoid heavy logic here.
+        ' Lightweight UI updates only
         If isRunning Then
             InitWatches()
 
-            ' Update progress bars based on stopwatch values
+            ' Update progress bars - the combinedStopwatch will track combined time
             If progressControllerTotalPress IsNot Nothing Then
-                ' Create synthetic stopwatch combining StimA + StimB
-                Dim combinedElapsed = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
                 progressControllerTotalPress.Update()
             End If
 
@@ -272,9 +271,7 @@ Public Class MainWindow
             If progressControllerStimA IsNot Nothing Then
                 progressControllerStimA.Update()
             End If
-
         End If
-
     End Sub
 
     ' -------------------------------------------------------
@@ -312,6 +309,16 @@ Public Class MainWindow
                                   ' Hide ready overlay
                                   HideReadyIndicator()
 
+                                  ' ACTIVATE progress bars when button pressed
+                                  progressControllerTotalPress.Activate()
+                                  progressControllerActiveStim.Activate()
+                                  progressControllerStimA.Activate()
+
+                                  ' Start combined stopwatch
+                                  If Not combinedStopwatch.IsRunning Then
+                                      combinedStopwatch.Start()
+                                  End If
+
                                   ' Button pressed
                                   Latency.Stop()
                                   ActivateOut(cc, 35) ' fire-and-forget
@@ -335,7 +342,17 @@ Public Class MainWindow
                                   End If
 
                               Else
-                                  ' Button released
+                                  ' ========== BUTTON RELEASED ==========
+                                  Log($"{DateTime.UtcNow:o} - Button RELEASED")
+
+                                  ' DEACTIVATE progress bars when button released
+                                  progressControllerTotalPress.Deactivate()
+                                  progressControllerActiveStim.Deactivate()
+                                  progressControllerStimA.Deactivate()
+
+                                  ' Stop combined stopwatch
+                                  combinedStopwatch.Stop()
+
                                   If Not isLockout Then
                                       RecordData()
                                   End If
@@ -350,13 +367,6 @@ Public Class MainWindow
 
                               Log($"{DateTime.UtcNow:o} - UI handler end for state={bc.State}")
                           End Sub)
-
-        'Catch ex As TaskCanceledException
-        'Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
-        'Catch ex As Exception
-        'Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
-        'End Try
-        'End Function)
     End Sub
     ' -------------------------------------------------------
     ' Button → Rumble Loop
@@ -607,10 +617,6 @@ Public Class MainWindow
     ' Alternating colors + overlays
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        'If isLockout OrElse Not isRunning Then
-        '    Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
-        '    Return
-        'End If
 
         Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
         ActiveStimWatch.Start()
@@ -981,8 +987,24 @@ Public Class MainWindow
         sessionStartTimeStamp = DateTime.Now()
 
         If Not isRunning Then
-            ' START SESSION
-            Log($"{DateTime.UtcNow:o} - START button clicked: starting session")
+            ' Set TargetTime FIRST
+            If TargetTimeInput.SelectedItem Is Nothing Then
+                TargetTimeInput.SelectedIndex = 0
+            End If
+            TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
+
+            ' RE-CREATE progress controller with correct TargetTime
+            progressControllerTotalPress = New ProgressBarController(
+                ProgressBar0,
+                combinedStopwatch,
+                TargetTime
+            )
+            progressControllerStimA = New ProgressBarController(
+                ProgressBar2,
+                StimAWatch,
+                TargetTime / 2
+            )
+
             isRunning = True
             trialReady = True
             _viewModel.IsSessionRunning = True
@@ -990,7 +1012,8 @@ Public Class MainWindow
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Red
 
-            ' Reset timers and counters for new session
+            ' Reset timers and counters
+            combinedStopwatch.Restart()
             Latency.Reset()
             ActiveStimWatch.Reset()
             StimAWatch.Reset()
@@ -1006,6 +1029,7 @@ Public Class MainWindow
             Log($"{DateTime.UtcNow:o} - STOP button clicked: stopping session")
             isRunning = False
             trialReady = False
+            combinedStopwatch.Stop()
             _viewModel.IsSessionRunning = False
 
             StBtn.Content = "Start"
