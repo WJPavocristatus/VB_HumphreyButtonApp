@@ -70,6 +70,10 @@ Public Class MainWindow
     'Private lastButtonState As Boolean = False
     Private manualSave As Boolean = False
     Private manualTrialSave As Boolean = False
+    ' Add after existing field declarations:
+    Private progressControllerTotalPress As ProgressBarController
+    Private progressControllerActiveStim As ProgressBarController
+    Private progressControllerStimA As ProgressBarController
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -182,6 +186,8 @@ Public Class MainWindow
             ResearcherCol.Width = New GridLength(researcherScreen.Bounds.Width)
             SubjectCol.Width = New GridLength(subjectScreen.Bounds.Width)
         End If
+
+        InitializeProgressBars()
     End Sub
 
 
@@ -194,6 +200,29 @@ Public Class MainWindow
         MainWin.ResizeMode = ResizeMode.NoResize
     End Sub
 
+    ' Add to MainWindow_Loaded or after InitializeComponent:
+    Private Sub InitializeProgressBars()
+        ' Total Press (StimA + StimB combined) with TargetTime threshold
+        progressControllerTotalPress = New ProgressBarController(
+            ProgressBar0, ' Reference the first ProgressBar in XAML
+            New Stopwatch(), ' Will be populated from StimAWatch + StimBWatch
+            TargetTime ' Uses the target hold time as max
+        )
+
+        ' Active Stimulus with HoldLimit threshold
+        progressControllerActiveStim = New ProgressBarController(
+            ProgressBar1,
+            ActiveStimWatch,
+            HoldLimit
+        )
+
+        ' Stim A specific with half of TargetTime as example threshold
+        progressControllerStimA = New ProgressBarController(
+            ProgressBar2,
+            StimAWatch,
+            TargetTime / 2
+        )
+    End Sub
 
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
@@ -202,16 +231,31 @@ Public Class MainWindow
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
-    'Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
-    '    ' Lightweight UI updates only. Avoid heavy logic here.
-    '    If isRunning Then
-    '        InitWatches()
-    '        ' do small periodic checks (e.g. ActiveStimWatch HoldLimit enforcement)
-    '    End If
-    'End Sub
-    ' -------------------------------------------------------
-    ' Button → Stimulus Logic
-    ' -------------------------------------------------------
+
+    Private Sub UiTimer_Tick(sender As Object, e As EventArgs)
+        ' Lightweight UI updates only. Avoid heavy logic here.
+        If isRunning Then
+            InitWatches()
+
+            ' Update progress bars based on stopwatch values
+            If progressControllerTotalPress IsNot Nothing Then
+                ' Create synthetic stopwatch combining StimA + StimB
+                Dim combinedElapsed = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
+                progressControllerTotalPress.Update()
+            End If
+
+            If progressControllerActiveStim IsNot Nothing Then
+                progressControllerActiveStim.Update()
+            End If
+
+            If progressControllerStimA IsNot Nothing Then
+                progressControllerStimA.Update()
+            End If
+
+        End If
+
+    End Sub
+
     ' -------------------------------------------------------
     ' Button → Stimulus Logic (Debounce Removed)
     ' -------------------------------------------------------
@@ -247,22 +291,17 @@ Public Class MainWindow
                                   ' Hide ready overlay
                                   HideReadyIndicator()
 
-                                  ' Stop latency timer
+                                  ' Button pressed
                                   Latency.Stop()
+                                  ActivateOut(cc, 35) ' fire-and-forget
 
-                                  ' Trigger rumble
-                                  ActivateOut(cc, 35)
-
-                                  ' Check hold limit
                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
-                                      ' Valid press: increment and activate stimulus
                                       btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
-                                      Log($"{DateTime.UtcNow:o} - Press processed: btnCount={btnCount}")
+                                      Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
                                   Else
-                                      ' Hold exceeded: reset everything
-                                      Log($"{DateTime.UtcNow:o} - HoldLimit exceeded; resetting")
+                                      ' Over HoldLimit -> reset visual and stim
                                       rumbleCts?.Cancel()
                                       cc.State = False
                                       ActiveStimWatch.Stop()
@@ -271,32 +310,32 @@ Public Class MainWindow
                                       EndColorWatch()
                                       ResetGridVisuals()
                                       ActiveStimWatch.Reset()
+                                      Log($"{DateTime.UtcNow:o} - HoldLimit exceeded; reset visuals")
                                   End If
 
                               Else
-                                  ' ========== BUTTON RELEASED ==========
-                                  Log($"{DateTime.UtcNow:o} - Button RELEASED")
-
-                                  ' Record data on release
-                                  RecordData()
-
-                                  ' Stop hardware outputs
+                                  ' Button released
+                                  If Not isLockout Then
+                                      RecordData()
+                                  End If
                                   cc.State = False
-
-                                  ' Start latency timer
                                   Latency.Start()
-
-                                  ' Stop stimulus watches
                                   ActiveStimWatch.Stop()
                                   StimAWatch.Stop()
                                   StimBWatch.Stop()
-
-                                  ' Reset visuals
                                   ResetGridVisuals()
-
-                                  Log($"{DateTime.UtcNow:o} - Release processed")
+                                  Log($"{DateTime.UtcNow:o} - Processed release")
                               End If
+
+                              Log($"{DateTime.UtcNow:o} - UI handler end for state={actualState}")
                           End Sub)
+
+        Catch ex As TaskCanceledException
+        Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
+        Catch ex As Exception
+        Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
+        End Try
+        End Function)
     End Sub
     ' -------------------------------------------------------
     ' Button → Rumble Loop
@@ -440,12 +479,14 @@ Public Class MainWindow
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 EndColorWatch()
+                progressControllerTotalPress.Deactivate() ' Track deactivation
+                progressControllerActiveStim.Deactivate()
+                progressControllerStimA.Deactivate()
                 Return
             End If
 
-            Dim totalPress As Long = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-
-            If totalPress >= TargetTime Then
+            ' Check progress bar threshold instead of raw stopwatch
+            If progressControllerTotalPress.IsThresholdReached() Then
                 ' Play chime
                 PlaySound(IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\beep.wav"))
 
@@ -457,12 +498,17 @@ Public Class MainWindow
                 EndColorWatch()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
+
+                ' Deactivate all progress bars during lockout
+                progressControllerTotalPress.Deactivate()
+                progressControllerActiveStim.Deactivate()
+                progressControllerStimA.Deactivate()
+
                 animationPlayed = True
                 Await LockOut()
 
                 isLockout = False
                 animationPlayed = False
-                ' Show ready overlay again after LockOut
                 ShowReadyIndicator()
                 Return
             End If
@@ -696,6 +742,12 @@ Public Class MainWindow
     Public Async Function LockOut() As Task
         trialReady = False
         ResetGridVisuals()
+
+        ' Deactivate all progress bars during lockout
+        progressControllerTotalPress.Deactivate()
+        progressControllerActiveStim.Deactivate()
+        progressControllerStimA.Deactivate()
+
         RecordData()
         RecordTrial()
         Try
