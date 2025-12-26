@@ -222,6 +222,7 @@ Public Class MainWindow
             pendingDebounceCts?.Dispose()
         Catch
         End Try
+
         Log($"{DateTime.UtcNow:o} - Pending debounce cancelled (if any)")
         pendingDebounceCts = New CancellationTokenSource()
         Dim localCts = pendingDebounceCts
@@ -263,36 +264,46 @@ Public Class MainWindow
                          Dispatcher.Invoke(Sub()
                                                Log($"{DateTime.UtcNow:o} - UI handler start for state={actualState}")
 
+                                               ' Check guard conditions AFTER debounce confirmation
                                                If Not trialReady Then
                                                    Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
                                                    Return
                                                End If
 
-                                               ' Pre-start or lockout: ignore presses
-                                               If isLockout OrElse Not isRunning Then
-                                                   ActiveStimWatch.Stop()
-                                                   StimAWatch.Stop()
-                                                   StimBWatch.Stop()
-                                                   Latency.Stop()
-                                                   Log($"{DateTime.UtcNow:o} - Ignored: lockout or not running")
+                                               If isLockout Then
+                                                   Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
                                                    Return
-                                               ElseIf actualState = True Then
-                                                   ' Button pressed → hide ready overlay
-                                                   If isRunning AndAlso Not isLockout Then
-                                                       HideReadyIndicator()
-                                                   End If
+                                               End If
 
-                                                   ' Button pressed
+                                               If Not isRunning Then
+                                                   Log($"{DateTime.UtcNow:o} - Ignored: session not running")
+                                                   Return
+                                               End If
+
+                                               ' Now process the button state
+                                               If actualState = True Then
+                                                   ' ========== BUTTON PRESSED ==========
+                                                   Log($"{DateTime.UtcNow:o} - Button PRESSED (state=True)")
+
+                                                   ' Hide ready overlay
+                                                   HideReadyIndicator()
+
+                                                   ' Stop latency timer (button is down)
                                                    Latency.Stop()
-                                                   ActivateOut(cc, 35) ' fire-and-forget
 
+                                                   ' Trigger rumble (fire-and-forget)
+                                                   ActivateOut(cc, 35)
+
+                                                   ' Check hold limit
                                                    If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
+                                                       ' Valid press: increment and activate stimulus
                                                        btnCount += 1
                                                        ActiveStimWatch.Reset()
                                                        SetGridColor(btnCount)
-                                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
+                                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}, stimulus activated")
                                                    Else
-                                                       ' Over HoldLimit -> reset visual and stim
+                                                       ' Hold exceeded: reset everything
+                                                       Log($"{DateTime.UtcNow:o} - HoldLimit exceeded ({ActiveStimWatch.ElapsedMilliseconds}ms >= {HoldLimit}ms); resetting")
                                                        rumbleCts?.Cancel()
                                                        cc.State = False
                                                        ActiveStimWatch.Stop()
@@ -301,21 +312,30 @@ Public Class MainWindow
                                                        EndColorWatch()
                                                        ResetGridVisuals()
                                                        ActiveStimWatch.Reset()
-                                                       Log($"{DateTime.UtcNow:o} - HoldLimit exceeded; reset visuals")
                                                    End If
 
                                                Else
-                                                   ' Button released
-                                                   If Not isLockout Then
-                                                       RecordData()
-                                                   End If
+                                                   ' ========== BUTTON RELEASED ==========
+                                                   Log($"{DateTime.UtcNow:o} - Button RELEASED (state=False)")
+
+                                                   ' Record data on release
+                                                   RecordData()
+
+                                                   ' Stop hardware outputs
                                                    cc.State = False
+
+                                                   ' Start latency timer (button is up)
                                                    Latency.Start()
+
+                                                   ' Stop stimulus watches
                                                    ActiveStimWatch.Stop()
                                                    StimAWatch.Stop()
                                                    StimBWatch.Stop()
+
+                                                   ' Reset visuals
                                                    ResetGridVisuals()
-                                                   Log($"{DateTime.UtcNow:o} - Processed release")
+
+                                                   Log($"{DateTime.UtcNow:o} - Release processed, stimulus deactivated")
                                                End If
 
                                                Log($"{DateTime.UtcNow:o} - UI handler end for state={actualState}")
@@ -554,9 +574,14 @@ Public Class MainWindow
     ' Alternating colors + overlays
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        If isLockout OrElse Not isRunning Then Return
+        If isLockout OrElse Not isRunning Then
+            Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
+            Return
+        End If
 
+        Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
         ActiveStimWatch.Start()
+
         If TrainingMode = True Then
             If count Mod 2 = 0 Then
                 If StimBWatch.IsRunning Then StimBWatch.Stop()
@@ -564,6 +589,7 @@ Public Class MainWindow
                 aPressCt += 1
                 StimGrid.Background = Brushes.Gray
                 ShowOverlay(StimGridOverlay, "Assets/invert_hd-wallpaper-7939241_1280.png")
+                Log($"{DateTime.UtcNow:o} - Stimulus A activated (Gray)")
             Else
                 If StimAWatch.IsRunning Then StimAWatch.Stop()
                 If Not StimBWatch.IsRunning Then StimBWatch.Start()
@@ -904,26 +930,39 @@ Public Class MainWindow
 
     Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
-        trialReady = True
-        RecordData()
-        RecordTrial()
+
         If Not isRunning Then
+            ' START SESSION
+            Log($"{DateTime.UtcNow:o} - START button clicked: starting session")
             isRunning = True
+            trialReady = True
+
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Red
+
+            ' Reset timers and counters for new session
+            Latency.Reset()
+            ActiveStimWatch.Reset()
+            StimAWatch.Reset()
+            StimBWatch.Reset()
+            btnCount = 0
+            idx = 0
+
             ShowReadyIndicator()
+            Log($"{DateTime.UtcNow:o} - Session started: ready for button presses")
+
         Else
+            ' STOP SESSION
+            Log($"{DateTime.UtcNow:o} - STOP button clicked: stopping session")
             isRunning = False
+            trialReady = False
+
             StBtn.Content = "Start"
             StBtn.Background = Brushes.Blue
-            HideReadyIndicator()
-        End If
 
-        Latency.Reset()
-        ActiveStimWatch.Reset()
-        StimAWatch.Reset()
-        StimBWatch.Reset()
-        btnCount = 0
+            HideReadyIndicator()
+            Log($"{DateTime.UtcNow:o} - Session stopped")
+        End If
     End Sub
 
     Private Sub XButton_Click(sender As Object, e As RoutedEventArgs) Handles ExitButton.Click
