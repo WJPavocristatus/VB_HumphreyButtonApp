@@ -265,31 +265,30 @@ Public Class MainWindow
 
         ' Marshal directly to UI thread without debounce
         Dispatcher.Invoke(Sub()
-                              Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
+                              'Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
 
-                              ' Guard conditions
-                              If Not trialReady Then
-                                  Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
-                                  Return
-                              End If
+                              '' Guard conditions
+                              'If Not trialReady Then
+                              '    Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
+                              '    Return
+                              'End If
 
-                              If isLockout Then
-                                  Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
-                                  Return
-                              End If
+                              'If isLockout Then
+                              '    Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
+                              '    Return
+                              'End If
 
-                              If Not isRunning Then
-                                  Log($"{DateTime.UtcNow:o} - Ignored: session not running")
-                                  Return
-                              End If
+                              'If Not isRunning Then
+                              '    Log($"{DateTime.UtcNow:o} - Ignored: session not running")
+                              '    Return
+                              'End If
 
                               ' Process button state
                               If e.State = True Then
                                   ' ========== BUTTON PRESSED ==========
                                   Log($"{DateTime.UtcNow:o} - Button PRESSED")
 
-                                  ' Hide ready overlay
-                                  HideReadyIndicator()
+
 
                                   ' Button pressed
                                   Latency.Stop()
@@ -327,15 +326,9 @@ Public Class MainWindow
                                   Log($"{DateTime.UtcNow:o} - Processed release")
                               End If
 
-                              Log($"{DateTime.UtcNow:o} - UI handler end for state={actualState}")
+                              Log($"{DateTime.UtcNow:o} - UI handler end for state={bc.State}")
                           End Sub)
 
-        Catch ex As TaskCanceledException
-        Log($"{DateTime.UtcNow:o} - Debounce confirmation cancelled")
-        Catch ex As Exception
-        Log($"{DateTime.UtcNow:o} - Debounce error: {ex.Message}")
-        End Try
-        End Function)
     End Sub
     ' -------------------------------------------------------
     ' Button → Rumble Loop
@@ -862,7 +855,7 @@ Public Class MainWindow
             Environment.NewLine
             TextBox1.ScrollToEnd()
         Else
-            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+            TextBox1.Text &= $"Start Time: {sessionStartTimeStamp}, " &
                 $"{subjectText}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -944,7 +937,7 @@ Public Class MainWindow
 
         If Not isRunning Then
             ' START SESSION
-            Log($"{DateTime.UtcNow:o} - START button clicked: starting session")
+            'Log($"{DateTime.UtcNow:o} - START button clicked: starting session")
             isRunning = True
             trialReady = True
 
@@ -969,7 +962,7 @@ Public Class MainWindow
             trialReady = False
 
             StBtn.Content = "Start"
-            StBtn.Background = Brushes.Blue
+            StBtn.Background = Brushes.PaleGreen
 
             HideReadyIndicator()
             Log($"{DateTime.UtcNow:o} - Session stopped")
