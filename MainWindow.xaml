@@ -156,6 +156,7 @@
                                      VerticalScrollBarVisibility="Visible"/>
                             <Button x:Name="BtnSave"
                                     Content="Save Data"
+                                    Foreground="Black"
                                     Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"/>
@@ -170,6 +171,7 @@
                                      VerticalScrollBarVisibility="Visible"/>
                             <Button x:Name="TrialSave"
                                     Content="Save Trial Data"
+                                    Foreground="Black"
                                     Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"/>
@@ -193,8 +195,8 @@
                             <Label Content="Active Stimulus (Hold Limit: 5s)" FontSize="12" Margin="0,12,0,0"/>
                             <ProgressBar x:Name="ProgressBar1" Height="30" Width="500" Foreground="Orange"/>
 
-                            <Label Content="Stim A Progress" FontSize="12" Margin="0,12,0,0"/>
-                            <ProgressBar x:Name="ProgressBar2" Height="30" Width="500" Foreground="Blue"/>
+                            <!--<Label Content="Stim A Progress" FontSize="12" Margin="0,12,0,0"/>
+                            <ProgressBar x:Name="ProgressBar2" Height="30" Width="500" Foreground="Blue"/>-->
                         </StackPanel>
 
                         <!-- Stim Spy -->
@@ -208,6 +210,7 @@
                         <!-- Shutdown -->
                         <Button x:Name="StBtn"
                              Content="Start"
+                                Foreground="Black"
                              Background="PaleGreen"
                              Width="112"
                              Height="40" Grid.Column="2" Margin="156,101,0,0" VerticalAlignment="Top"/>

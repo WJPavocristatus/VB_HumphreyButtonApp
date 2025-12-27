@@ -2,7 +2,6 @@
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
-'Imports System.Windows.Forms
 Imports VB_HumphreyButtonApp.StimulusSequence
 
 Imports Phidget22
@@ -43,8 +42,6 @@ Public Class MainWindow
     ' -----------------------------
     Private sessionStartTimeStamp As DateTime
     Private rumbleCts As CancellationTokenSource
-    'Private pendingDebounceCts As CancellationTokenSource = Nothing
-    ' File logger
     Private logWriter As StreamWriter = Nothing
     Private logLock As New Object()
     Private logFilePath As String = String.Empty
@@ -56,7 +53,6 @@ Public Class MainWindow
     Private idx As Integer = 0
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
-    'Private DebounceMs As Integer = 20 ' adjust as needed (30-60 ms is typical)
 
     Private devMode As Boolean = False
     Private isLockout As Boolean = False
@@ -66,14 +62,10 @@ Public Class MainWindow
     Private TrainingMode As Boolean = False
     Private colorWatchOn As Boolean = False
     Private hasSavedOnDisconnect As Boolean = False
-    'Private lastButtonEvent As DateTime = DateTime.MinValue
-    'Private lastButtonState As Boolean = False
     Private manualSave As Boolean = False
     Private manualTrialSave As Boolean = False
-    ' Add after existing field declarations:
     Private progressControllerTotalPress As ProgressBarController
     Private progressControllerActiveStim As ProgressBarController
-    Private progressControllerStimA As ProgressBarController
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -110,7 +102,7 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
-        'AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
+        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
 
         ' Open hardware
         Try
@@ -125,7 +117,7 @@ Public Class MainWindow
         End Try
 
         ' Timer
-        'uiTimer.Start()
+        uiTimer.Start()
         timer.Start()
 
         Try
@@ -202,6 +194,26 @@ Public Class MainWindow
 
     ' Add to MainWindow_Loaded or after InitializeComponent:
     Private Sub InitializeProgressBars()
+        ' Ensure TargetTimeInput has a selection and set TargetTime (seconds -> ms)
+        If TargetTimeInput Is Nothing Then
+            ' defensive: if control isn't ready, fall back to 3 seconds
+            TargetTime = 3000
+        Else
+            If TargetTimeInput.SelectedItem Is Nothing Then
+                TargetTimeInput.SelectedIndex = 0
+            End If
+
+            ' Parse selected ComboBoxItem content to milliseconds.
+            Try
+                Dim seconds = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content)
+                TargetTime = seconds * 1000
+            Catch ex As Exception
+                ' fallback if unexpected content
+                TargetTime = 3000
+                Log($"InitializeProgressBars: failed to parse TargetTimeInput, defaulting to 3000 ms: {ex.Message}")
+            End Try
+        End If
+
         ' Total Press (StimA + StimB combined) with TargetTime threshold
         progressControllerTotalPress = New ProgressBarController(
             ProgressBar0, ' Reference the first ProgressBar in XAML
@@ -217,11 +229,11 @@ Public Class MainWindow
         )
 
         ' Stim A specific with half of TargetTime as example threshold
-        progressControllerStimA = New ProgressBarController(
-            ProgressBar2,
-            StimAWatch,
-            TargetTime / 2
-        )
+        'progressControllerStimA = New ProgressBarController(
+        '    ProgressBar2,
+        '    StimAWatch,
+        '    Math.Max(1, TargetTime \ 2) ' avoid zero
+        ')
     End Sub
 
     ' -------------------------------------------------------
@@ -248,11 +260,9 @@ Public Class MainWindow
                 progressControllerActiveStim.Update()
             End If
 
-            If progressControllerStimA IsNot Nothing Then
-                    progressControllerStimA.Update()
-                End If
 
-            End If
+
+        End If
 
     End Sub
 
@@ -287,7 +297,10 @@ Public Class MainWindow
                               If e.State = True Then
                                   ' ========== BUTTON PRESSED ==========
                                   Log($"{DateTime.UtcNow:o} - Button PRESSED")
-
+                                  btnCount += 1
+                                  If btnCount > 0 Then
+                                      HideReadyIndicator()
+                                  End If
 
 
                                   ' Button pressed
@@ -295,7 +308,6 @@ Public Class MainWindow
                                   ActivateOut(cc, 35) ' fire-and-forget
 
                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
-                                      btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
@@ -446,11 +458,11 @@ Public Class MainWindow
             SubjectName.SelectedIndex = SubjectName.Items.Count - 1
         End If
 
-        If TargetTimeInput.SelectedItem Is Nothing Then
-            TargetTimeInput.SelectedIndex = 0
-        End If
+        'If TargetTimeInput.SelectedItem Is Nothing Then
+        '    TargetTimeInput.SelectedIndex = 0
+        'End If
 
-        TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
+        'TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
 
         ' Auto stop at HoldLimit sec
         'If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
@@ -474,7 +486,7 @@ Public Class MainWindow
                 EndColorWatch()
                 progressControllerTotalPress.Deactivate() ' Track deactivation
                 progressControllerActiveStim.Deactivate()
-                progressControllerStimA.Deactivate()
+                'progressControllerStimA.Deactivate()
                 Return
             End If
 
@@ -495,7 +507,7 @@ Public Class MainWindow
                 ' Deactivate all progress bars during lockout
                 progressControllerTotalPress.Deactivate()
                 progressControllerActiveStim.Deactivate()
-                progressControllerStimA.Deactivate()
+                'progressControllerStimA.Deactivate()
 
                 animationPlayed = True
                 Await LockOut()
@@ -739,7 +751,7 @@ Public Class MainWindow
         ' Deactivate all progress bars during lockout
         progressControllerTotalPress.Deactivate()
         progressControllerActiveStim.Deactivate()
-        progressControllerStimA.Deactivate()
+        'progressControllerStimA.Deactivate()
 
         RecordData()
         RecordTrial()
