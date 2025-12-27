@@ -733,7 +733,6 @@ Public Class MainWindow
         ' Deactivate all progress bars during lockout
         progressControllerTotalPress.Deactivate()
         progressControllerActiveStim.Deactivate()
-        'progressControllerStimA.Deactivate()
 
         RecordData()
         RecordTrial()
