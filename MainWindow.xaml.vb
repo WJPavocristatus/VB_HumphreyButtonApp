@@ -668,8 +668,7 @@ Public Class MainWindow
                 StimGrid.Background = Brushes.White
         End Select
 
-        ' Advance persisted index exactly once per stimulus event.
-        idx = (idx + 1) Mod 10
+
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
@@ -814,6 +813,8 @@ Public Class MainWindow
         End If
 
         trialCount += 1
+        ' Advance persisted index exactly once per test cycle.
+        idx = (idx + 1) Mod 10
         'TrialSelect.Text = trialCount.ToString()
         btnCount = 0
         aPressCt = 0
