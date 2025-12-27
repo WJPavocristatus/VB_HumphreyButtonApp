@@ -7,9 +7,6 @@ Imports VB_HumphreyButtonApp.StimulusSequence
 Imports Phidget22
 Imports Phidget22.Events
 
-''' <summary>
-''' WORKING MVP VERSION OF APP!!!!
-''' </summary>
 Public Class MainWindow
 
     ' -----------------------------
@@ -194,31 +191,22 @@ Public Class MainWindow
 
     ' Add to MainWindow_Loaded or after InitializeComponent:
     Private Sub InitializeProgressBars()
-        ' Ensure TargetTimeInput has a selection and set TargetTime (seconds -> ms)
-        If TargetTimeInput Is Nothing Then
-            ' defensive: if control isn't ready, fall back to 3 seconds
-            TargetTime = 3000
-        Else
-            If TargetTimeInput.SelectedItem Is Nothing Then
-                TargetTimeInput.SelectedIndex = 0
-            End If
-
-            ' Parse selected ComboBoxItem content to milliseconds.
+        ' Only read TargetTime here if the ComboBox control exists AND has a selection.
+        If TargetTimeInput IsNot Nothing AndAlso TargetTimeInput.SelectedItem IsNot Nothing Then
             Try
                 Dim seconds = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content)
                 TargetTime = seconds * 1000
             Catch ex As Exception
-                ' fallback if unexpected content
-                TargetTime = 3000
-                Log($"InitializeProgressBars: failed to parse TargetTimeInput, defaulting to 3000 ms: {ex.Message}")
+                ' don't override TargetTime here; leave it as 0 to be resolved at Start
+                Log($"InitializeProgressBars: parse error, leaving TargetTime unchanged: {ex.Message}")
             End Try
         End If
 
         ' Total Press (StimA + StimB combined) with TargetTime threshold
         progressControllerTotalPress = New ProgressBarController(
-            ProgressBar0, ' Reference the first ProgressBar in XAML
-            New Stopwatch(), ' Will be populated from StimAWatch + StimBWatch
-            TargetTime ' Uses the target hold time as max
+            ProgressBar0, ' placeholder stopwatch (we will push combined elapsed manually)
+            New Stopwatch(),
+            TargetTime ' if zero/invalid, controller will use safe min internally
         )
 
         ' Active Stimulus with HoldLimit threshold
@@ -227,13 +215,6 @@ Public Class MainWindow
             ActiveStimWatch,
             HoldLimit
         )
-
-        ' Stim A specific with half of TargetTime as example threshold
-        'progressControllerStimA = New ProgressBarController(
-        '    ProgressBar2,
-        '    StimAWatch,
-        '    Math.Max(1, TargetTime \ 2) ' avoid zero
-        ')
     End Sub
 
     ' -------------------------------------------------------
@@ -251,19 +232,15 @@ Public Class MainWindow
 
             ' Update progress bars based on stopwatch values
             If progressControllerTotalPress IsNot Nothing Then
-                ' Create synthetic stopwatch combining StimA + StimB
+                ' Create synthetic elapsed combining StimA + StimB and pass to controller.
                 Dim combinedElapsed = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-                progressControllerTotalPress.Update()
+                progressControllerTotalPress.SetElapsed(combinedElapsed)
             End If
 
             If progressControllerActiveStim IsNot Nothing Then
                 progressControllerActiveStim.Update()
             End If
-
-
-
         End If
-
     End Sub
 
     ' -------------------------------------------------------
@@ -302,6 +279,9 @@ Public Class MainWindow
                                       HideReadyIndicator()
                                   End If
 
+                                  ' Activate progress bars on press (total also activated at session start)
+                                  progressControllerTotalPress?.Activate()
+                                  progressControllerActiveStim?.Activate()
 
                                   ' Button pressed
                                   Latency.Stop()
@@ -326,6 +306,9 @@ Public Class MainWindow
 
                               Else
                                   ' Button released
+                                  ' Deactivate active-stim progress tracking on release
+                                  progressControllerActiveStim?.Deactivate()
+
                                   If Not isLockout Then
                                       RecordData()
                                   End If
@@ -420,7 +403,7 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on phidget error: {ex.Message}")
+                                  Console.WriteLine($"Error autosaving trial data on error: {ex.Message}")
                               End Try
 
                           End Sub)
@@ -458,23 +441,23 @@ Public Class MainWindow
             SubjectName.SelectedIndex = SubjectName.Items.Count - 1
         End If
 
-        'If TargetTimeInput.SelectedItem Is Nothing Then
-        '    TargetTimeInput.SelectedIndex = 0
-        'End If
+        If TargetTimeInput.SelectedItem Is Nothing Then
+            TargetTimeInput.SelectedIndex = 0
+        End If
 
         'TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
 
         ' Auto stop at HoldLimit sec
-        'If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
-        '    rumbleCts?.Cancel()
-        '    cc.State = False
-        '    ActiveStimWatch.Stop()
-        '    StimAWatch.Stop()
-        '    StimBWatch.Stop()
-        '    EndColorWatch()
-        '    ResetGridVisuals()
-        '    ActiveStimWatch.Reset()
-        'End If
+        If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
+            rumbleCts?.Cancel()
+            cc.State = False
+            ActiveStimWatch.Stop()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+            EndColorWatch()
+            ResetGridVisuals()
+            ActiveStimWatch.Reset()
+        End If
 
         If Not isLockout Then
             If devMode Then Return
@@ -484,8 +467,8 @@ Public Class MainWindow
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 EndColorWatch()
-                progressControllerTotalPress.Deactivate() ' Track deactivation
-                progressControllerActiveStim.Deactivate()
+                ' Keep total progress visible throughout trial; only stop active-stim tracking.
+                progressControllerActiveStim?.Deactivate()
                 'progressControllerStimA.Deactivate()
                 Return
             End If
@@ -579,7 +562,7 @@ Public Class MainWindow
         'If isLockout OrElse Not isRunning Then
         '    Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
         '    Return
-        'End If
+        ' End If
 
         Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
         ActiveStimWatch.Start()
@@ -845,6 +828,9 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
+
+        ' End of trial — clear total progress so next trial starts fresh.
+        progressControllerTotalPress?.Deactivate()
     End Sub
 
     Private Sub RecordData()
@@ -944,7 +930,7 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+    Private Sub StartButton_Click(sender As Object, e As EventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
 
         If Not isRunning Then
@@ -964,8 +950,32 @@ Public Class MainWindow
             btnCount = 0
             idx = 0
 
+            ' Determine TargetTime at session start:
+            If TargetTimeInput Is Nothing OrElse TargetTimeInput.SelectedItem Is Nothing Then
+                ' Only force default here if control is missing / no selection at start
+                TargetTime = 3000
+                Log($"{DateTime.UtcNow:o} - TargetTimeInput missing/unselected — defaulting to 3000 ms")
+            Else
+                Try
+                    Dim seconds = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content)
+                    TargetTime = seconds * 1000
+                Catch ex As Exception
+                    ' fallback if parsing fails
+                    TargetTime = 3000
+                    Log($"{DateTime.UtcNow:o} - Failed to parse TargetTimeInput at Start, defaulting to 3000 ms: {ex.Message}")
+                End Try
+            End If
+
+            ' Ensure the total-progress controller uses the runtime TargetTime value
+            If progressControllerTotalPress IsNot Nothing Then
+                progressControllerTotalPress.UpdateMaxThreshold(TargetTime)
+            End If
+
+            ' Ensure total progress is tracking for this trial/session.
+            progressControllerTotalPress?.Activate()
+
             ShowReadyIndicator()
-            Log($"{DateTime.UtcNow:o} - Session started: ready for button presses")
+            Log($"{DateTime.UtcNow:o} - Session started: ready for button presses (TargetTime={TargetTime} ms)")
 
         Else
             ' STOP SESSION
@@ -977,6 +987,8 @@ Public Class MainWindow
             StBtn.Background = Brushes.PaleGreen
 
             HideReadyIndicator()
+            ' Stop total progress when session stopped.
+            progressControllerTotalPress?.Deactivate()
             Log($"{DateTime.UtcNow:o} - Session stopped")
         End If
     End Sub
