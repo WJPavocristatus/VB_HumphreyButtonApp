@@ -14,7 +14,7 @@
 
 
 
-    <Grid x:Name="ScreenSplitter" Background="DarkCyan">
+    <Grid x:Name="ScreenSplitter" Background="DarkSlateGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="ResearcherCol" />
 
@@ -40,7 +40,7 @@
                         <!-- Subject -->
                         <StackPanel>
                             <Label Content="Subject" FontSize="14"/>
-                            <ComboBox x:Name="SubjectName" Height="31" FontSize="14">
+                            <ComboBox x:Name="SubjectName" Height="43" FontSize="14">
                                 <ComboBoxItem Content="Arthur"/>
                                 <ComboBoxItem Content="Ben"/>
                                 <ComboBoxItem Content="Billy"/>
@@ -56,7 +56,7 @@
                         <!-- Trial -->
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
                             <Label Content="Trial" FontSize="14"/>
-                            <ComboBox x:Name="TrialSelect" Height="31" FontSize="14">
+                            <ComboBox x:Name="TrialSelect" Height="43" FontSize="14">
                                 <ComboBoxItem Content="0"/>
                                 <ComboBoxItem Content="1"/>
                                 <ComboBoxItem Content="2"/>
@@ -73,7 +73,7 @@
                         <!-- Target Time -->
                         <StackPanel Grid.Column="2" Margin="12,0,0,0">
                             <Label Content="Target Time (seconds)" FontSize="14"/>
-                            <ComboBox x:Name="TargetTimeInput" Height="31">
+                            <ComboBox x:Name="TargetTimeInput" Height="43">
                                 <ComboBoxItem Content="3"/>
                                 <ComboBoxItem Content="10"/>
                                 <ComboBoxItem Content="20"/>
@@ -157,7 +157,7 @@
                                      VerticalScrollBarVisibility="Visible"/>
                             <Button x:Name="BtnSave"
                                     Content="Save Data"
-                                    Background="PaleGreen"
+                                    Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"/>
                         </StackPanel>
@@ -171,7 +171,7 @@
                                      VerticalScrollBarVisibility="Visible"/>
                             <Button x:Name="TrialSave"
                                     Content="Save Trial Data"
-                                    Background="PaleGreen"
+                                    Background="LightBlue"
                                     Height="45"
                                     Margin="0,6,0,0"/>
                         </StackPanel>
@@ -188,7 +188,7 @@
                         <!-- Progress Bars -->
                         <!-- In the XAML Progress Bars section -->
                         <StackPanel>
-                            <Label Content="Total Press Progress (Target: 3s)" FontSize="12"/>
+                            <Label Content="Total Press Progress" FontSize="12"/>
                             <ProgressBar x:Name="ProgressBar0" Height="30" Width="500" Foreground="Green"/>
 
                             <Label Content="Active Stimulus (Hold Limit: 5s)" FontSize="12" Margin="0,12,0,0"/>
@@ -209,7 +209,7 @@
                         <!-- Shutdown -->
                         <Button x:Name="StBtn"
                              Content="Start"
-                             Background="Blue"
+                             Background="PaleGreen"
                              Width="112"
                              Height="40" Grid.Column="2" Margin="156,101,0,0" VerticalAlignment="Top"/>
                         <Expander Grid.Column="2"

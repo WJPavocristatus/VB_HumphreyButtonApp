@@ -86,4 +86,3 @@
         .Color2 = Brushes.Green
     }
 End Class
-

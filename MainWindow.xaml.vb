@@ -49,7 +49,7 @@ Public Class MainWindow
     Private logLock As New Object()
     Private logFilePath As String = String.Empty
 
-    Private TargetTime As Integer
+    Private TargetTime As Integer = 0
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
@@ -265,23 +265,23 @@ Public Class MainWindow
 
         ' Marshal directly to UI thread without debounce
         Dispatcher.Invoke(Sub()
-                              'Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
+                              Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
 
-                              '' Guard conditions
-                              'If Not trialReady Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
-                              '    Return
-                              'End If
+                              ' Guard conditions
+                              If Not trialReady Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
+                                  Return
+                              End If
 
-                              'If isLockout Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
-                              '    Return
-                              'End If
+                              If isLockout Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
+                                  Return
+                              End If
 
-                              'If Not isRunning Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: session not running")
-                              '    Return
-                              'End If
+                              If Not isRunning Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: session not running")
+                                  Return
+                              End If
 
                               ' Process button state
                               If e.State = True Then
