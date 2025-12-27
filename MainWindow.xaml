@@ -101,7 +101,6 @@
                         <!-- Stats -->
                         <StackPanel x:Name="StatTracker"
                                     Background="Gray"
-
                                     Margin="12,12,24,12">
                             <Label Content="STATS"
                                    FontSize="18"
@@ -232,10 +231,8 @@
         <!-- ================================================= -->
         <!-- SUBJECT VIEW (UNCHANGED) -->
         <!-- ================================================= -->
-        <Grid Grid.Column="2" x:Name="SubjectView">
-            <Grid x:Name="StimGrid"
-                  
-                  Background="Black">
+        <Grid Grid.Column="1" x:Name="SubjectView">
+            <Grid x:Name="StimGrid" Background="Black">
 
                 <Image x:Name="StimGridOverlay"
                        Source="Assets/invert_hd-wallpaper-7939241_1280.png"
