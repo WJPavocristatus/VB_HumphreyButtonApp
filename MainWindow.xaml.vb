@@ -249,10 +249,10 @@ Public Class MainWindow
             End If
 
             If progressControllerStimA IsNot Nothing Then
-                progressControllerStimA.Update()
-            End If
+                    progressControllerStimA.Update()
+                End If
 
-        End If
+            End If
 
     End Sub
 
@@ -443,7 +443,7 @@ Public Class MainWindow
 
         ' Handle ComboBox defaults
         If SubjectName.SelectedItem Is Nothing Then
-            SubjectName.SelectedIndex = 0
+            SubjectName.SelectedIndex = SubjectName.Items.Count - 1
         End If
 
         If TargetTimeInput.SelectedItem Is Nothing Then
