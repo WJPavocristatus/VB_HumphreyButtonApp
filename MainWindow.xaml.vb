@@ -507,8 +507,8 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
-        If sessionId >= 5 Then
-            sessionId = 0
+        If trialId > 9 Then
+            trialId = 0
         End If
 
 
@@ -750,8 +750,8 @@ Public Class MainWindow
         progressControllerTotalPress.Deactivate()
         progressControllerActiveStim.Deactivate()
 
-        RecordData()
-        RecordTrial()
+        'RecordData()
+        'RecordTrial()
         Try
             bc.Close()
         Catch
@@ -764,7 +764,7 @@ Public Class MainWindow
         End If
         Await PlayLockoutLEDSequence()
         Await ActivateOut(fc, 50)
-        Await Task.Delay(3000)
+        Await Task.Delay(1000)
 
         Try
             bc.Open()
@@ -774,7 +774,7 @@ Public Class MainWindow
         flc.State = False
         Latency.Reset()
         Latency.Stop()
-        ResetTrial()
+        NextSession()
         trialReady = True
     End Function
 
@@ -814,7 +814,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' Reset Trial
     ' -------------------------------------------------------
-    Private Sub ResetTrial()
+    Private Sub NextSession()
         MasterWatch.Stop()
         ActiveStimWatch.Stop()
         EndColorWatch()
@@ -823,14 +823,14 @@ Public Class MainWindow
         ResetGridVisuals()
 
 
-        If Not isLockout Then
-            RecordData()
-        End If
+        RecordData()
+        RecordTrial()
 
         sessionId += 1
-        ' Advance persisted index exactly once per test cycle.
-        trialId = (trialId + 1) Mod 10
-        'TrialSelect.Text = trialId.ToString()
+        If sessionId > 4 Then
+            sessionId = 0
+            trialId += 1
+        End If
         btnCount = 0
         aPressCt = 0
         bPressCt = 0
@@ -854,7 +854,7 @@ Public Class MainWindow
 
         If TrainingMode Then
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{SubjectName.Text}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialId}, " &
@@ -868,10 +868,11 @@ Public Class MainWindow
             TextBox1.ScrollToEnd()
         Else
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp}, " &
-                $"{SubjectName.Text}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialId}, " &
+                $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -891,9 +892,8 @@ Public Class MainWindow
     Private Sub RecordTrial()
         If TrainingMode Then
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{SubjectName.Text}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
-                $"Trial: {trialId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Target Hold Time: {TargetTime}, " &
@@ -906,9 +906,10 @@ Public Class MainWindow
             TrialDataBox.ScrollToEnd()
         Else
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{SubjectName.Text}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
-                $"Trial: {trialId}, " &
+                $"TrialID: {trialId}, " &
+                $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Target Hold Time: {TargetTime}, " &
@@ -916,6 +917,7 @@ Public Class MainWindow
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Stim B Presses: {bPressCt}, " &
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Stimulus Color: , " &
                 $"Blue Time: {BlueWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Green Time: {GreenWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Yellow Time: {YellowWatch.ElapsedMilliseconds / 1000} secs, " &

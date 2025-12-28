@@ -6,7 +6,7 @@
       .Color4 = Brushes.Yellow,
       .Color3 = Brushes.Blue,
       .Color5 = Brushes.Red
-  }
+    }
 
     Public Shared Trial1 As New TrialStimulusSequence With {
         .TrialID = 1,
