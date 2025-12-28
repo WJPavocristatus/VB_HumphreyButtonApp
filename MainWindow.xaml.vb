@@ -2,7 +2,7 @@
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
-Imports VB_HumphreyButtonApp.StimulusSequence
+Imports VB_HumphreyButtonApp.TrialStimulusSequence
 
 Imports Phidget22
 Imports Phidget22.Events
@@ -108,7 +108,7 @@ Public Class MainWindow
             fc.Open()
             flc.Open()
         Catch ex As Exception
-            Console.WriteLine($"Error opening channels: {ex.Message}")
+            Log($"Error opening channels: {ex.Message}")
             ' If open fails, ensure we save what we have
             HandleDisconnectSave("Error opening channels: " & ex.Message)
         End Try
@@ -126,7 +126,7 @@ Public Class MainWindow
             }
             Log($"Log started: {DateTime.UtcNow:o}")
         Catch ex As Exception
-            Console.WriteLine($"Failed to open log file: {ex.Message}")
+            Log($"Failed to open log file: {ex.Message}")
         End Try
     End Sub
 
@@ -358,7 +358,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget {sender} attached!")
+                              Log($"Phidget {sender} attached!")
                           End Sub)
     End Sub
 
@@ -367,7 +367,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnDetachHandler(sender As Object, e As DetachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget detached: {sender}")
+                              Log($"Phidget detached: {sender}")
 
                               ' Save only once even if multiple channels detach
                               If hasSavedOnDisconnect Then
@@ -380,7 +380,7 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on detach: {ex.Message}")
+                                  Log($"Error saving on detach: {ex.Message}")
                               End Try
 
                           End Sub)
@@ -391,7 +391,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnErrorHandler(sender As Object, e As Events.ErrorEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget error on {sender}: {e.Description}")
+                              Log($"Phidget error on {sender}: {e.Description}")
 
                               ' Save only once on first error that we treat as critical
                               If hasSavedOnDisconnect Then
@@ -403,12 +403,11 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error autosaving trial data on error: {ex.Message}")
+                                  Log($"Error autosaving trial data on error: {ex.Message}")
                               End Try
 
                           End Sub)
     End Sub
-
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
@@ -507,6 +506,7 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
+
         InitWatches()
     End Sub
 
@@ -519,7 +519,7 @@ Public Class MainWindow
             Dim player As New SoundPlayer(fileName)
             player.Play()
         Catch ex As Exception
-            Console.WriteLine($"Error playing sound: {ex.Message}")
+            Log($"Error playing sound: {ex.Message}")
         End Try
     End Sub
 
@@ -535,10 +535,10 @@ Public Class MainWindow
                     logWriter.WriteLine(line)
                 Else
                     ' fallback to console if writer not available
-                    Console.WriteLine(line)
+                    Log(line)
                 End If
             Catch ex As Exception
-                Console.WriteLine($"Logging error: {ex.Message}")
+                Log($"Logging error: {ex.Message}")
             End Try
         End SyncLock
     End Sub
@@ -584,33 +584,33 @@ Public Class MainWindow
             End If
         Else
             ' Use persisted idx as the authoritative step index.
-            Select Case trialCount
+            Select Case idx
                 Case 0
-                    TrialToggler(StimulusSequence.Trial0)
+                    TrialToggler(TrialStimulusSequence.Trial0)
                 Case 1
-                    TrialToggler(StimulusSequence.Trial1)
+                    TrialToggler(TrialStimulusSequence.Trial1)
                 Case 2
-                    TrialToggler(StimulusSequence.Trial2)
+                    TrialToggler(TrialStimulusSequence.Trial2)
                 Case 3
-                    TrialToggler(StimulusSequence.Trial3)
+                    TrialToggler(TrialStimulusSequence.Trial3)
                 Case 4
-                    TrialToggler(StimulusSequence.Trial4)
+                    TrialToggler(TrialStimulusSequence.Trial4)
                 Case 5
-                    TrialToggler(StimulusSequence.Trial5)
+                    TrialToggler(TrialStimulusSequence.Trial5)
                 Case 6
-                    TrialToggler(StimulusSequence.Trial6)
+                    TrialToggler(TrialStimulusSequence.Trial6)
                 Case 7
-                    TrialToggler(StimulusSequence.Trial7)
+                    TrialToggler(TrialStimulusSequence.Trial7)
                 Case 8
-                    TrialToggler(StimulusSequence.Trial8)
+                    TrialToggler(TrialStimulusSequence.Trial8)
                 Case 9
-                    TrialToggler(StimulusSequence.Trial9)
+                    TrialToggler(TrialStimulusSequence.Trial9)
             End Select
         End If
     End Sub
 
     ' Simplified TrialToggler: use persisted field `idx` and advance it exactly once.
-    Private Sub TrialToggler(stimSeq As StimulusSequence)
+    Private Sub TrialToggler(stimSeq As TrialStimulusSequence)
         Select Case idx
             Case 0
                 If StimBWatch.IsRunning Then StimBWatch.Stop()
@@ -791,7 +791,7 @@ Public Class MainWindow
             Dispatcher.BeginInvoke(Sub() cc.State = False)
         Catch ex As Exception
             ' log and surface critical error
-            'Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+            'Dispatcher.BeginInvoke(Sub() Log($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
@@ -834,13 +834,11 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
+
 
         If TrainingMode Then
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialCount}, " &
@@ -854,7 +852,7 @@ Public Class MainWindow
             TextBox1.ScrollToEnd()
         Else
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp}, " &
-                $"{subjectText}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Trial: {trialCount}, " &
@@ -875,13 +873,9 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
-
         If TrainingMode Then
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
@@ -896,7 +890,7 @@ Public Class MainWindow
             TrialDataBox.ScrollToEnd()
         Else
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"{SubjectName}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
@@ -1032,9 +1026,9 @@ Public Class MainWindow
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_StimA-{stimAText}_StimB-{stimBText}_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TextBox1.Text)
-            Console.WriteLine($"Autosaved data to {file}")
+            Log($"Autosaved data to {file}")
         Catch ex As Exception
-            Console.WriteLine($"Error autosaving data: {ex.Message}")
+            Log($"Error autosaving data: {ex.Message}")
         End Try
     End Sub
 
@@ -1048,9 +1042,9 @@ Public Class MainWindow
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_Trials_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TrialDataBox.Text)
-            Console.WriteLine($"Autosaved trial data to {file}")
+            Log($"Autosaved trial data to {file}")
         Catch ex As Exception
-            Console.WriteLine($"Error autosaving trial data: {ex.Message}")
+            Log($"Error autosaving trial data: {ex.Message}")
         End Try
     End Sub
 
@@ -1063,9 +1057,9 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on disconnect helper: {ex.Message}")
+                                  Log($"Error saving on disconnect helper: {ex.Message}")
                               End Try
-                              Console.WriteLine($"Handled disconnect save: {reason}")
+                              Log($"Handled disconnect save: {reason}")
                           End Sub)
     End Sub
 
