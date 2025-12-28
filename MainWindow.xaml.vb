@@ -2,15 +2,11 @@
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
-'Imports System.Windows.Forms
-Imports VB_HumphreyButtonApp.StimulusSequence
+Imports VB_HumphreyButtonApp.TrialStimulusSequence
 
 Imports Phidget22
 Imports Phidget22.Events
 
-''' <summary>
-''' WORKING MVP VERSION OF APP!!!!
-''' </summary>
 Public Class MainWindow
 
     ' -----------------------------
@@ -43,20 +39,18 @@ Public Class MainWindow
     ' -----------------------------
     Private sessionStartTimeStamp As DateTime
     Private rumbleCts As CancellationTokenSource
-    'Private pendingDebounceCts As CancellationTokenSource = Nothing
-    ' File logger
     Private logWriter As StreamWriter = Nothing
     Private logLock As New Object()
     Private logFilePath As String = String.Empty
 
-    Private TargetTime As Integer
+    Private TargetTime As Integer = 0
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
-    Private trialCount As Integer = 0
-    Private idx As Integer = 0
+    'Private trialId As Integer = 0
+    Private trialId As Integer = 0
+    Private sessionId As Integer = 0
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
-    'Private DebounceMs As Integer = 20 ' adjust as needed (30-60 ms is typical)
 
     Private devMode As Boolean = False
     Private isLockout As Boolean = False
@@ -66,14 +60,10 @@ Public Class MainWindow
     Private TrainingMode As Boolean = False
     Private colorWatchOn As Boolean = False
     Private hasSavedOnDisconnect As Boolean = False
-    'Private lastButtonEvent As DateTime = DateTime.MinValue
-    'Private lastButtonState As Boolean = False
     Private manualSave As Boolean = False
     Private manualTrialSave As Boolean = False
-    ' Add after existing field declarations:
     Private progressControllerTotalPress As ProgressBarController
     Private progressControllerActiveStim As ProgressBarController
-    Private progressControllerStimA As ProgressBarController
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -110,7 +100,7 @@ Public Class MainWindow
         AddHandler bc.StateChange, AddressOf ButtonStim_StateChanged
         AddHandler bc.StateChange, AddressOf ButtonRumble_StateChanged
 
-        'AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
+        AddHandler uiTimer.Tick, AddressOf UiTimer_Tick
 
         ' Open hardware
         Try
@@ -119,13 +109,13 @@ Public Class MainWindow
             fc.Open()
             flc.Open()
         Catch ex As Exception
-            Console.WriteLine($"Error opening channels: {ex.Message}")
+            Log($"Error opening channels: {ex.Message}")
             ' If open fails, ensure we save what we have
             HandleDisconnectSave("Error opening channels: " & ex.Message)
         End Try
 
         ' Timer
-        'uiTimer.Start()
+        uiTimer.Start()
         timer.Start()
 
         Try
@@ -137,7 +127,7 @@ Public Class MainWindow
             }
             Log($"Log started: {DateTime.UtcNow:o}")
         Catch ex As Exception
-            Console.WriteLine($"Failed to open log file: {ex.Message}")
+            Log($"Failed to open log file: {ex.Message}")
         End Try
     End Sub
 
@@ -202,11 +192,22 @@ Public Class MainWindow
 
     ' Add to MainWindow_Loaded or after InitializeComponent:
     Private Sub InitializeProgressBars()
+        ' Only read TargetTime here if the ComboBox control exists AND has a selection.
+        If TargetTimeInput IsNot Nothing AndAlso TargetTimeInput.SelectedItem IsNot Nothing Then
+            Try
+                Dim seconds = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content)
+                TargetTime = seconds * 1000
+            Catch ex As Exception
+                ' don't override TargetTime here; leave it as 0 to be resolved at Start
+                Log($"InitializeProgressBars: parse error, leaving TargetTime unchanged: {ex.Message}")
+            End Try
+        End If
+
         ' Total Press (StimA + StimB combined) with TargetTime threshold
         progressControllerTotalPress = New ProgressBarController(
-            ProgressBar0, ' Reference the first ProgressBar in XAML
-            New Stopwatch(), ' Will be populated from StimAWatch + StimBWatch
-            TargetTime ' Uses the target hold time as max
+            ProgressBar0, ' placeholder stopwatch (we will push combined elapsed manually)
+            New Stopwatch(),
+            TargetTime ' if zero/invalid, controller will use safe min internally
         )
 
         ' Active Stimulus with HoldLimit threshold
@@ -214,13 +215,6 @@ Public Class MainWindow
             ProgressBar1,
             ActiveStimWatch,
             HoldLimit
-        )
-
-        ' Stim A specific with half of TargetTime as example threshold
-        progressControllerStimA = New ProgressBarController(
-            ProgressBar2,
-            StimAWatch,
-            TargetTime / 2
         )
     End Sub
 
@@ -239,21 +233,15 @@ Public Class MainWindow
 
             ' Update progress bars based on stopwatch values
             If progressControllerTotalPress IsNot Nothing Then
-                ' Create synthetic stopwatch combining StimA + StimB
+                ' Create synthetic elapsed combining StimA + StimB and pass to controller.
                 Dim combinedElapsed = StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds
-                progressControllerTotalPress.Update()
+                progressControllerTotalPress.SetElapsed(combinedElapsed)
             End If
 
             If progressControllerActiveStim IsNot Nothing Then
                 progressControllerActiveStim.Update()
             End If
-
-            If progressControllerStimA IsNot Nothing Then
-                progressControllerStimA.Update()
-            End If
-
         End If
-
     End Sub
 
     ' -------------------------------------------------------
@@ -265,37 +253,42 @@ Public Class MainWindow
 
         ' Marshal directly to UI thread without debounce
         Dispatcher.Invoke(Sub()
-                              'Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
+                              Log($"{DateTime.UtcNow:o} - Processing button state: {e.State}")
 
-                              '' Guard conditions
-                              'If Not trialReady Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
-                              '    Return
-                              'End If
+                              ' Guard conditions
+                              If Not trialReady Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: trial not ready")
+                                  Return
+                              End If
 
-                              'If isLockout Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
-                              '    Return
-                              'End If
+                              If isLockout Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: in lockout")
+                                  Return
+                              End If
 
-                              'If Not isRunning Then
-                              '    Log($"{DateTime.UtcNow:o} - Ignored: session not running")
-                              '    Return
-                              'End If
+                              If Not isRunning Then
+                                  Log($"{DateTime.UtcNow:o} - Ignored: session not running")
+                                  Return
+                              End If
 
                               ' Process button state
                               If e.State = True Then
                                   ' ========== BUTTON PRESSED ==========
                                   Log($"{DateTime.UtcNow:o} - Button PRESSED")
+                                  btnCount += 1
+                                  If btnCount > 0 Then
+                                      HideReadyIndicator()
+                                  End If
 
-
+                                  ' Activate progress bars on press (total also activated at session start)
+                                  progressControllerTotalPress?.Activate()
+                                  progressControllerActiveStim?.Activate()
 
                                   ' Button pressed
                                   Latency.Stop()
                                   ActivateOut(cc, 35) ' fire-and-forget
 
                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
-                                      btnCount += 1
                                       ActiveStimWatch.Reset()
                                       SetGridColor(btnCount)
                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
@@ -314,6 +307,9 @@ Public Class MainWindow
 
                               Else
                                   ' Button released
+                                  ' Deactivate active-stim progress tracking on release
+                                  progressControllerActiveStim?.Deactivate()
+
                                   If Not isLockout Then
                                       RecordData()
                                   End If
@@ -363,7 +359,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnAttachHandler(sender As Object, e As AttachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget {sender} attached!")
+                              Log($"Phidget {sender} attached!")
                           End Sub)
     End Sub
 
@@ -372,7 +368,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnDetachHandler(sender As Object, e As DetachEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget detached: {sender}")
+                              Log($"Phidget detached: {sender}")
 
                               ' Save only once even if multiple channels detach
                               If hasSavedOnDisconnect Then
@@ -385,7 +381,7 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on detach: {ex.Message}")
+                                  Log($"Error saving on detach: {ex.Message}")
                               End Try
 
                           End Sub)
@@ -396,7 +392,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub OnErrorHandler(sender As Object, e As Events.ErrorEventArgs)
         Dispatcher.Invoke(Sub()
-                              Console.WriteLine($"Phidget error on {sender}: {e.Description}")
+                              Log($"Phidget error on {sender}: {e.Description}")
 
                               ' Save only once on first error that we treat as critical
                               If hasSavedOnDisconnect Then
@@ -408,12 +404,11 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on phidget error: {ex.Message}")
+                                  Log($"Error autosaving trial data on error: {ex.Message}")
                               End Try
 
                           End Sub)
     End Sub
-
 
     ' -------------------------------------------------------
     ' CONTROL LOOP
@@ -443,26 +438,26 @@ Public Class MainWindow
 
         ' Handle ComboBox defaults
         If SubjectName.SelectedItem Is Nothing Then
-            SubjectName.SelectedIndex = 0
+            SubjectName.SelectedIndex = SubjectName.Items.Count - 1
         End If
 
         If TargetTimeInput.SelectedItem Is Nothing Then
             TargetTimeInput.SelectedIndex = 0
         End If
 
-        TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
+        'TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
 
         ' Auto stop at HoldLimit sec
-        'If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
-        '    rumbleCts?.Cancel()
-        '    cc.State = False
-        '    ActiveStimWatch.Stop()
-        '    StimAWatch.Stop()
-        '    StimBWatch.Stop()
-        '    EndColorWatch()
-        '    ResetGridVisuals()
-        '    ActiveStimWatch.Reset()
-        'End If
+        If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
+            rumbleCts?.Cancel()
+            cc.State = False
+            ActiveStimWatch.Stop()
+            StimAWatch.Stop()
+            StimBWatch.Stop()
+            EndColorWatch()
+            ResetGridVisuals()
+            ActiveStimWatch.Reset()
+        End If
 
         If Not isLockout Then
             If devMode Then Return
@@ -472,9 +467,9 @@ Public Class MainWindow
                 StimAWatch.Stop()
                 StimBWatch.Stop()
                 EndColorWatch()
-                progressControllerTotalPress.Deactivate() ' Track deactivation
-                progressControllerActiveStim.Deactivate()
-                progressControllerStimA.Deactivate()
+                ' Keep total progress visible throughout trial; only stop active-stim tracking.
+                progressControllerActiveStim?.Deactivate()
+                'progressControllerStimA.Deactivate()
                 Return
             End If
 
@@ -495,7 +490,7 @@ Public Class MainWindow
                 ' Deactivate all progress bars during lockout
                 progressControllerTotalPress.Deactivate()
                 progressControllerActiveStim.Deactivate()
-                progressControllerStimA.Deactivate()
+                'progressControllerStimA.Deactivate()
 
                 animationPlayed = True
                 Await LockOut()
@@ -512,6 +507,11 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
+        If trialId > 9 Then
+            trialId = 0
+        End If
+
+
         InitWatches()
     End Sub
 
@@ -524,7 +524,7 @@ Public Class MainWindow
             Dim player As New SoundPlayer(fileName)
             player.Play()
         Catch ex As Exception
-            Console.WriteLine($"Error playing sound: {ex.Message}")
+            Log($"Error playing sound: {ex.Message}")
         End Try
     End Sub
 
@@ -540,10 +540,10 @@ Public Class MainWindow
                     logWriter.WriteLine(line)
                 Else
                     ' fallback to console if writer not available
-                    Console.WriteLine(line)
+                    Log(line)
                 End If
             Catch ex As Exception
-                Console.WriteLine($"Logging error: {ex.Message}")
+                Log($"Logging error: {ex.Message}")
             End Try
         End SyncLock
     End Sub
@@ -567,7 +567,7 @@ Public Class MainWindow
         'If isLockout OrElse Not isRunning Then
         '    Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
         '    Return
-        'End If
+        ' End If
 
         Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
         ActiveStimWatch.Start()
@@ -588,93 +588,103 @@ Public Class MainWindow
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
-            ' Use persisted idx as the authoritative step index.
-            Select Case trialCount
+            Select Case trialId
                 Case 0
-                    TrialToggler(StimulusSequence.Trial0)
+                    TrialSequencer(Trials.Trial0)
                 Case 1
-                    TrialToggler(StimulusSequence.Trial1)
+                    TrialSequencer(Trials.Trial1)
                 Case 2
-                    TrialToggler(StimulusSequence.Trial2)
+                    TrialSequencer(Trials.Trial2)
                 Case 3
-                    TrialToggler(StimulusSequence.Trial3)
+                    TrialSequencer(Trials.Trial3)
                 Case 4
-                    TrialToggler(StimulusSequence.Trial4)
+                    TrialSequencer(Trials.Trial4)
                 Case 5
-                    TrialToggler(StimulusSequence.Trial5)
+                    TrialSequencer(Trials.Trial5)
                 Case 6
-                    TrialToggler(StimulusSequence.Trial6)
+                    TrialSequencer(Trials.Trial6)
                 Case 7
-                    TrialToggler(StimulusSequence.Trial7)
+                    TrialSequencer(Trials.Trial7)
                 Case 8
-                    TrialToggler(StimulusSequence.Trial8)
+                    TrialSequencer(Trials.Trial8)
                 Case 9
-                    TrialToggler(StimulusSequence.Trial9)
+                    TrialSequencer(Trials.Trial9)
             End Select
         End If
     End Sub
 
-    ' Simplified TrialToggler: use persisted field `idx` and advance it exactly once.
-    Private Sub TrialToggler(stimSeq As StimulusSequence)
-        Select Case idx
+    ' Simplified TrialSequencer: use persisted field `trialId` and advance it exactly once.
+    Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
+
+        Select Case sessionId
             Case 0
-                If StimBWatch.IsRunning Then StimBWatch.Stop()
-                If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                RunColorWatch(stimSeq.Color1)
-                aPressCt += 1
-                StimGrid.Background = stimSeq.Color1
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    RunColorWatch(stimSeq.Color1)
+                    aPressCt += 1
+                    StimGrid.Background = stimSeq.Color1
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
             Case 1
-                If StimAWatch.IsRunning Then StimAWatch.Stop()
-                If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                bPressCt += 1
-                StimGrid.Background = Brushes.White
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    RunColorWatch(stimSeq.Color2)
+                    aPressCt += 1
+                    StimGrid.Background = stimSeq.Color2
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
             Case 2
-                If StimBWatch.IsRunning Then StimBWatch.Stop()
-                If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                RunColorWatch(stimSeq.Color2)
-                aPressCt += 1
-                StimGrid.Background = stimSeq.Color2
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    RunColorWatch(stimSeq.Color3)
+                    aPressCt += 1
+                    StimGrid.Background = stimSeq.Color3
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
             Case 3
-                If StimAWatch.IsRunning Then StimAWatch.Stop()
-                If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                bPressCt += 1
-                StimGrid.Background = Brushes.White
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    RunColorWatch(stimSeq.Color4)
+                    aPressCt += 1
+                    StimGrid.Background = stimSeq.Color4
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
             Case 4
-                If StimBWatch.IsRunning Then StimBWatch.Stop()
-                If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                RunColorWatch(stimSeq.Color3)
-                aPressCt += 1
-                StimGrid.Background = stimSeq.Color3
-            Case 5
-                If StimAWatch.IsRunning Then StimAWatch.Stop()
-                If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                bPressCt += 1
-                StimGrid.Background = Brushes.White
-            Case 6
-                If StimBWatch.IsRunning Then StimBWatch.Stop()
-                If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                RunColorWatch(stimSeq.Color4)
-                aPressCt += 1
-                StimGrid.Background = stimSeq.Color4
-            Case 7
-                If StimAWatch.IsRunning Then StimAWatch.Stop()
-                If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                bPressCt += 1
-                StimGrid.Background = Brushes.White
-            Case 8
-                If StimBWatch.IsRunning Then StimBWatch.Stop()
-                If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                RunColorWatch(stimSeq.Color5)
-                aPressCt += 1
-                StimGrid.Background = stimSeq.Color5
-            Case 9
-                StimBWatch.Start()
-                bPressCt += 1
-                StimGrid.Background = Brushes.White
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    RunColorWatch(stimSeq.Color5)
+                    aPressCt += 1
+                    StimGrid.Background = stimSeq.Color5
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
         End Select
 
-        ' Advance persisted index exactly once per stimulus event.
-        idx = (idx + 1) Mod 10
+
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
@@ -739,10 +749,9 @@ Public Class MainWindow
         ' Deactivate all progress bars during lockout
         progressControllerTotalPress.Deactivate()
         progressControllerActiveStim.Deactivate()
-        progressControllerStimA.Deactivate()
 
-        RecordData()
-        RecordTrial()
+        'RecordData()
+        'RecordTrial()
         Try
             bc.Close()
         Catch
@@ -755,7 +764,7 @@ Public Class MainWindow
         End If
         Await PlayLockoutLEDSequence()
         Await ActivateOut(fc, 50)
-        Await Task.Delay(3000)
+        Await Task.Delay(1000)
 
         Try
             bc.Open()
@@ -765,7 +774,7 @@ Public Class MainWindow
         flc.State = False
         Latency.Reset()
         Latency.Stop()
-        ResetTrial()
+        NextSession()
         trialReady = True
     End Function
 
@@ -798,14 +807,14 @@ Public Class MainWindow
             Dispatcher.BeginInvoke(Sub() cc.State = False)
         Catch ex As Exception
             ' log and surface critical error
-            'Dispatcher.BeginInvoke(Sub() Console.WriteLine($"Rumble error: {ex.Message}"))
+            'Dispatcher.BeginInvoke(Sub() Log($"Rumble error: {ex.Message}"))
         End Try
     End Function
 
     ' -------------------------------------------------------
     ' Reset Trial
     ' -------------------------------------------------------
-    Private Sub ResetTrial()
+    Private Sub NextSession()
         MasterWatch.Stop()
         ActiveStimWatch.Stop()
         EndColorWatch()
@@ -814,12 +823,14 @@ Public Class MainWindow
         ResetGridVisuals()
 
 
-        If Not isLockout Then
-            RecordData()
-        End If
+        RecordData()
+        RecordTrial()
 
-        trialCount += 1
-        'TrialSelect.Text = trialCount.ToString()
+        sessionId += 1
+        If sessionId > 4 Then
+            sessionId = 0
+            trialId += 1
+        End If
         btnCount = 0
         aPressCt = 0
         bPressCt = 0
@@ -833,19 +844,20 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
+
+        ' End of trial — clear total progress so next trial starts fresh.
+        progressControllerTotalPress?.Deactivate()
     End Sub
 
     Private Sub RecordData()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
+
 
         If TrainingMode Then
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Trial: {trialCount}, " &
+                $"Trial: {trialId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -856,10 +868,11 @@ Public Class MainWindow
             TextBox1.ScrollToEnd()
         Else
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp}, " &
-                $"{subjectText}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Trial: {trialCount}, " &
+                $"Trial: {trialId}, " &
+                $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -877,15 +890,10 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordTrial()
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
-
         If TrainingMode Then
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
-                $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Target Hold Time: {TargetTime}, " &
@@ -898,9 +906,10 @@ Public Class MainWindow
             TrialDataBox.ScrollToEnd()
         Else
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
-                $"{subjectText}, " &
+                $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
-                $"Trial: {trialCount}, " &
+                $"TrialID: {trialId}, " &
+                $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Target Hold Time: {TargetTime}, " &
@@ -908,6 +917,7 @@ Public Class MainWindow
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Stim B Presses: {bPressCt}, " &
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Stimulus Color: , " &
                 $"Blue Time: {BlueWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Green Time: {GreenWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Yellow Time: {YellowWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -932,7 +942,7 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub StartButton_Click(sender As Object, e As RoutedEventArgs) Handles StBtn.Click
+    Private Sub StartButton_Click(sender As Object, e As EventArgs) Handles StBtn.Click
         sessionStartTimeStamp = DateTime.Now()
 
         If Not isRunning Then
@@ -950,10 +960,34 @@ Public Class MainWindow
             StimAWatch.Reset()
             StimBWatch.Reset()
             btnCount = 0
-            idx = 0
+            trialId = 0
+
+            ' Determine TargetTime at session start:
+            If TargetTimeInput Is Nothing OrElse TargetTimeInput.SelectedItem Is Nothing Then
+                ' Only force default here if control is missing / no selection at start
+                TargetTime = 3000
+                Log($"{DateTime.UtcNow:o} - TargetTimeInput missing/unselected — defaulting to 3000 ms")
+            Else
+                Try
+                    Dim seconds = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content)
+                    TargetTime = seconds * 1000
+                Catch ex As Exception
+                    ' fallback if parsing fails
+                    TargetTime = 3000
+                    Log($"{DateTime.UtcNow:o} - Failed to parse TargetTimeInput at Start, defaulting to 3000 ms: {ex.Message}")
+                End Try
+            End If
+
+            ' Ensure the total-progress controller uses the runtime TargetTime value
+            If progressControllerTotalPress IsNot Nothing Then
+                progressControllerTotalPress.UpdateMaxThreshold(TargetTime)
+            End If
+
+            ' Ensure total progress is tracking for this trial/session.
+            progressControllerTotalPress?.Activate()
 
             ShowReadyIndicator()
-            Log($"{DateTime.UtcNow:o} - Session started: ready for button presses")
+            Log($"{DateTime.UtcNow:o} - Session started: ready for button presses (TargetTime={TargetTime} ms)")
 
         Else
             ' STOP SESSION
@@ -965,6 +999,8 @@ Public Class MainWindow
             StBtn.Background = Brushes.PaleGreen
 
             HideReadyIndicator()
+            ' Stop total progress when session stopped.
+            progressControllerTotalPress?.Deactivate()
             Log($"{DateTime.UtcNow:o} - Session stopped")
         End If
     End Sub
@@ -1008,9 +1044,9 @@ Public Class MainWindow
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_StimA-{stimAText}_StimB-{stimBText}_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TextBox1.Text)
-            Console.WriteLine($"Autosaved data to {file}")
+            Log($"Autosaved data to {file}")
         Catch ex As Exception
-            Console.WriteLine($"Error autosaving data: {ex.Message}")
+            Log($"Error autosaving data: {ex.Message}")
         End Try
     End Sub
 
@@ -1024,9 +1060,9 @@ Public Class MainWindow
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
             Dim file As String = Path.Combine(folder, $"{subjectText}_Trials_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TrialDataBox.Text)
-            Console.WriteLine($"Autosaved trial data to {file}")
+            Log($"Autosaved trial data to {file}")
         Catch ex As Exception
-            Console.WriteLine($"Error autosaving trial data: {ex.Message}")
+            Log($"Error autosaving trial data: {ex.Message}")
         End Try
     End Sub
 
@@ -1039,9 +1075,9 @@ Public Class MainWindow
                                   SaveDataAuto()
                                   SaveTrialDataAuto()
                               Catch ex As Exception
-                                  Console.WriteLine($"Error saving on disconnect helper: {ex.Message}")
+                                  Log($"Error saving on disconnect helper: {ex.Message}")
                               End Try
-                              Console.WriteLine($"Handled disconnect save: {reason}")
+                              Log($"Handled disconnect save: {reason}")
                           End Sub)
     End Sub
 
