@@ -2,8 +2,6 @@
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
-Imports VB_HumphreyButtonApp.TrialStimulusSequence
-
 Imports Phidget22
 Imports Phidget22.Events
 
@@ -46,7 +44,6 @@ Public Class MainWindow
     Private TargetTime As Integer = 0
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
-    'Private trialId As Integer = 0
     Private trialId As Integer = 0
     Private sessionId As Integer = 0
     Private aPressCt As Integer = 0
@@ -414,13 +411,6 @@ Public Class MainWindow
     ' CONTROL LOOP
     ' -------------------------------------------------------
     Private Async Sub ControlLoop()
-        'If Not bc.Attached Then
-        '    If devMode Then Return
-        '    HideReadyIndicator()
-        '    MsgBox("Button Channel not attached. Please check connections.")
-        '    'Return
-        'End If
-
         If Not trialReady Then
             HideReadyIndicator()
         End If
@@ -445,8 +435,6 @@ Public Class MainWindow
             TargetTimeInput.SelectedIndex = 0
         End If
 
-        'TargetTime = CInt(CType(TargetTimeInput.SelectedItem, ComboBoxItem).Content) * 1000
-
         ' Auto stop at HoldLimit sec
         If ActiveStimWatch.ElapsedMilliseconds >= HoldLimit Then
             rumbleCts?.Cancel()
@@ -469,7 +457,6 @@ Public Class MainWindow
                 EndColorWatch()
                 ' Keep total progress visible throughout trial; only stop active-stim tracking.
                 progressControllerActiveStim?.Deactivate()
-                'progressControllerStimA.Deactivate()
                 Return
             End If
 
@@ -490,7 +477,6 @@ Public Class MainWindow
                 ' Deactivate all progress bars during lockout
                 progressControllerTotalPress.Deactivate()
                 progressControllerActiveStim.Deactivate()
-                'progressControllerStimA.Deactivate()
 
                 animationPlayed = True
                 Await LockOut()
@@ -510,7 +496,6 @@ Public Class MainWindow
         If trialId > 9 Then
             trialId = 0
         End If
-
 
         InitWatches()
     End Sub
@@ -564,14 +549,13 @@ Public Class MainWindow
     ' Alternating colors + overlays
     ' -------------------------------------------------------
     Private Sub SetGridColor(count As Integer)
-        'If isLockout OrElse Not isRunning Then
-        '    Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
-        '    Return
-        ' End If
+        If isLockout OrElse Not isRunning Then 
+            Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
+            Return
+        End If
 
         Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
         ActiveStimWatch.Start()
-
         If TrainingMode = True Then
             If count Mod 2 = 0 Then
                 If StimBWatch.IsRunning Then StimBWatch.Stop()
@@ -615,7 +599,6 @@ Public Class MainWindow
 
     ' Simplified TrialSequencer: use persisted field `trialId` and advance it exactly once.
     Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
-
         Select Case sessionId
             Case 0
                 If btnCount Mod 2 = 0 Then
@@ -683,14 +666,11 @@ Public Class MainWindow
                     StimGrid.Background = Brushes.White
                 End If
         End Select
-
-
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
         colorWatchOn = True
         Dim c = brush.Color
-
         If c = Brushes.Blue.Color Then
             BlueWatch.Start()
         ElseIf c = Brushes.Green.Color Then
@@ -702,7 +682,6 @@ Public Class MainWindow
         ElseIf c = Brushes.Red.Color Then
             RedWatch.Start()
         End If
-
     End Sub
 
     Private Sub EndColorWatch()
@@ -850,8 +829,6 @@ Public Class MainWindow
     End Sub
 
     Private Sub RecordData()
-
-
         If TrainingMode Then
             TextBox1.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
                 $"Subject: {SubjectName.Text}, " &
@@ -1016,14 +993,8 @@ Public Class MainWindow
     End Sub
 
     Private Sub Save_Click(sender As Object, e As RoutedEventArgs) Handles BtnSave.Click
-        Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                             CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                             "Unknown")
-        Dim stimAText = StimAName.Text
-        Dim stimBText = StimBName.Text
-
         Dim save As New Microsoft.Win32.SaveFileDialog With {
-            .FileName = $"{subjectText}_StimA-{stimAText}_StimB-{stimBText}_{Date.Now.ToFileTimeUtc}.csv",
+            .FileName = $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv",
             .DefaultExt = ".csv"
         }
         If save.ShowDialog() Then
@@ -1032,19 +1003,23 @@ Public Class MainWindow
         manualSave = True
     End Sub
 
+    Private Sub SaveTrialData(sender As Object, e As RoutedEventArgs) Handles TrialSave.Click
+        Dim save As New Microsoft.Win32.SaveFileDialog With {
+            .FileName = $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv",
+            .DefaultExt = ".csv"
+        }
+        If save.ShowDialog() Then
+            IO.File.WriteAllText(save.FileName, TextBox1.Text)
+        End If
+        manualTrialSave = True
+    End Sub
+
     Private Sub SaveDataAuto()
         Try
-            Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                                 CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                                 "Unknown")
-            Dim stimAText = StimAName.Text
-            Dim stimBText = StimBName.Text
-
             Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
-            Dim file As String = Path.Combine(folder, $"{subjectText}_StimA-{stimAText}_StimB-{stimBText}_{Date.Now.ToFileTimeUtc}.csv")
+            Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_StimA-{StimAName.Text}_StimB-{StimBName.Text}_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TextBox1.Text)
-            Log($"Autosaved data to {file}")
         Catch ex As Exception
             Log($"Error autosaving data: {ex.Message}")
         End Try
@@ -1052,15 +1027,10 @@ Public Class MainWindow
 
     Private Sub SaveTrialDataAuto()
         Try
-            Dim subjectText = If(SubjectName.SelectedItem IsNot Nothing,
-                                 CType(SubjectName.SelectedItem, ComboBoxItem).Content.ToString(),
-                                 "Unknown")
-
             Dim folder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData/autosave")
             If Not Directory.Exists(folder) Then Directory.CreateDirectory(folder)
-            Dim file As String = Path.Combine(folder, $"{subjectText}_Trials_{Date.Now.ToFileTimeUtc}.csv")
+            Dim file As String = Path.Combine(folder, $"{SubjectName.Text}_Trials_{Date.Now.ToFileTimeUtc}.csv")
             IO.File.WriteAllText(file, TrialDataBox.Text)
-            Log($"Autosaved trial data to {file}")
         Catch ex As Exception
             Log($"Error autosaving trial data: {ex.Message}")
         End Try
