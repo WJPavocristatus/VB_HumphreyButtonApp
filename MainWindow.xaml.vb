@@ -3,7 +3,7 @@ Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
 Imports System.Collections.Generic
-Imports System.Lin
+Imports System.Linq
 Imports Phidget22
 Imports Phidget22.Events
 
@@ -19,7 +19,7 @@ Public Class MainWindow
     ' -----------------------------
     ' Timers & Stopwatches
     ' -----------------------------
-    Friend WithEvents timer As New System.Timers.Timer(1) ' 1 ms tick
+    Friend WithEvents CoreTimer As New System.Timers.Timer(1) ' 1 ms tick
     Private uiTimer As New System.Windows.Threading.DispatcherTimer With {
         .Interval = TimeSpan.FromMilliseconds(50)
     }
@@ -115,7 +115,7 @@ Public Class MainWindow
 
         ' Timer
         uiTimer.Start()
-        timer.Start()
+        CoreTimer.Start()
 
         Try
             Dim folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "PhidgetData", "logs")
@@ -220,7 +220,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' Clock tick → UI dispatcher → control loop
     ' -------------------------------------------------------
-    Private Sub Clock() Handles timer.Elapsed
+    Private Sub Clock() Handles CoreTimer.Elapsed
         Application.Current.Dispatcher.BeginInvoke(AddressOf ControlLoop)
     End Sub
 
@@ -935,7 +935,7 @@ Public Class MainWindow
             StBtn.Content = "Stop"
             StBtn.Background = Brushes.Red
 
-            ' Reset timers and counters for new session
+            ' Reset CoreTimers and counters for new session
             Latency.Reset()
             ActiveStimWatch.Reset()
             StimAWatch.Reset()
