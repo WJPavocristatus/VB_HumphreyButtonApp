@@ -475,6 +475,7 @@ Public Class MainWindow
                 EndColorWatch()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
+                MasterWatch.Stop()
 
                 ' Deactivate all progress bars during lockout
                 progressControllerTotalPress.Deactivate()
@@ -939,6 +940,7 @@ Public Class MainWindow
             ActiveStimWatch.Reset()
             StimAWatch.Reset()
             StimBWatch.Reset()
+            MasterWatch.Reset()
             btnCount = 0
             trialCount = 0
 
