@@ -2,6 +2,8 @@
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Threading
+Imports System.Collections.Generic
+Imports System.Lin
 Imports Phidget22
 Imports Phidget22.Events
 
@@ -44,7 +46,7 @@ Public Class MainWindow
     Private TargetTime As Integer = 0
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
-    Private trialId As Integer = 0
+    Private trialCount As Integer = 0
     Private sessionId As Integer = 0
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
@@ -287,7 +289,7 @@ Public Class MainWindow
 
                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
                                       ActiveStimWatch.Reset()
-                                      SetGridColor(btnCount)
+                                      SetGridColor(Trials.AllTrials.Find(Function(t) t.TrialID = trialCount))
                                       Log($"{DateTime.UtcNow:o} - Processed press: btnCount={btnCount}")
                                   Else
                                       ' Over HoldLimit -> reset visual and stim
@@ -493,8 +495,8 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
-        If trialId > 9 Then
-            trialId = 0
+        If trialCount > 9 Then
+            trialCount = 0
         End If
 
         InitWatches()
@@ -548,16 +550,16 @@ Public Class MainWindow
     ' -------------------------------------------------------
     ' Alternating colors + overlays
     ' -------------------------------------------------------
-    Private Sub SetGridColor(count As Integer)
-        If isLockout OrElse Not isRunning Then 
+    Private Sub SetGridColor(stimSeq As TrialStimulusSequence)
+        If isLockout OrElse Not isRunning Then
             Log($"{DateTime.UtcNow:o} - SetGridColor ignored: isLockout={isLockout}, isRunning={isRunning}")
             Return
         End If
 
-        Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{count}")
+        Log($"{DateTime.UtcNow:o} - SetGridColor activating for press #{btnCount}")
         ActiveStimWatch.Start()
         If TrainingMode = True Then
-            If count Mod 2 = 0 Then
+            If btnCount Mod 2 = 0 Then
                 If StimBWatch.IsRunning Then StimBWatch.Stop()
                 If Not StimAWatch.IsRunning Then StimAWatch.Start()
                 aPressCt += 1
@@ -572,7 +574,7 @@ Public Class MainWindow
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
         Else
-            Select Case trialId
+            Select Case trialCount
                 Case 0
                     TrialSequencer(Trials.Trial0)
                 Case 1
@@ -597,73 +599,73 @@ Public Class MainWindow
         End If
     End Sub
 
-    ' Simplified TrialSequencer: use persisted field `trialId` and advance it exactly once.
+    ' Simplified TrialSequencer: use persisted field `trialCount` and advance it exactly once.
     Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
         Select Case sessionId
             Case 0
                 If btnCount Mod 2 = 0 Then
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                Else
                     If StimBWatch.IsRunning Then StimBWatch.Stop()
                     If Not StimAWatch.IsRunning Then StimAWatch.Start()
                     RunColorWatch(stimSeq.Color1)
                     aPressCt += 1
                     StimGrid.Background = stimSeq.Color1
-                Else
+                End If
+            Case 1
+                If btnCount Mod 2 = 0 Then
                     If StimAWatch.IsRunning Then StimAWatch.Stop()
                     If Not StimBWatch.IsRunning Then StimBWatch.Start()
                     bPressCt += 1
                     StimGrid.Background = Brushes.White
-                End If
-            Case 1
-                If btnCount Mod 2 = 0 Then
+                Else
                     If StimBWatch.IsRunning Then StimBWatch.Stop()
                     If Not StimAWatch.IsRunning Then StimAWatch.Start()
                     RunColorWatch(stimSeq.Color2)
                     aPressCt += 1
                     StimGrid.Background = stimSeq.Color2
-                Else
+                End If
+            Case 2
+                If btnCount Mod 2 = 0 Then
                     If StimAWatch.IsRunning Then StimAWatch.Stop()
                     If Not StimBWatch.IsRunning Then StimBWatch.Start()
                     bPressCt += 1
                     StimGrid.Background = Brushes.White
-                End If
-            Case 2
-                If btnCount Mod 2 = 0 Then
+                Else
                     If StimBWatch.IsRunning Then StimBWatch.Stop()
                     If Not StimAWatch.IsRunning Then StimAWatch.Start()
                     RunColorWatch(stimSeq.Color3)
                     aPressCt += 1
                     StimGrid.Background = stimSeq.Color3
-                Else
+                End If
+            Case 3
+                If btnCount Mod 2 = 0 Then
                     If StimAWatch.IsRunning Then StimAWatch.Stop()
                     If Not StimBWatch.IsRunning Then StimBWatch.Start()
                     bPressCt += 1
                     StimGrid.Background = Brushes.White
-                End If
-            Case 3
-                If btnCount Mod 2 = 0 Then
+                Else
                     If StimBWatch.IsRunning Then StimBWatch.Stop()
                     If Not StimAWatch.IsRunning Then StimAWatch.Start()
                     RunColorWatch(stimSeq.Color4)
                     aPressCt += 1
                     StimGrid.Background = stimSeq.Color4
-                Else
+                End If
+            Case 4
+                If btnCount Mod 2 = 0 Then
                     If StimAWatch.IsRunning Then StimAWatch.Stop()
                     If Not StimBWatch.IsRunning Then StimBWatch.Start()
                     bPressCt += 1
                     StimGrid.Background = Brushes.White
-                End If
-            Case 4
-                If btnCount Mod 2 = 0 Then
+                Else
                     If StimBWatch.IsRunning Then StimBWatch.Stop()
                     If Not StimAWatch.IsRunning Then StimAWatch.Start()
                     RunColorWatch(stimSeq.Color5)
                     aPressCt += 1
                     StimGrid.Background = stimSeq.Color5
-                Else
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
                 End If
         End Select
     End Sub
@@ -773,6 +775,7 @@ Public Class MainWindow
     End Function
 
     Private Async Function RumblePak(ct As CancellationToken) As Task
+        If Not trialReady Then Return
         Try
             While Not ct.IsCancellationRequested
                 ' Set hardware state via Dispatcher (short non-blocking marshal)
@@ -808,7 +811,7 @@ Public Class MainWindow
         sessionId += 1
         If sessionId > 4 Then
             sessionId = 0
-            trialId += 1
+            trialCount += 1
         End If
         btnCount = 0
         aPressCt = 0
@@ -834,7 +837,7 @@ Public Class MainWindow
                 $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Trial: {trialId}, " &
+                $"Trial: {trialCount}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -848,7 +851,7 @@ Public Class MainWindow
                 $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
                 $"Trial Timer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Trial: {trialId}, " &
+                $"Trial: {trialCount}, " &
                 $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Press duration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -885,7 +888,7 @@ Public Class MainWindow
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
                 $"Subject: {SubjectName.Text}, " &
                 $"Training Mode?: {TrainingMode}, " &
-                $"TrialID: {trialId}, " &
+                $"trialCount: {trialCount}, " &
                 $"SessionID: {sessionId}, " &
                 $"Button Presses: {btnCount}, " &
                 $"Trial Duration: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -937,7 +940,7 @@ Public Class MainWindow
             StimAWatch.Reset()
             StimBWatch.Reset()
             btnCount = 0
-            trialId = 0
+            trialCount = 0
 
             ' Determine TargetTime at session start:
             If TargetTimeInput Is Nothing OrElse TargetTimeInput.SelectedItem Is Nothing Then
