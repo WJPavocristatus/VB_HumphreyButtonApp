@@ -2,7 +2,7 @@
 Imports System.Linq
 
 Public Class Trials
-    Public Shared ReadOnly Trial0 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial6 As New TrialStimulusSequence With {
       .TrialID = 0,
       .Color1 = Brushes.Orange,
       .Color2 = Brushes.Green,
@@ -11,7 +11,7 @@ Public Class Trials
       .Color5 = Brushes.Red
     }
 
-    Public Shared ReadOnly Trial1 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial7 As New TrialStimulusSequence With {
         .TrialID = 1,
         .Color1 = Brushes.Green,
         .Color2 = Brushes.Blue,
@@ -20,7 +20,7 @@ Public Class Trials
         .Color5 = Brushes.Orange
     }
 
-    Public Shared ReadOnly Trial2 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial8 As New TrialStimulusSequence With {
         .TrialID = 2,
         .Color1 = Brushes.Blue,
         .Color2 = Brushes.Yellow,
@@ -29,7 +29,7 @@ Public Class Trials
         .Color5 = Brushes.Green
     }
 
-    Public Shared ReadOnly Trial3 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial9 As New TrialStimulusSequence With {
         .TrialID = 3,
         .Color1 = Brushes.Red,
         .Color2 = Brushes.Blue,
@@ -38,7 +38,7 @@ Public Class Trials
         .Color5 = Brushes.Orange
     }
 
-    Public Shared ReadOnly Trial4 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial0 As New TrialStimulusSequence With {
         .TrialID = 4,
         .Color1 = Brushes.Yellow,
         .Color2 = Brushes.Red,
@@ -47,7 +47,7 @@ Public Class Trials
         .Color5 = Brushes.Orange
     }
 
-    Public Shared ReadOnly Trial5 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial1 As New TrialStimulusSequence With {
         .TrialID = 5,
         .Color1 = Brushes.Yellow,
         .Color2 = Brushes.Blue,
@@ -56,7 +56,7 @@ Public Class Trials
         .Color5 = Brushes.Green
     }
 
-    Public Shared ReadOnly Trial6 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial2 As New TrialStimulusSequence With {
         .TrialID = 6,
         .Color1 = Brushes.Orange,
         .Color2 = Brushes.Blue,
@@ -65,7 +65,7 @@ Public Class Trials
         .Color5 = Brushes.Green
     }
 
-    Public Shared ReadOnly Trial7 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial3 As New TrialStimulusSequence With {
         .TrialID = 7,
        .Color1 = Brushes.Blue,
        .Color2 = Brushes.Orange,
@@ -74,7 +74,7 @@ Public Class Trials
        .Color5 = Brushes.Red
    }
 
-    Public Shared ReadOnly Trial8 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial4 As New TrialStimulusSequence With {
         .TrialID = 8,
         .Color1 = Brushes.Green,
         .Color2 = Brushes.Red,
@@ -83,7 +83,7 @@ Public Class Trials
         .Color5 = Brushes.Yellow
     }
 
-    Public Shared ReadOnly Trial9 As New TrialStimulusSequence With {
+    Public Shared ReadOnly Trial5 As New TrialStimulusSequence With {
         .TrialID = 9,
         .Color1 = Brushes.Red,
         .Color2 = Brushes.Yellow,
