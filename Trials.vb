@@ -4,7 +4,7 @@ Imports System.Linq
 Public Class Trials
     Public Shared ReadOnly Trial6 As New TrialStimulusSequence With {
       .TrialID = 0,
-      .Color1 = Brushes.Orange,
+      .Color1 = Brushes.DarkOrange,
       .Color2 = Brushes.Green,
       .Color3 = Brushes.Yellow,
       .Color4 = Brushes.Blue,
@@ -17,14 +17,14 @@ Public Class Trials
         .Color2 = Brushes.Blue,
         .Color3 = Brushes.Red,
         .Color4 = Brushes.Yellow,
-        .Color5 = Brushes.Orange
+        .Color5 = Brushes.DarkOrange
     }
 
     Public Shared ReadOnly Trial8 As New TrialStimulusSequence With {
         .TrialID = 2,
         .Color1 = Brushes.Blue,
         .Color2 = Brushes.Yellow,
-        .Color3 = Brushes.Orange,
+        .Color3 = Brushes.DarkOrange,
         .Color4 = Brushes.Red,
         .Color5 = Brushes.Green
     }
@@ -35,7 +35,7 @@ Public Class Trials
         .Color2 = Brushes.Blue,
         .Color3 = Brushes.Green,
         .Color4 = Brushes.Yellow,
-        .Color5 = Brushes.Orange
+        .Color5 = Brushes.DarkOrange
     }
 
     Public Shared ReadOnly Trial0 As New TrialStimulusSequence With {
@@ -44,21 +44,21 @@ Public Class Trials
         .Color2 = Brushes.Red,
         .Color3 = Brushes.Green,
         .Color4 = Brushes.Blue,
-        .Color5 = Brushes.Orange
+        .Color5 = Brushes.DarkOrange
     }
 
     Public Shared ReadOnly Trial1 As New TrialStimulusSequence With {
         .TrialID = 5,
         .Color1 = Brushes.Yellow,
         .Color2 = Brushes.Blue,
-        .Color3 = Brushes.Orange,
+        .Color3 = Brushes.DarkOrange,
         .Color4 = Brushes.Red,
         .Color5 = Brushes.Green
     }
 
     Public Shared ReadOnly Trial2 As New TrialStimulusSequence With {
         .TrialID = 6,
-        .Color1 = Brushes.Orange,
+        .Color1 = Brushes.DarkOrange,
         .Color2 = Brushes.Blue,
         .Color3 = Brushes.Red,
         .Color4 = Brushes.Yellow,
@@ -68,7 +68,7 @@ Public Class Trials
     Public Shared ReadOnly Trial3 As New TrialStimulusSequence With {
         .TrialID = 7,
        .Color1 = Brushes.Blue,
-       .Color2 = Brushes.Orange,
+       .Color2 = Brushes.DarkOrange,
        .Color3 = Brushes.Green,
        .Color4 = Brushes.Yellow,
        .Color5 = Brushes.Red
@@ -79,7 +79,7 @@ Public Class Trials
         .Color1 = Brushes.Green,
         .Color2 = Brushes.Red,
         .Color3 = Brushes.Blue,
-        .Color4 = Brushes.Orange,
+        .Color4 = Brushes.DarkOrange,
         .Color5 = Brushes.Yellow
     }
 
@@ -87,7 +87,7 @@ Public Class Trials
         .TrialID = 9,
         .Color1 = Brushes.Red,
         .Color2 = Brushes.Yellow,
-        .Color3 = Brushes.Orange,
+        .Color3 = Brushes.DarkOrange,
         .Color4 = Brushes.Blue,
         .Color5 = Brushes.Green
     }
