@@ -218,13 +218,33 @@
                                   Header="Shutdown"
                                   Background="Black"
                                   HorizontalAlignment="Left"
-                                  Width="112" Margin="156,0,0,0">
+                                  Width="112" 
+                                  Margin="156,0,0,0">
                             <Button x:Name="ExitButton"
                                     Content="X"
                                     Background="Firebrick"
                                     Width="49"
                                     Click="XButton_Click"
                                     HorizontalAlignment="Center"/>
+                        </Expander>
+                        <Expander x:Name="ModeSelect"
+                                  Header="Mode"
+                                  Grid.Column="2"
+                                  Background="MediumOrchid"
+                                  Margin="336,101,413,0" VerticalAlignment="Top">
+                            <ListBox>
+                                <ListBoxItem >
+                                    <RadioButton Content="Preference"  />
+                                   
+                                </ListBoxItem>
+                                <ListBoxItem >
+                                    <RadioButton Content="Progress" />
+                                </ListBoxItem>
+                                <ListBoxItem >
+                                    <RadioButton Content="Targeting" />
+                                </ListBoxItem>
+                            </ListBox>
+
                         </Expander>
                     </Grid>
 
@@ -236,7 +256,7 @@
         <!-- ================================================= -->
         <Grid Grid.Column="1" x:Name="SubjectView">
             <Grid x:Name="StimGrid" Background="Black">
-
+                <ProgressBar x:Name="targetBar" Width="400" Height="75" Background="AntiqueWhite"/>
                 <Image x:Name="StimGridOverlay"
                        Source="Assets/invert_hd-wallpaper-7939241_1280.png"
                        Stretch="UniformToFill"
