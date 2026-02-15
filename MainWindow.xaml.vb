@@ -330,6 +330,7 @@ Public Class MainWindow
     ' -------------------------------------------------------
     Private Sub ButtonRumble_StateChanged(sender As Object, e As DigitalInputStateChangeEventArgs)
         ' Do not block the UI thread with Invoke + async. Perform minimal dispatcher work.
+        If Not trialReady Then Return
         If e.State Then
             ' Cancel and dispose any existing CTS first
             Try
@@ -454,6 +455,7 @@ Public Class MainWindow
             ActiveStimWatch.Stop()
             StimAWatch.Stop()
             StimBWatch.Stop()
+            Latency.Stop()
             EndColorWatch()
             ResetGridVisuals()
             ActiveStimWatch.Reset()
@@ -483,6 +485,7 @@ Public Class MainWindow
                 rumbleCts?.Cancel()
                 cc.State = False
                 ActiveStimWatch.Stop()
+                'Latency.Stop()
                 EndColorWatch()
                 StimAWatch.Stop()
                 StimBWatch.Stop()
@@ -494,9 +497,9 @@ Public Class MainWindow
 
                 animationPlayed = True
                 Await LockOut()
-
                 isLockout = False
                 animationPlayed = False
+                trialReady = True
                 ShowReadyIndicator()
                 Return
             End If
@@ -504,7 +507,7 @@ Public Class MainWindow
 
         If btnCount < 1 Then
             Latency.Reset()
-            Latency.Stop()
+            'Latency.Stop()
         End If
 
         InitWatches()
@@ -682,7 +685,7 @@ Public Class MainWindow
             GreenWatch.Start()
         ElseIf c = Brushes.Yellow.Color Then
             YellowWatch.Start()
-        ElseIf c = Brushes.Orange.Color Then
+        ElseIf c = Brushes.DarkOrange.Color Then
             OrangeWatch.Start()
         ElseIf c = Brushes.Red.Color Then
             RedWatch.Start()
@@ -737,7 +740,7 @@ Public Class MainWindow
         'progressControllerStimA.Deactivate()
 
         RecordData()
-        RecordTrial()
+        'RecordTrial()
         Try
             bc.Close()
         Catch
@@ -758,10 +761,10 @@ Public Class MainWindow
         End Try
 
         flc.State = False
-        Latency.Reset()
+        'Latency.Reset()
         Latency.Stop()
-        ResetTrial()
-        trialReady = True
+        NextSession()
+
     End Function
 
     Private Async Function PlayLockoutLEDSequence() As Task
@@ -819,6 +822,7 @@ Public Class MainWindow
         aPressCt = 0
         bPressCt = 0
 
+        Latency.Reset()
         BlueWatch.Reset()
         GreenWatch.Reset()
         YellowWatch.Reset()
