@@ -337,9 +337,10 @@ Public Class MainWindow
                 rumbleCts?.Dispose()
             Catch
             End Try
-            rumbleCts = New CancellationTokenSource()
+            Dim currentCts As New CancellationTokenSource()
+            rumbleCts = currentCts
             ' Start rumble on background thread (fire-and-forget)
-            Task.Run(Function() RumblePak(rumbleCts.Token))
+            Task.Run(Function() RumblePak(currentCts.Token))
         Else
             ' Stop rumble
             Try
