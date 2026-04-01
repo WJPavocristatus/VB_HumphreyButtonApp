@@ -6,7 +6,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports Phidget22
 Imports Phidget22.Events
-
+Imports System.Random
 Public Class MainWindow
 
     ' -----------------------------
@@ -28,7 +28,7 @@ Public Class MainWindow
     Private StimAWatch As New Stopwatch()
     Private StimBWatch As New Stopwatch() '<--- also used for the white/control stimulus during test
     Private MasterWatch As New Stopwatch()
-    Private BlueWatch As New Stopwatch()
+    Private BlueWatch As New Stopwatch() ' <--- maybe delete these and just use StimA value for color columns
     Private GreenWatch As New Stopwatch()
     Private YellowWatch As New Stopwatch()
     Private OrangeWatch As New Stopwatch()
@@ -603,73 +603,145 @@ Public Class MainWindow
 
     ' Simplified TrialSequencer: use persisted field `trialCount` and advance it exactly once.
     Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
-        Select Case sessionId
-            Case 0
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
-                Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    RunColorWatch(stimSeq.Color1)
-                    aPressCt += 1
-                    StimGrid.Background = stimSeq.Color1
-                End If
-            Case 1
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
-                Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    RunColorWatch(stimSeq.Color2)
-                    aPressCt += 1
-                    StimGrid.Background = stimSeq.Color2
-                End If
-            Case 2
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
-                Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    RunColorWatch(stimSeq.Color3)
-                    aPressCt += 1
-                    StimGrid.Background = stimSeq.Color3
-                End If
-            Case 3
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
-                Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    RunColorWatch(stimSeq.Color4)
-                    aPressCt += 1
-                    StimGrid.Background = stimSeq.Color4
-                End If
-            Case 4
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
-                Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    RunColorWatch(stimSeq.Color5)
-                    aPressCt += 1
-                    StimGrid.Background = stimSeq.Color5
-                End If
-        End Select
+        Dim rnd As New Random()
+        Dim d = Int(rnd.Next(0, 100)) ' discard first value for better randomness
+        If d Mod 2 = 0 Then
+            Select Case sessionId
+                Case 0
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        RunColorWatch(stimSeq.Color1)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color1
+                    End If
+                Case 1
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        RunColorWatch(stimSeq.Color2)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color2
+                    End If
+                Case 2
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        RunColorWatch(stimSeq.Color3)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color3
+                    End If
+                Case 3
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        RunColorWatch(stimSeq.Color4)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color4
+                    End If
+                Case 4
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        RunColorWatch(stimSeq.Color5)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color5
+                    End If
+            End Select
+        ElseIf d Mod 2!= 0 Then
+            Select Case sessionId
+                Case 0
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        RunColorWatch(stimSeq.Color1)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color1
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
+                Case 1
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        RunColorWatch(stimSeq.Color2)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color2
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
+                Case 2
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        RunColorWatch(stimSeq.Color3)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color3
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
+                Case 3
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        RunColorWatch(stimSeq.Color4)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color4
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
+                Case 4
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        RunColorWatch(stimSeq.Color5)
+                        aPressCt += 1
+                        StimGrid.Background = stimSeq.Color5
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
+            End Select
+        End If
     End Sub
 
     Private Sub RunColorWatch(brush As SolidColorBrush)
