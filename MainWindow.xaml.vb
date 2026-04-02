@@ -955,7 +955,7 @@ Public Class MainWindow
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Stim B Presses: {bPressCt}, " &
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
+                $"Time to first press (Master - [B + A]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
         Else
@@ -971,13 +971,13 @@ Public Class MainWindow
                 $"Total StimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Stim B Presses: {bPressCt}, " &
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Stimulus Color: , " &
+                $"Stimulus Color: ," &
                 $"Blue Time: {BlueWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Green Time: {GreenWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Yellow Time: {YellowWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Orange Time: {OrangeWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Red Time: {RedWatch.ElapsedMilliseconds / 1000} secs, " &
-                $"Time to first press (Master - [Up + Down]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
+                $"Time to first press (Master - [B + A]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
         End If
