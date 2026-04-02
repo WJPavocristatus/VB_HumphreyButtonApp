@@ -603,8 +603,8 @@ Public Class MainWindow
 
     ' Simplified TrialSequencer: use persisted field `trialCount` and advance it exactly once.
     Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
-        Dim rnd As New Random()
-        Dim d = Int(rnd.Next(0, 100)) ' discard first value for better randomness
+        Dim rnd As New Random(616)
+        Dim d = Int(rnd.Next(100)) ' discard first value for better randomness
         If d Mod 2 = 0 Then
             Select Case sessionId
                 Case 0
