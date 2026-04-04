@@ -63,6 +63,8 @@ Public Class MainWindow
     Private manualTrialSave As Boolean = False
     Private progressControllerTotalPress As ProgressBarController
     Private progressControllerActiveStim As ProgressBarController
+    Private DoPhase2 As Boolean = False
+    Public seed As Integer
     ' -------------------------------------------------------
     ' Constructor
     ' -------------------------------------------------------
@@ -184,9 +186,9 @@ Public Class MainWindow
     ' UI Initialization
     ' -------------------------------------------------------
     Private Sub InitMainWindow() Handles MyBase.Initialized
-
         MainWin.WindowStyle = WindowStyle.None
         MainWin.ResizeMode = ResizeMode.NoResize
+        seed = Randomize()
     End Sub
 
     ' Add to MainWindow_Loaded or after InitializeComponent:
@@ -243,6 +245,13 @@ Public Class MainWindow
         End If
     End Sub
 
+
+    Public Function Randomize()
+        Dim rnd As New Random()
+        Dim num = rnd.Next(100)
+        Return num
+    End Function
+
     ' -------------------------------------------------------
     ' Button → Stimulus Logic (Debounce Removed)
     ' -------------------------------------------------------
@@ -286,7 +295,7 @@ Public Class MainWindow
                                   ' Button pressed
                                   Latency.Stop()
                                   ActivateOut(cc, 35) ' fire-and-forget
-
+                                  'If Phase2 Is False
                                   If ActiveStimWatch.ElapsedMilliseconds < HoldLimit Then
                                       ActiveStimWatch.Reset()
                                       SetGridColor(Trials.AllTrials.Find(Function(t) t.TrialID = trialCount))
@@ -537,6 +546,7 @@ Public Class MainWindow
         End SyncLock
     End Sub
 
+
     ' -------------------------------------------------------
     ' Update UI watch labels
     ' -------------------------------------------------------
@@ -575,7 +585,7 @@ Public Class MainWindow
                 StimGrid.Background = Brushes.LightGray
                 ShowOverlay(StimGridOverlay, "Assets/waves-9954690_1280.png")
             End If
-        Else
+        ElseIf TrainingMode = False AndAlso DoPhase2 = False Then
             Select Case trialCount
                 Case 0
                     TrialSequencer(Trials.Trial0)
@@ -598,14 +608,42 @@ Public Class MainWindow
                 Case 9
                     TrialSequencer(Trials.Trial9)
             End Select
+        ElseIf DoPhase2 = True Then
+            If seed Mod 2 = 0 Then
+
+                If btnCount Mod 2 = 0 Then
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    aPressCt += 1
+                    ShowOverlay(Phase2Image, "Assets/ai-chan.png")
+                Else
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                End If
+            Else
+                If btnCount Mod 2 = 0 Then
+                    If StimAWatch.IsRunning Then StimAWatch.Stop()
+                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                    bPressCt += 1
+                    StimGrid.Background = Brushes.White
+                Else
+                    If StimBWatch.IsRunning Then StimBWatch.Stop()
+                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                    aPressCt += 1
+                    ShowOverlay(Phase2Image, "Assets/ai-chan.png")
+                End If
+
+
+            End If
         End If
     End Sub
 
     ' Simplified TrialSequencer: use persisted field `trialCount` and advance it exactly once.
     Private Sub TrialSequencer(stimSeq As TrialStimulusSequence)
-        Dim rnd As New Random(616)
-        Dim d = Int(rnd.Next(100)) ' discard first value for better randomness
-        If d Mod 2 = 0 Then
+
+        If seed Mod 2 = 0 Then
             Select Case sessionId
                 Case 0
                     If btnCount Mod 2 = 0 Then
@@ -673,70 +711,76 @@ Public Class MainWindow
                         StimGrid.Background = stimSeq.Color5
                     End If
             End Select
-        ElseIf d Mod 2!= 0 Then
+        Else
             Select Case sessionId
                 Case 0
                     If btnCount Mod 2 = 0 Then
-                        If StimAWatch.IsRunning Then StimAWatch.Stop()
-                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
                         RunColorWatch(stimSeq.Color1)
                         aPressCt += 1
                         StimGrid.Background = stimSeq.Color1
                     Else
-                        If StimBWatch.IsRunning Then StimBWatch.Stop()
-                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
                         bPressCt += 1
                         StimGrid.Background = Brushes.White
                     End If
                 Case 1
                     If btnCount Mod 2 = 0 Then
-                        If StimAWatch.IsRunning Then StimAWatch.Stop()
-                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
                         RunColorWatch(stimSeq.Color2)
                         aPressCt += 1
                         StimGrid.Background = stimSeq.Color2
                     Else
-                        If StimBWatch.IsRunning Then StimBWatch.Stop()
-                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
                         bPressCt += 1
                         StimGrid.Background = Brushes.White
                     End If
                 Case 2
                     If btnCount Mod 2 = 0 Then
-                        If StimAWatch.IsRunning Then StimAWatch.Stop()
-                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
                         RunColorWatch(stimSeq.Color3)
                         aPressCt += 1
                         StimGrid.Background = stimSeq.Color3
                     Else
-                        If StimBWatch.IsRunning Then StimBWatch.Stop()
-                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
                         bPressCt += 1
                         StimGrid.Background = Brushes.White
                     End If
                 Case 3
                     If btnCount Mod 2 = 0 Then
-                        If StimAWatch.IsRunning Then StimAWatch.Stop()
-                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
                         RunColorWatch(stimSeq.Color4)
                         aPressCt += 1
                         StimGrid.Background = stimSeq.Color4
                     Else
-                        If StimBWatch.IsRunning Then StimBWatch.Stop()
-                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
                         bPressCt += 1
                         StimGrid.Background = Brushes.White
                     End If
                 Case 4
                     If btnCount Mod 2 = 0 Then
-                        If StimAWatch.IsRunning Then StimAWatch.Stop()
-                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
                         RunColorWatch(stimSeq.Color5)
                         aPressCt += 1
                         StimGrid.Background = stimSeq.Color5
                     Else
-                        If StimBWatch.IsRunning Then StimBWatch.Stop()
-                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+
                         bPressCt += 1
                         StimGrid.Background = Brushes.White
                     End If
@@ -772,11 +816,15 @@ Public Class MainWindow
     Private Sub ShowOverlay(img As Image, file As String)
         img.Source = New BitmapImage(New Uri(file, UriKind.Relative))
         img.Visibility = Visibility.Visible
+
     End Sub
+
+
 
     Private Sub ResetGridVisuals()
         StimGrid.Background = Brushes.Black
         StimGridOverlay.Visibility = Visibility.Collapsed
+        Phase2Image.Visibility = Visibility.Collapsed
     End Sub
 
     ' -------------------------------------------------------
@@ -900,7 +948,7 @@ Public Class MainWindow
         ActiveStimWatch.Reset()
         StimAWatch.Reset()
         StimBWatch.Reset()
-
+        seed = Randomize()
         ' End of trial — clear total progress so next trial starts fresh.
         progressControllerTotalPress?.Deactivate()
     End Sub
@@ -918,6 +966,21 @@ Public Class MainWindow
                 $"Total StimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Total Button Down time: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
                 $"Total Button Up time (Latency): {Latency.ElapsedMilliseconds / 1000} secs, " &
+            Environment.NewLine
+            TextBox1.ScrollToEnd()
+        ElseIf DoPhase2 Then
+            TextBox1.Text &= $"Session: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"Subject: {SubjectName.Text}, " &
+                $"Pase2?: {DoPhase2}, " &
+                $"TrialTimer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Block: {trialCount}, " &
+                $"Trial: {sessionId}, " &
+                $"ButtonPresses: {btnCount}, " &
+                $"Pressduration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"TotalStimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"TotalStimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"TotalButtonDowntime: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
+                $"Latency: {Latency.ElapsedMilliseconds / 1000} secs, " &
             Environment.NewLine
             TextBox1.ScrollToEnd()
         Else
@@ -958,6 +1021,25 @@ Public Class MainWindow
                 $"Time to first press (Master - [B + A]): {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
                 Environment.NewLine
             TrialDataBox.ScrollToEnd()
+        ElseIf DoPhase2 Then
+
+            TrialDataBox.Text &= $"Session: {sessionStartTimeStamp.ToFileTimeUtc}, " &
+                $"Subject: {SubjectName.Text}, " &
+                $"Pase2?: {DoPhase2}, " &
+                $"TrialTimer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Block: {trialCount}, " &
+                $"Trial: {sessionId}, " &
+                $"ButtonPresses: {btnCount}, " &
+                $"Pressduration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"TotalStimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"StimAPresses: {aPressCt},  " &
+                $"TotalStimB: {StimBWatch.ElapsedMilliseconds / 1000} secs, " &
+                $"Stim B Presses: {bPressCt}, " &
+                $"TotalButtonDowntime: {(StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds) / 1000} secs, " &
+                $"Latency: {Latency.ElapsedMilliseconds / 1000} secs, " &
+                $"TimeToFirstPress: {(MasterWatch.ElapsedMilliseconds - (StimAWatch.ElapsedMilliseconds + StimBWatch.ElapsedMilliseconds)) / 1000} secs" &
+            Environment.NewLine
+            TrialDataBox.ScrollToEnd()
         Else
             TrialDataBox.Text &= $"Start Time: {sessionStartTimeStamp.ToFileTimeUtc}, " &
                 $"Subject: {SubjectName.Text}, " &
@@ -989,10 +1071,23 @@ Public Class MainWindow
     Private Sub SetMode() Handles TrainingToggle.Click
         If TrainingToggle.IsChecked Then
             TrainingMode = True
+            Phase2.Visibility = Visibility.Collapsed
             TrialSelect.Visibility = Visibility.Collapsed
         ElseIf Not TrainingToggle.IsChecked Then
             TrainingMode = False
+            Phase2.Visibility = Visibility.Visible
             TrialSelect.Visibility = Visibility.Visible
+        End If
+
+    End Sub
+
+    Private Sub SetPhase() Handles Phase2.Click
+        If Phase2.IsChecked Then
+            DoPhase2 = True
+            TrainingToggle.Visibility = Visibility.Collapsed
+        ElseIf Not Phase2.IsChecked Then
+            DoPhase2 = False
+            TrainingToggle.Visibility = Visibility.Visible
         End If
     End Sub
 

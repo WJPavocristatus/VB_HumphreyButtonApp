@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\ai-chan.png" />
     <None Remove="Assets\beep.wav" />
     <None Remove="Assets\invert_hd-wallpaper-7939241_1280.png" />
     <None Remove="Assets\playbtn.png" />
@@ -74,6 +75,12 @@
 
   <ItemGroup>
     <Folder Include="Assets\Stimuli\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\ai-chan.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

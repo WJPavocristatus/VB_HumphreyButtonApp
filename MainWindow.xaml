@@ -88,6 +88,11 @@
                                       Height="32"
                                       Margin="0,6,0,0"
                                       Checked="SetMode"/>
+                            <CheckBox x:Name="Phase2"
+                                        Content="Phase2?"
+                                        Height="32"
+                                        Margin="0,6,0,0"
+                                        Checked="SetMode"/>
                         </StackPanel>
                     </Grid>
 
@@ -241,12 +246,17 @@
                        Source="Assets/invert_hd-wallpaper-7939241_1280.png"
                        Stretch="UniformToFill"
                        Visibility="Collapsed"/>
-
                 <Image x:Name="StimGridReadyOverlay"
                        Source="Assets/playbtn.png"
                        Stretch="None"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
+            
+                
+                <Image x:Name="Phase2Image"
+                       Source="Assets/ai-chan.png"
+                       Stretch="UniformToFill"    
+                       Visibility="Collapsed"/>
             </Grid>
         </Grid>
     </Grid>
