@@ -47,6 +47,7 @@ Public Class MainWindow
     Private HoldLimit As Integer = 5000
     Private btnCount As Integer = 0
     Private trialCount As Integer = 0
+    Public phase2Counter As Integer = 0
     Private sessionId As Integer = 0
     Private aPressCt As Integer = 0
     Private bPressCt As Integer = 0
@@ -609,34 +610,67 @@ Public Class MainWindow
                     TrialSequencer(Trials.Trial9)
             End Select
         ElseIf DoPhase2 = True Then
-            If seed Mod 2 = 0 Then
+            If phase2Counter Mod 2 = 0 Then
 
-                If btnCount Mod 2 = 0 Then
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    aPressCt += 1
-                    ShowOverlay(Phase2Image, "Assets/ai-chan.png")
+                If seed Mod 2 = 0 Then
+
+                    If btnCount Mod 2 = 0 Then
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        aPressCt += 1
+                        ShowOverlay(Phase2Image, "Assets/Chimp.png")
+                    Else
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
                 Else
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        aPressCt += 1
+                        ShowOverlay(Phase2Image, "Assets/Chimp.png")
+                    End If
+
+
                 End If
             Else
-                If btnCount Mod 2 = 0 Then
-                    If StimAWatch.IsRunning Then StimAWatch.Stop()
-                    If Not StimBWatch.IsRunning Then StimBWatch.Start()
-                    bPressCt += 1
-                    StimGrid.Background = Brushes.White
+                If seed Mod 2 = 0 Then
+
+                    If btnCount Mod 2 = 0 Then
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        aPressCt += 1
+                        ShowOverlay(Phase2Image, "Assets/Human1.png")
+                    Else
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    End If
                 Else
-                    If StimBWatch.IsRunning Then StimBWatch.Stop()
-                    If Not StimAWatch.IsRunning Then StimAWatch.Start()
-                    aPressCt += 1
-                    ShowOverlay(Phase2Image, "Assets/ai-chan.png")
+                    If btnCount Mod 2 = 0 Then
+                        If StimAWatch.IsRunning Then StimAWatch.Stop()
+                        If Not StimBWatch.IsRunning Then StimBWatch.Start()
+                        bPressCt += 1
+                        StimGrid.Background = Brushes.White
+                    Else
+                        If StimBWatch.IsRunning Then StimBWatch.Stop()
+                        If Not StimAWatch.IsRunning Then StimAWatch.Start()
+                        aPressCt += 1
+                        ShowOverlay(Phase2Image, "Assets/Human1.png")
+                    End If
+
+
                 End If
-
-
             End If
+
         End If
     End Sub
 
@@ -852,9 +886,11 @@ Public Class MainWindow
         ' Deactivate all progress bars during lockout
         progressControllerTotalPress.Deactivate()
         progressControllerActiveStim.Deactivate()
-
-        'RecordData()
-        'RecordTrial()
+        If DoPhase2 = True Then
+            phase2Counter += 1
+        End If
+        RecordData()
+        RecordTrial()
         Try
             bc.Close()
         Catch

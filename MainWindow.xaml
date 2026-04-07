@@ -254,8 +254,9 @@
             
                 
                 <Image x:Name="Phase2Image"
-                       Source="Assets/ai-chan.png"
-                       Stretch="UniformToFill"    
+                       Source="Assets/Chimp.png"
+                       Stretch="Fill"
+                       MaxHeight="1600"
                        Visibility="Collapsed"/>
             </Grid>
         </Grid>
