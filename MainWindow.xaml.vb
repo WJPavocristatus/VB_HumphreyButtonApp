@@ -1007,9 +1007,10 @@ Public Class MainWindow
         ElseIf DoPhase2 Then
             TextBox1.Text &= $"Session: {sessionStartTimeStamp.ToFileTimeUtc}, " &
                 $"Subject: {SubjectName.Text}, " &
-                $"Pase2?: {DoPhase2}, " &
+                $"Phase2?: {DoPhase2}, " &
                 $"TrialTimer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Block: {trialCount}, " &
+                $"ContentStimA: {Phase2Image.Source}, " &
                 $"Trial: {sessionId}, " &
                 $"ButtonPresses: {btnCount}, " &
                 $"Pressduration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
@@ -1065,6 +1066,7 @@ Public Class MainWindow
                 $"TrialTimer: {MasterWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"Block: {trialCount}, " &
                 $"Trial: {sessionId}, " &
+                $"ContentStimA: {Phase2Image.Source}, " &
                 $"ButtonPresses: {btnCount}, " &
                 $"Pressduration: {ActiveStimWatch.ElapsedMilliseconds / 1000} secs, " &
                 $"TotalStimA: {StimAWatch.ElapsedMilliseconds / 1000} secs, " &
