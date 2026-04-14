@@ -507,7 +507,7 @@ Public Class MainWindow
             Latency.Stop()
         End If
 
-        If trialCount > 9 Then
+        If trialCount > 9 And Not DoPhase2 Then
             trialCount = 0
         End If
 
