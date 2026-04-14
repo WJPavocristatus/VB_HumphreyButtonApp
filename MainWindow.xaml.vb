@@ -623,14 +623,14 @@ Public Class MainWindow
                         If StimAWatch.IsRunning Then StimAWatch.Stop()
                         If Not StimBWatch.IsRunning Then StimBWatch.Start()
                         bPressCt += 1
-                        StimGrid.Background = Brushes.White
+                        ShowOverlay(Phase2Image, "Assets/Human1.png")
                     End If
                 Else
                     If btnCount Mod 2 = 0 Then
                         If StimAWatch.IsRunning Then StimAWatch.Stop()
                         If Not StimBWatch.IsRunning Then StimBWatch.Start()
                         bPressCt += 1
-                        StimGrid.Background = Brushes.White
+                        ShowOverlay(Phase2Image, "Assets/Human1.png")
                     Else
                         If StimBWatch.IsRunning Then StimBWatch.Stop()
                         If Not StimAWatch.IsRunning Then StimAWatch.Start()
@@ -652,14 +652,14 @@ Public Class MainWindow
                         If StimAWatch.IsRunning Then StimAWatch.Stop()
                         If Not StimBWatch.IsRunning Then StimBWatch.Start()
                         bPressCt += 1
-                        StimGrid.Background = Brushes.White
+                        ShowOverlay(Phase2Image, "Assets/Chimp.png")
                     End If
                 Else
                     If btnCount Mod 2 = 0 Then
                         If StimAWatch.IsRunning Then StimAWatch.Stop()
                         If Not StimBWatch.IsRunning Then StimBWatch.Start()
                         bPressCt += 1
-                        StimGrid.Background = Brushes.White
+                        ShowOverlay(Phase2Image, "Assets/Chimp.png")
                     Else
                         If StimBWatch.IsRunning Then StimBWatch.Stop()
                         If Not StimAWatch.IsRunning Then StimAWatch.Start()
